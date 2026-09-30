@@ -10,12 +10,24 @@ mkdir -p "$clearpair_output"
 case "${2:-archive}" in
 archive)
   test ! -e "$clearpair_output/App.xcarchive"
+  # Provision only the application, never SwiftPM resource bundles. Passing a
+  # profile on xcodebuild's command line incorrectly applies it to every target.
+  ruby -rxcodeproj -e '
+    project = Xcodeproj::Project.open(ARGV.fetch(0))
+    app = project.targets.find { |target| target.name == "App" }
+    abort "Expected exactly one App target" unless app && project.targets.count { |target| target.name == "App" } == 1
+    release = app.build_configurations.find { |config| config.name == "Release" }
+    abort "Missing Release configuration" unless release
+    release.build_settings["DEVELOPMENT_TEAM"] = ENV.fetch("CLEARPAIR_TEAM_ID")
+    release.build_settings["CODE_SIGN_STYLE"] = "Manual"
+    release.build_settings["CODE_SIGN_IDENTITY"] = "Apple Distribution"
+    release.build_settings["PROVISIONING_PROFILE_SPECIFIER"] = ENV.fetch("CLEARPAIR_PROFILE")
+    project.save
+  ' "native/apps/$clearpair_app/ios/App/App.xcodeproj"
   xcodebuild -project "native/apps/$clearpair_app/ios/App/App.xcodeproj" \
     -scheme App -configuration Release -destination 'generic/platform=iOS' \
     -archivePath "$clearpair_output/App.xcarchive" -derivedDataPath .runtime/ios/release/DerivedData \
     -clonedSourcePackagesDirPath .runtime/ios/handf/SourcePackages -jobs 2 \
-    DEVELOPMENT_TEAM="$CLEARPAIR_TEAM_ID" CODE_SIGN_STYLE=Manual \
-    CODE_SIGN_IDENTITY='Apple Distribution' PROVISIONING_PROFILE_SPECIFIER="$CLEARPAIR_PROFILE" \
     "OTHER_CODE_SIGN_FLAGS=--keychain $CLEARPAIR_SIGNING_KEYCHAIN" \
     COMPILER_INDEX_STORE_ENABLE=NO archive
   ;;
