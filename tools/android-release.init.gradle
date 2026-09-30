@@ -1,7 +1,6 @@
 // Signing values come only from the invoking process, never Gradle source files.
-gradle.projectsEvaluated {
-    allprojects { p ->
-        if (p.plugins.hasPlugin('com.android.application')) {
+gradle.beforeProject { p ->
+        p.pluginManager.withPlugin('com.android.application') {
             def env = System.getenv()
             ['CLEARPAIR_KEYSTORE', 'CLEARPAIR_STOREPASS', 'CLEARPAIR_KEYPASS', 'CLEARPAIR_KEYALIAS'].each {
                 if (!env[it]) throw new GradleException("Missing signing environment: ${it}")
@@ -13,7 +12,8 @@ gradle.projectsEvaluated {
                 keyAlias = env.CLEARPAIR_KEYALIAS
                 keyPassword = env.CLEARPAIR_KEYPASS
             }
-            android.buildTypes.release.signingConfig = android.signingConfigs.clearpairUpload
+            android.buildTypes.configureEach { type ->
+                if (type.name == 'release') type.signingConfig = android.signingConfigs.clearpairUpload
+            }
         }
-    }
 }
