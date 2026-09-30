@@ -46,7 +46,7 @@ ID: `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`; ID gói dùng `a
 
 Bản ghi mic ở trên thiết bị; ứng dụng không tải chúng lên. Xuất mở bảng chia sẻ gốc hoặc tải xuống web; bạn chọn nơi nhận. Lưu trữ có thể thất bại; xóa dữ liệu hoặc gỡ ứng dụng có thể làm mất bản ghi. Hãy xuất bản quan trọng.
 
-Âm mẫu là giọng tổng hợp đọc nội dung bài học tự viết, vẫn cần người nghe kiểm tra chất lượng. Nếu thiếu mẫu, giọng của thiết bị có thể dùng dịch vụ mạng.
+Không đóng gói các đoạn giọng tổng hợp dùng tạm cho nghiên cứu: quyền phân phối lại và kiểm chứng phát âm bởi người nghe chưa được xác nhận. Bản thử nghiệm dùng giọng đã cài trên thiết bị. Chất lượng, ngôn ngữ và khả năng ngoại tuyến khác nhau; nhà cung cấp có thể dùng mạng.
 
 ## Nghiên cứu và giới hạn
 

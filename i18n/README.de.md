@@ -46,7 +46,7 @@ App-IDs: `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`; Bundle-IDs:
 
 Mikrofonaufnahmen bleiben auf dem Gerät; die App lädt sie nicht hoch. Export öffnet das native Teilen-Menü oder einen Webdownload. Du wählst das Ziel. Speichern kann fehlschlagen; Datenlöschung oder Deinstallation können Aufnahmen entfernen. Exportiere wichtige Dateien.
 
-Mitgelieferte Referenzen sind synthetische Sprache aus eigenen Unterrichtstexten und benötigen noch menschliche Hörprüfung. Fehlt eine Referenz, können Gerätestimmen Netzwerkdienste verwenden.
+Vorläufige synthetische Forschungsclips werden nicht mitgeliefert: Weitergaberechte und menschliche Ausspracheprüfung sind ungeklärt. Testversionen nutzen installierte Gerätestimmen. Qualität, Sprachen und Offline-Verfügbarkeit variieren; Anbieter können Netzwerkdienste verwenden.
 
 ## Forschung und Grenzen
 

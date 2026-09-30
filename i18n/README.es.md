@@ -46,7 +46,7 @@ Los identificadores son `handf`, `landr`, `english`, `chinese`, `korean`, `arabi
 
 Las grabaciones quedan en el dispositivo; la aplicación no las sube. Exportar abre el menú nativo de compartir o una descarga web. Tú eliges el destino. El almacenamiento puede fallar; borrar datos o desinstalar puede eliminar grabaciones. Exporta tus favoritas.
 
-Las referencias incluidas son voz sintética de textos originales y necesitan revisión auditiva humana. Si falta una referencia, las voces del dispositivo pueden utilizar servicios de red.
+Los clips sintéticos temporales de investigación no se incluyen: faltan permiso de redistribución verificado y revisión fonética humana. Las versiones de prueba usan voces instaladas. La calidad y disponibilidad de idiomas sin conexión varían; el proveedor puede utilizar la red.
 
 ## Investigación y límites
 

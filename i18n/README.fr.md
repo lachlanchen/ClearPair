@@ -46,7 +46,7 @@ Identifiants : `handf`, `landr`, `english`, `chinese`, `korean`, `arabic` ; paqu
 
 Les enregistrements restent sur l'appareil ; l'application ne les téléverse pas. L'export ouvre le partage natif ou un téléchargement web. Vous choisissez la destination. Le stockage peut échouer ; effacer les données ou désinstaller peut supprimer les enregistrements. Exportez vos favoris.
 
-Les références sont des voix synthétiques lisant des textes originaux ; une écoute humaine de contrôle reste nécessaire. Si une référence manque, les voix de l'appareil peuvent utiliser le réseau.
+Les extraits synthétiques de recherche ne sont pas inclus : droits de redistribution et contrôle phonétique humain restent non vérifiés. Les versions de test utilisent les voix installées. Qualité, langues et disponibilité hors ligne varient ; le fournisseur peut utiliser le réseau.
 
 ## Recherche et limites
 

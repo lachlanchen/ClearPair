@@ -16,7 +16,9 @@ VOICES = {'en-US':'en-US-JennyNeural','zh-CN':'zh-CN-XiaoxiaoNeural','ko-KR':'ko
 
 async def main():
     requests = json.loads((ROOT/'.runtime/audio/requests.json').read_text())
-    out = ROOT/'public/audio'
+    # Edge Read Aloud probes have no verified commercial redistribution grant.
+    # Keep these private; release references need a separately reviewed source.
+    out = ROOT/'.runtime/audio/edge-reference-probes'
     out.mkdir(parents=True,exist_ok=True)
     manifest_path = out/'manifest.json'
     manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}

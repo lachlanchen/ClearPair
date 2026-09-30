@@ -21,7 +21,9 @@ permission recovery, repeated recording, waveform visibility, local history,
 replay and exporting a chosen recording. Check small-screen layout and switching
 the interface language independently of the practice language.
 
-Synthetic reference pronunciation still needs human auditioning. Report a specific
+Test builds use installed device voices. Temporary synthetic research clips are
+excluded because redistribution permission has not been verified. Voice quality
+and language availability vary by device. Report a specific
 lesson, selected word, device/OS and what you heard. Do not treat signal-quality
 feedback or listening accuracy as a pronunciation score. No microphone recordings
 are uploaded by this preview; exporting is an explicit user-selected share action.

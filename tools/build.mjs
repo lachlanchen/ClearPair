@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { mkdir, writeFile, readFile, cp } from "node:fs/promises";
+import { mkdir, writeFile, readFile, cp, rm } from "node:fs/promises";
 import sharp from "sharp";
 const apps = {
   handf: ["H & F", "h↔f", "#146957", "English & Mandarin h/f"],
@@ -17,6 +17,9 @@ for (const [id, [name, mark, color]] of Object.entries(apps).filter(
 )) {
   const publicDir = `.runtime/public/${id}`;
   await mkdir(`${publicDir}/icons`, { recursive: true });
+  // Never retain reference clips from an earlier, unapproved research build.
+  // This is generated staging only; original research audio is kept privately.
+  await rm(`${publicDir}/audio`, { recursive: true, force: true });
   const icon = Buffer.from(
     `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512"><rect width="512" height="512" fill="${color}"/><circle cx="256" cy="256" r="192" fill="none" stroke="#ffffff" stroke-opacity=".28" stroke-width="2"/><text x="256" y="300" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-size="130" fill="white">${mark}</text><text x="256" y="415" text-anchor="middle" font-family="sans-serif" font-size="24" letter-spacing="7" fill="#ffffff">CLEARPAIR</text></svg>`,
   );
@@ -34,6 +37,9 @@ for (const [id, [name, mark, color]] of Object.entries(apps).filter(
     // Snapshot the manifest before copying; synthesis may still be preparing
     // later clips. Every published key must have an already-complete file.
     const audioManifest=JSON.parse(await readFile('public/audio/manifest.json','utf8'));
+    const rights=JSON.parse(await readFile('public/audio/RIGHTS.json','utf8'));
+    if(rights.redistributionApproved!==true || !rights.source || !rights.termsUrl)
+      throw new Error('Bundled references require reviewed redistribution rights.');
     await mkdir(`${publicDir}/audio`,{recursive:true});
     for(const filename of new Set(Object.values(audioManifest))){
       if(typeof filename!=='string'||! /^[a-f0-9]+\.mp3$/.test(filename))throw new Error('Unsafe audio filename');

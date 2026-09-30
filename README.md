@@ -46,7 +46,7 @@ The six app IDs are `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`; 
 
 Microphone recordings stay on the device; the app does not upload them. Export opens the native share sheet or a web download. You choose the destination. Storage can fail; clearing data or uninstalling can delete recordings, so export favourites.
 
-Bundled references use synthetic speech of original lesson text. Their sound quality still needs human auditioning. Device voices may use network services when a reference is missing.
+Temporary synthetic research clips are not bundled: redistribution permission and phonetic audition are unverified. Test builds use installed device voices. Quality and offline/language availability vary, and voice providers may use network services.
 
 ## Research and limits
 

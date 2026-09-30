@@ -137,6 +137,7 @@ test("Arabic choices preserve RTL shaping and visual recall", async ({
 test("Arabic listening and visual recall have separate review histories", async ({
   page,
 }) => {
+  await fakeVoice(page);
   await page.goto("/arabic/");
   await page.getByRole("button", { name: "Listen", exact: true }).click();
   await page.locator(".word-card").first().click();
