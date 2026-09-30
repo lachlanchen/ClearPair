@@ -7,8 +7,8 @@ or real-speaker pronunciation accuracy.
 
 ## Current status
 
-The checked KVM Mac reports no audio devices and has no installed HAL audio
-driver. Its `simctl io` help offers display operations, not file-to-microphone
+The checked KVM Mac reports no audio devices; no third-party loopback driver was
+found in `/Library/Audio/Plug-Ins/HAL`. Its `simctl io` help offers display operations, not file-to-microphone
 injection. No virtual microphone has been installed or verified for ClearPair.
 TestFlight distribution for owner testing proceeds independently of this work.
 

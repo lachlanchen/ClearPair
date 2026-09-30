@@ -25,9 +25,17 @@ unrestricted public downloads. New releases may take time to reach devices.
 
 ## iOS TestFlight
 
-The six app records, signing profiles and internal tester groups are prepared.
-All six iPhone/iPad builds are signed and exported; Apple validation and upload
-are in progress. Availability is not confirmed yet.
+All six iPhone/iPad builds **0.1.0 (1) are available in internal TestFlight**.
+Apple readback on 30 September 2026 (UTC) confirms `VALID` processing and
+`IN_BETA_TESTING` for every app. The internal tester account is invited and
+automatic notifications are enabled.
+
+Open [TestFlight](https://apps.apple.com/app/testflight/id899247664) on the iPhone
+or iPad, using the invited Apple account. Accept Apple's invitation if prompted.
+These are private internal tests, not unrestricted public join links. A separate
+microphone is not required to try the apps using the iPad's built-in microphone.
+No App Store production review was submitted in this beta operation.
+
 Native recording qualification remains incomplete. Simulator compilation alone
 does not establish working microphone capture or playback.
 The current iOS native test did not pass: UI automation timed out after granting

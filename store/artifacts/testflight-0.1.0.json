@@ -4,7 +4,10 @@
   "distribution": "internal-testflight",
   "applicationSourceCommit": "63ca7baba6ccf367ad395f547197d9cd0f27a428",
   "buildToolCommit": "8a0d9d6",
-  "status": "signed-exported-awaiting-apple-validation",
+  "status": "available-to-internal-testers",
+  "appleProcessingState": "VALID",
+  "internalBuildState": "IN_BETA_TESTING",
+  "verifiedDateUtc": "2026-09-30",
   "qa": {
     "unitTestsPassed": 131,
     "browserTestsPassed": 13,
