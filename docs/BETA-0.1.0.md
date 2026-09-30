@@ -29,6 +29,10 @@ The six app records, signing profiles and internal tester groups are prepared.
 **No iOS build has been uploaded or made available in TestFlight yet.**
 Native recording qualification is still required. Simulator compilation alone
 does not establish working microphone capture or playback.
+The current iOS native test did not pass: UI automation timed out after granting
+microphone permission. This is not yet attributed conclusively to application
+code versus the test environment. Upload is held until it is diagnosed and a
+successful native capture/replay run is recorded.
 
 ## What to test
 
