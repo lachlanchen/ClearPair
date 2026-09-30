@@ -16,8 +16,12 @@ for clearpair_app in handf landr english chinese korean arabic; do
     -derivedDataPath .runtime/ios/family \
     -clonedSourcePackagesDirPath .runtime/ios/handf/SourcePackages \
     -jobs 2 CODE_SIGNING_ALLOWED=NO build > ".runtime/ios/$clearpair_app-family.log" 2>&1
-  ditto .runtime/ios/family/Build/Products/Debug-iphonesimulator/App.app \
-    ".runtime/ios/artifacts/$clearpair_app.app"
+  mkdir -p ".runtime/ios/artifacts/$clearpair_app.app"
+  rsync -a --delete .runtime/ios/family/Build/Products/Debug-iphonesimulator/App.app/ \
+    ".runtime/ios/artifacts/$clearpair_app.app/"
+  # These unsigned simulator artifacts must not retain obsolete web resources.
+  rsync -a --delete "native/apps/$clearpair_app/ios/App/App/public/" \
+    ".runtime/ios/artifacts/$clearpair_app.app/public/"
   /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' ".runtime/ios/artifacts/$clearpair_app.app/Info.plist"
   echo "$clearpair_app: unsigned simulator build passed"
 done
