@@ -26,13 +26,15 @@ unrestricted public downloads. New releases may take time to reach devices.
 ## iOS TestFlight
 
 The six app records, signing profiles and internal tester groups are prepared.
-**No iOS build has been uploaded or made available in TestFlight yet.**
-Native recording qualification is still required. Simulator compilation alone
+All six iPhone/iPad builds are signed and exported; Apple validation and upload
+are in progress. Availability is not confirmed yet.
+Native recording qualification remains incomplete. Simulator compilation alone
 does not establish working microphone capture or playback.
 The current iOS native test did not pass: UI automation timed out after granting
 microphone permission. This is not yet attributed conclusively to application
-code versus the test environment. Upload is held until it is diagnosed and a
-successful native capture/replay run is recorded.
+code versus the test environment. These previews are being distributed for
+owner-requested real-device self-testing, with that limitation disclosed. This
+does not constitute production qualification or a passed microphone test.
 
 ## What to test
 

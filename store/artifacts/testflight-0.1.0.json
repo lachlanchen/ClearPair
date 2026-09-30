@@ -1,0 +1,24 @@
+{
+  "version": "0.1.0",
+  "build": "1",
+  "distribution": "internal-testflight",
+  "applicationSourceCommit": "63ca7baba6ccf367ad395f547197d9cd0f27a428",
+  "buildToolCommit": "8a0d9d6",
+  "status": "signed-exported-awaiting-apple-validation",
+  "qa": {
+    "unitTestsPassed": 131,
+    "browserTestsPassed": 13,
+    "simulatorCompilation": "passed-all-six",
+    "nativeIosAudio": "unverified; automated test timed out after microphone permission",
+    "betaPurpose": "owner-requested real-device self-testing",
+    "pronunciationGradesEnabled": false
+  },
+  "apps": [
+    {"app":"handf","bundleId":"art.lazying.clearpair.handf","ipaSha256":"588cc0349e0fc2ea010f5d4f2a01db3f75e535ed1c44a86dfd0a21f3b39c4bf8"},
+    {"app":"landr","bundleId":"art.lazying.clearpair.landr","ipaSha256":"f9ae77394d6735665974402856e66545b94ee255b280c69c07f05ba10210f1ce"},
+    {"app":"english","bundleId":"art.lazying.clearpair.english","ipaSha256":"fab3afb4df7ea6d9397dcb221c599c3a10085d451fa94e8e1509e11542db904f"},
+    {"app":"chinese","bundleId":"art.lazying.clearpair.chinese","ipaSha256":"ce5630b0dac198c075b2b2ad49657b9901f53c99684191881c9cb29450e5a1fa"},
+    {"app":"korean","bundleId":"art.lazying.clearpair.korean","ipaSha256":"5482a01168197465a331f792f9165a1c8694ec67fcf90c30fd9c4bcbf09d87cf"},
+    {"app":"arabic","bundleId":"art.lazying.clearpair.arabic","ipaSha256":"d9786af361bf1a6f7ff26fdb88e8e73b7a68da64de5de08f570005d815cc4c2f"}
+  ]
+}
