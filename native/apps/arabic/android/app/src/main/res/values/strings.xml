@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ClearPair Arabic Letters</string>
+    <string name="title_activity_main">ClearPair Arabic Letters</string>
+    <string name="package_name">art.lazying.clearpair.arabic</string>
+    <string name="custom_url_scheme">art.lazying.clearpair.arabic</string>
+</resources>

@@ -1,0 +1,77 @@
+[English](../README.md) · [العربية](README.ar.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Tiếng Việt](README.vi.md) · [中文 (简体)](README.zh-Hans.md) · [中文（繁體）](README.zh-Hant.md) · [Deutsch](README.de.md) · [Русский](README.ru.md)
+
+[![LazyingArt banner](https://github.com/lachlanchen/lachlanchen/raw/main/figs/banner.png)](https://github.com/lachlanchen/lachlanchen/blob/main/figs/banner.png)
+
+# ClearPair by LazyingArt
+
+*专练容易混淆的部分，真正学会分辨。*
+
+六款针对易混淆语音与字母的专项学习应用，支持iOS、Android和PWA。ClearPair是暂定品牌名，原有L & N继续作为独立应用。这里强调对比、辨音与区分，而不是泛泛的单词练习。
+
+## 六款专项应用
+
+| ClearPair | 六款专项应用 |
+| --- | --- |
+| H & F | 英语与普通话h/f对比 |
+| L & R | 英语l/r与辅音组合 |
+| English | 英语元音、TH、清浊音与词尾 |
+| Mandarin | 普通话声母、韵母、送气与声调 |
+| Korean | 韩文字母记忆与易混淆语音 |
+| Arabic Letters | 阿拉伯字母形状、点位、连接与声音 |
+
+## 开发预览状态
+
+已实现听辨测验、词对连续播放和循环、学习指导、间隔复习、录音波形、录音历史及导出。英语、简体中文两种界面语言与练习语言分别设置，选择中文界面并不意味着只能练习中文。
+
+**发音评分尚未启用，须先完成模型接入与真人标注验证。** 信号质量不是发音准确度，也不能作为评分替代品。应用采用Capacitor，将React界面与Swift/Java原生录音及语音播放结合，并非分别开发的SwiftUI/Compose界面。
+
+## 构建与测试
+
+需要Node 22+、npm、Android SDK/JDK 21；iOS构建需配有Xcode的Mac。各项构建依次运行，避免同时启动多个重型任务。浏览器测试验证交互行为，不能证明真实语音质量或发音识别准确率。
+
+```sh
+npm ci --legacy-peer-deps
+npm run dev
+npm test
+npm run build
+npm run test:e2e
+npm run native:sync -- handf android
+npm run native:sync -- handf ios
+node tools/native-family.mjs --android-build
+```
+
+六个应用ID为`handf`、`landr`、`english`、`chinese`、`korean`、`arabic`，包名为`art.lazying.clearpair.<id>`。PWA构建输出到`dist/site`。调试APK不是Google Play发布包；测试版是否可安装必须以核实过的商店回执为准，不能仅凭编译成功判断。
+
+## 音频与隐私
+
+麦克风录音保留在设备上，应用不会上传录音。导出时打开原生分享面板或网页下载，目的地由你选择，不会自动发送给任何收件人。存储可能失败；清除应用或网站数据、卸载应用可能删除录音，请提前导出重要内容。
+
+内置参考音频使用原创教材文本的合成语音，仍需真人试听核验发音质量。若缺少内置参考音频，会使用设备语音；设备语音提供方可能调用网络服务，离线可用性取决于设备。
+
+## 研究与边界
+
+参阅[构建计划](../docs/BUILD-PLAN.md)、[评分设计](../docs/SCORING-DESIGN.md)与[教材来源](../docs/CURRICULUM-SOURCES.md)。每个对比都需要经过校准的证据；对于静音、无法确认的内容，以及某些口音中已合并的音，不应凭空给出分数。
+
+计划网站为[language-agent.lazying.art](https://language-agent.lazying.art/)，尚未核实上线部署。本预览用于学习，不提供言语治疗或医学诊断。品牌商标核查与开源许可证尚未确定；公开代码并不自动表示获得任意再分发授权。
+
+## 支持开发
+
+可通过[GitHub Sponsors](https://github.com/sponsors/lachlanchen)或下方按钮支持开发。
+
+| Donate | PayPal | Stripe |
+| --- | --- | --- |
+| [![Donate](https://img.shields.io/badge/Donate-LazyingArt-0EA5E9?style=for-the-badge&logo=kofi&logoColor=white)](https://chat.lazying.art/donate) | [![PayPal](https://img.shields.io/badge/PayPal-RongzhouChen-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/RongzhouChen) | [![Stripe](https://img.shields.io/badge/Stripe-Donate-635BFF?style=for-the-badge&logo=stripe&logoColor=white)](https://buy.stripe.com/aFadR8gIaflgfQV6T4fw400) |
+
+## 引用
+
+GitHub读取[CITATION.cff](../CITATION.cff)以显示“Cite this repository”入口。引用本软件时请使用以下信息：
+
+```bibtex
+@software{chen_clearpair_2026,
+  author = {Chen, Lachlan},
+  title = {ClearPair: Practise What You Mix Up},
+  year = {2026},
+  version = {0.1.0},
+  url = {https://github.com/lachlanchen/ClearPair}
+}
+```

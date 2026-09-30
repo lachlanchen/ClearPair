@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use ClearPair, please cite this repository."
+type: software
+title: "ClearPair: Practise What You Mix Up"
+version: 0.1.0
+date-released: 2026-09-30
+abstract: "Six focused pronunciation and letter-learning apps for easily confused contrasts; development preview."
+authors:
+  - family-names: Chen
+    given-names: Lachlan
+    alias: lachlanchen
+repository-code: "https://github.com/lachlanchen/ClearPair"
+url: "https://github.com/lachlanchen/ClearPair"
+keywords:
+  - pronunciation
+  - minimal pairs
+  - language learning
+  - speech research

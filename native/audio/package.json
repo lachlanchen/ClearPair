@@ -1,0 +1,6 @@
+{
+  "name":"@clearpair/audio","version":"0.1.0","description":"Native microphone and reference speech for ClearPair",
+  "main":"index.js","types":"index.d.ts","files":["android/","ios/","Package.swift","index.js","index.d.ts"],
+  "capacitor":{"ios":{"src":"ios"},"android":{"src":"android"}},
+  "peerDependencies":{"@capacitor/core":">=8.0.0"}
+}
