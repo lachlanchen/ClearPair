@@ -1,5 +1,6 @@
 import { hasNativeAudio, nativeAudio } from "./native";
 import type { Language } from "./types";
+import { selectVoice } from './voices';
 export type Clip = {
   text: string;
   language: Language;
@@ -21,20 +22,21 @@ export class Player {
     else if (typeof speechSynthesis !== "undefined") speechSynthesis.cancel();
     this.changed(null, false);
   }
-  async play(clips: Clip[], loop = false, rate = 1): Promise<void> {
+  async play(clips: Clip[], loop = false, rate = 1): Promise<boolean> {
     this.stop();
     const generation = this.generation;
     try {
       do {
         for (const clip of clips) {
-          if (generation !== this.generation) return;
+          if (generation !== this.generation) return false;
           this.changed(clip.key, loop);
           await this.one(clip, rate);
-          if (generation !== this.generation) return;
+          if (generation !== this.generation) return false;
           await this.pause(260);
         }
         if (loop && generation === this.generation) await this.pause(650);
       } while (loop && generation === this.generation);
+      return generation === this.generation;
     } finally {
       if (generation === this.generation) this.stop();
     }
@@ -97,9 +99,7 @@ export class Player {
         return;
       }
       const voices = speechSynthesis.getVoices(),
-        voice =
-          voices.find((v) => v.lang.replace("_", "-") === clip.language) ||
-          voices.find((v) => v.lang.startsWith(clip.language.slice(0, 2)));
+        voice = selectVoice(voices, clip.language);
       if (!voice) {
         done(
           new Error(

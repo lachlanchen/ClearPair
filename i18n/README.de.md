@@ -6,22 +6,27 @@
 
 *Übe, was du verwechselst. Lerne den Unterschied.*
 
-Sechs gezielte Apps für leicht verwechselbare Laute und Buchstaben auf iOS, Android und als PWA. ClearPair ist ein Arbeitsname; L & N bleibt eine eigenständige App.
+Sieben gezielte Apps für leicht verwechselbare Laute und Buchstaben auf iOS, Android und als PWA. ClearPair ist ein Arbeitsname; L & N bleibt eine eigenständige App.
 
-## Sechs spezialisierte Apps
+![ClearPair](../docs/assets/seven-icons.png)
 
-| ClearPair | Sechs spezialisierte Apps |
+## Sieben spezialisierte Apps
+
+| ClearPair | Sieben spezialisierte Apps |
 | --- | --- |
 | H & F | Englisches und mandarinchinesisches h/f |
 | L & R | Englisches l/r und Konsonantengruppen |
 | English | Vokale, TH, Stimmhaftigkeit und Endlaute |
 | Mandarin | Anlaute, Auslaute, Aspiration und Töne |
+| Cantonese | Jyutping, Töne, Vokale, Aspiration und Endlaute |
 | Korean | Hangul-Merktraining und verwechselbare Laute |
 | Arabic Letters | Formen, Punkte, Verbindungen und Laute |
 
 ## Entwicklungsvorschau
 
 Hörquiz, Paarwiedergabe mit Schleife, Lernhinweise, verteilte Wiederholung, Wellenformen, Aufnahmeverlauf und Export sind umgesetzt. Die englische oder vereinfachte chinesische Oberfläche ist unabhängig von der Übungssprache.
+
+Der aktuelle Quellstand ergänzt kräftige Icons, übersichtliche farbcodierte Ansichten, optionale Lernanimationen und Fünf-Fragen-Runden mit lokal gespeicherten Sternen. Sterne belohnen Hörunterscheidung und Erinnerung, keine unvalidierte Aussprache. Die [Kantonesisch-Hinweise](../docs/CANTONESE.md) nennen Quellen und Sprachsicherungen. Die bestehende [Beta mit sechs Apps](../docs/BETA-0.1.0.md) enthält weder dieses Redesign noch die siebte App.
 
 **Aussprachebewertungen bleiben bis zur Modellintegration und menschlichen Validierung deaktiviert.** Signalqualität ist keine Aussprachegenauigkeit. Capacitor verbindet React mit nativer Swift/Java-Aufnahme und Sprachausgabe; es sind keine getrennten SwiftUI/Compose-Oberflächen.
 
@@ -40,7 +45,7 @@ npm run native:sync -- handf ios
 node tools/native-family.mjs --android-build
 ```
 
-App-IDs: `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`; Bundle-IDs: `art.lazying.clearpair.<id>`. PWAs entstehen in `dist/site`. Debug-APKs sind keine Play-Veröffentlichungen. Testverfügbarkeit benötigt einen verifizierten Store-Beleg.
+App-IDs: `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`, `cantonese`; Bundle-IDs: `art.lazying.clearpair.<id>`. PWAs entstehen in `dist/site`. Debug-APKs sind keine Play-Veröffentlichungen. Testverfügbarkeit benötigt einen verifizierten Store-Beleg.
 
 ## Audio und Datenschutz
 

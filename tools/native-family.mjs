@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { mkdir,copyFile,writeFile } from 'node:fs/promises';
-const apps=['handf','landr','english','chinese','korean','arabic'];
+const apps=['handf','landr','english','chinese','korean','arabic','cantonese'];
 const results=[];
 await mkdir('.runtime/artifacts',{recursive:true});
 for(const app of apps){

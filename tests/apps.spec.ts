@@ -1,8 +1,8 @@
 import { test, expect, type Page } from "@playwright/test";
-const ids = ["handf", "landr", "english", "chinese", "korean", "arabic"];
+const ids = ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese"];
 async function fakeVoice(page: Page) {
   await page.addInitScript(() => {
-    const languages = ["en-US", "zh-CN", "ko-KR", "ar-SA"];
+    const languages = ["en-US", "zh-CN", "zh-HK", "ko-KR", "ar-SA"];
     let timer: ReturnType<typeof setTimeout>;
     Object.defineProperty(window, "SpeechSynthesisUtterance", {
       value: class {
@@ -17,6 +17,7 @@ async function fakeVoice(page: Page) {
         getVoices: () =>
           languages.map((lang) => ({ lang, name: lang, localService: true })),
         speak: (utterance: SpeechSynthesisUtterance) => {
+          (window as unknown as { lastSpoken: string }).lastSpoken = utterance.text;
           timer = setTimeout(
             () => utterance.onend?.(new Event("end") as SpeechSynthesisEvent),
             50,
@@ -224,7 +225,7 @@ test("microphone failure shows an error without a fake score", async ({
   ).toBeEnabled();
   await expect(page.getByText("58", { exact: true })).toHaveCount(0);
 });
-test("six manifests keep separate installation scopes", async ({ request }) => {
+test("seven manifests keep separate installation scopes and maskable icons", async ({ request }) => {
   for (const id of ids) {
     const response = await request.get(`/${id}/manifest.webmanifest`);
     expect(response.ok()).toBe(true);
@@ -232,6 +233,7 @@ test("six manifests keep separate installation scopes", async ({ request }) => {
     expect(manifest.scope).toBe(`/${id}/`);
     expect(manifest.id).toBe(`/${id}/`);
     expect(manifest.start_url).toBe(`/${id}/`);
+    expect(manifest.icons.some((icon: {purpose?:string}) => icon.purpose === 'maskable')).toBe(true);
   }
 });
 test("desktop overview has no page errors or overflow", async ({ page }) => {

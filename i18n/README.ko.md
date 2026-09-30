@@ -6,22 +6,27 @@
 
 *헷갈리는 부분을 연습하고, 차이를 익히세요.*
 
-혼동하기 쉬운 소리와 글자에 집중하는 여섯 앱으로, iOS·Android·PWA를 지원합니다. ClearPair는 임시 이름이며 기존 L & N과 별개입니다.
+혼동하기 쉬운 소리와 글자에 집중하는 일곱 앱으로, iOS·Android·PWA를 지원합니다. ClearPair는 임시 이름이며 기존 L & N과 별개입니다.
 
-## 여섯 가지 전문 앱
+![ClearPair](../docs/assets/seven-icons.png)
 
-| ClearPair | 여섯 가지 전문 앱 |
+## 일곱 가지 전문 앱
+
+| ClearPair | 일곱 가지 전문 앱 |
 | --- | --- |
 | H & F | 영어와 중국어의 h/f |
 | L & R | 영어 l/r 및 자음군 |
 | English | 모음, TH, 유성·무성, 어말 소리 |
 | Mandarin | 성모, 운모, 기식, 성조 |
+| Cantonese | 광둥어 월병(Jyutping), 성조, 모음, 기식 및 어말 소리 |
 | Korean | 한글 기억과 헷갈리는 소리 |
 | Arabic Letters | 아랍 문자 모양, 점, 연결, 소리 |
 
 ## 개발 미리보기
 
 듣기 퀴즈, 쌍 재생과 반복, 학습 안내, 간격 반복, 파형, 녹음 기록과 내보내기를 구현했습니다. 영어·중국어 간체 UI 언어는 연습 언어와 별도로 설정합니다.
+
+최신 소스에는 선명한 아이콘, 깔끔한 색상별 화면, 선택형 학습 애니메이션, 별을 기기에 저장하는 5문제 게임을 추가했습니다. 별은 듣기와 회상 연습을 보상하며 검증되지 않은 발음 점수가 아닙니다. 출처와 음성 안전장치는 [광둥어 안내](../docs/CANTONESE.md)를 확인하세요. 기존 [6개 앱 베타](../docs/BETA-0.1.0.md)에는 이번 디자인과 일곱 번째 앱이 아직 포함되지 않습니다.
 
 **발음 점수는 모델 통합과 사람의 검증이 끝날 때까지 비활성화됩니다.** 신호 품질은 발음 정확도가 아닙니다. Capacitor는 React 화면에 Swift/Java 네이티브 녹음과 음성을 결합합니다. 별도의 SwiftUI/Compose 인터페이스는 아닙니다.
 
@@ -40,7 +45,7 @@ npm run native:sync -- handf ios
 node tools/native-family.mjs --android-build
 ```
 
-앱 ID는 `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`이며 번들 ID는 `art.lazying.clearpair.<id>`입니다. PWA는 `dist/site`에 생성됩니다. 디버그 APK는 Play 출시본이 아닙니다. 테스트 배포 여부는 검증된 스토어 응답으로 확인해야 합니다.
+앱 ID는 `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`, `cantonese`이며 번들 ID는 `art.lazying.clearpair.<id>`입니다. PWA는 `dist/site`에 생성됩니다. 디버그 APK는 Play 출시본이 아닙니다. 테스트 배포 여부는 검증된 스토어 응답으로 확인해야 합니다.
 
 ## 오디오와 개인정보
 

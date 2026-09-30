@@ -30,6 +30,19 @@ const profile = (
 });
 
 export const scoringProfiles = {
+  cantoneseTones: profile('yue-tones', 'zh-HK', 'tone',
+    ['relative-f0-contour', 'tone-context', 'voicing-confidence', 'speaker-normalization'],
+    ['tone-1', 'tone-2', 'tone-3', 'tone-4', 'tone-5', 'tone-6', 'other'],
+    'Compare all six Cantonese tones after alignment; validate mergers by speaker and context.',
+    '對齊後比較六個粵語聲調，按說話者及語境驗證合併現象。'),
+  cantoneseVowels: profile('yue-vowels', 'zh-HK', 'phone',
+    ['formant-trajectory', 'vowel-duration', 'speaker-normalization', 'syllable-alignment'],
+    ['aa', 'a', 'other-vowels', 'omission', 'other'],
+    'Quality and duration jointly distinguish aa/a; no duration-only grade.', '結合音色與時長區分 aa/a，不只按長短評分。'),
+  cantoneseConsonants: profile('yue-consonants', 'zh-HK', 'phone',
+    ['phone-likelihood', 'closure-location', 'aspiration', 'vowel-transition', 'syllable-alignment'],
+    ['target', 'competitor', 'omission', 'other'],
+    'Align the intended initial or coda; retain other and omitted categories.', '對齊目標聲母或韻尾，保留其他音與漏音類別。'),
   englishHF: profile(
     "en-h-f",
     "en-US",
@@ -290,6 +303,9 @@ function route(head: ProfileName, ids: string[]) {
   }
 }
 route("englishHF", ["hf-en"]);
+route('cantoneseTones', ['yue-tone-1-3', 'yue-tone-2-5', 'yue-tone-4-6']);
+route('cantoneseVowels', ['yue-aa-a']);
+route('cantoneseConsonants', ['yue-n-ng', 'yue-b-p', 'yue-p-t']);
 route("mandarinHF", ["hf-zh"]);
 route("englishLR", ["lr-start", "lr-more", "lr-clusters", "lr-end"]);
 route("englishVowels", [
@@ -388,7 +404,7 @@ export function assessmentPlan(
     (side !== 0 && side !== 1)
   )
     throw new Error("Invalid target");
-  if (lessonId === "v-merger" || lessonId === "ko-ae-e")
+  if (lessonId === "v-merger" || lessonId === "ko-ae-e" || lessonId === 'yue-n-l')
     return { mode: "explore", reason: "accent-merger" };
   if (lessonId === "tone-context")
     return { mode: "explore", reason: "connected-speech-guide" };

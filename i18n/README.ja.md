@@ -6,22 +6,27 @@
 
 *混同しやすいところを練習し、違いを身につける。*
 
-紛らわしい音や文字に特化した六つのアプリ。iOS、Android、PWAに対応します。ClearPairは仮称であり、既存のL & Nとは別のアプリ群です。一般的な単語練習ではなく、聞き分けと発音の対比を中心にしています。
+紛らわしい音や文字に特化した七つのアプリ。iOS、Android、PWAに対応します。ClearPairは仮称であり、既存のL & Nとは別のアプリ群です。一般的な単語練習ではなく、聞き分けと発音の対比を中心にしています。
 
-## 六つの専門アプリ
+![ClearPair](../docs/assets/seven-icons.png)
 
-| ClearPair | 六つの専門アプリ |
+## 七つの専門アプリ
+
+| ClearPair | 七つの専門アプリ |
 | --- | --- |
 | H & F | 英語と中国語のh/fの区別 |
 | L & R | 英語のl/rと子音連続 |
 | English | 英語の母音、TH、有声・無声、語末 |
 | Mandarin | 中国語の声母、韻母、気息、声調 |
+| Cantonese | 広東語の粵拼、声調、母音、気息、語末音 |
 | Korean | ハングルの記憶と紛らわしい音 |
 | Arabic Letters | アラビア文字の形、点、連結、音 |
 
 ## 開発プレビュー
 
 聞き取りクイズ、ペアの連続再生とループ、学習ガイド、間隔反復、波形表示、録音履歴、書き出しを実装しています。英語・簡体字中国語の表示言語と、練習する言語は独立して選択できます。
+
+最新のソースには、鮮やかなアイコン、すっきりした色分け画面、任意の学習アニメーション、星を端末に保存する5問のゲームを追加しました。星は聞き分けと想起の練習への報酬であり、未検証の発音点数ではありません。出典と音声の安全策は[広東語の説明](../docs/CANTONESE.md)をご覧ください。既存の[6アプリのベータ版](../docs/BETA-0.1.0.md)には、このデザイン変更や7番目のアプリはまだ含まれていません。
 
 **発音点数は、モデルの組み込みと人による検証が完了するまで無効です。** 信号品質は発音の正確さではありません。CapacitorのReact画面にSwift/Javaによるネイティブ録音・音声再生を組み合わせています。個別のSwiftUI/Compose画面ではありません。
 
@@ -40,7 +45,7 @@ npm run native:sync -- handf ios
 node tools/native-family.mjs --android-build
 ```
 
-アプリIDは`handf`、`landr`、`english`、`chinese`、`korean`、`arabic`です。バンドルIDは`art.lazying.clearpair.<id>`。PWAは`dist/site`に出力します。デバッグAPKはPlay公開版ではありません。テスト配信の利用可否はストアの確認結果で判断します。
+アプリIDは`handf`、`landr`、`english`、`chinese`、`korean`、`arabic`、`cantonese`です。バンドルIDは`art.lazying.clearpair.<id>`。PWAは`dist/site`に出力します。デバッグAPKはPlay公開版ではありません。テスト配信の利用可否はストアの確認結果で判断します。
 
 ## 音声とプライバシー
 

@@ -5,9 +5,9 @@ import { priority, review, readProgress, storeProgress } from "./review";
 import { saveTake, listTakes, getTake, deleteTake } from "./storage";
 import type { Take } from "./types";
 import { Blob as NodeBlob } from "node:buffer";
-describe("six contrast curricula", () => {
-  it("contains six distinct identities and unique lessons", () => {
-    expect(products).toHaveLength(6);
+describe("seven contrast curricula", () => {
+  it("contains seven distinct identities and unique lessons", () => {
+    expect(products).toHaveLength(7);
     expect(new Set(lessons.map((l) => l.id)).size).toBe(lessons.length);
   });
   for (const p of products)

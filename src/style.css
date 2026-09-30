@@ -305,7 +305,7 @@ h1 em {
   align-items: center;
   justify-content: center;
 }
-.diagram svg {
+.diagram > svg {
   height: 225px;
   width: 100%;
   overflow: visible;
@@ -978,7 +978,7 @@ footer details > p {
   .diagram {
     height: 214px;
   }
-  .diagram svg {
+  .diagram > svg {
     height: 200px;
   }
   .contrast-diagram {

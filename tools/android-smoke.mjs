@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdir,writeFile } from 'node:fs/promises';
 const serial=process.env.CLEARPAIR_ADB_SERIAL||'emulator-5568';
 if(!serial.startsWith('emulator-'))throw new Error('This smoke script is emulator-only. Do not operate an owner phone automatically.');
-const allowed=['handf','landr','english','chinese','korean','arabic'];
+const allowed=['handf','landr','english','chinese','korean','arabic','cantonese'];
 const ids=process.argv.find(arg=>arg.startsWith('--apps='))?.slice(7).split(',')||allowed;
 if(!ids.length||ids.some(id=>!allowed.includes(id)))throw new Error('Unknown ClearPair app');
 const port=9456,results=[];

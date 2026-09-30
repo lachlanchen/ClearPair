@@ -1,5 +1,6 @@
 import type { Lesson, Product, Text, Word } from "./types";
 import { scriptLessons } from "./script-curriculum";
+import { cantoneseLessons } from "./cantonese-curriculum";
 
 const t = (en: string, zh: string): Text => ({ en, zh });
 const e = (text: string, ipa: string, sentence?: string): Word => ({
@@ -1505,7 +1506,7 @@ export const lessons: Lesson[] = [
   ),
 ];
 
-lessons.push(...scriptLessons);
+lessons.push(...scriptLessons, ...cantoneseLessons);
 for (const lesson of lessons) {
   if (["tone-context", "v-merger"].includes(lesson.id))
     lesson.quizMode = "none";
@@ -1517,7 +1518,7 @@ export const products: Product[] = [
     name: "H & F",
     zhName: "H 与 F",
     mark: "hf",
-    accent: "#146957",
+    accent: "#007b60",
     blurb: t("A little air. A clearer difference.", "一点气流，清楚的区别。"),
     lessons: ["hf-en", "hf-zh", "hf-final"],
   },
@@ -1526,7 +1527,7 @@ export const products: Product[] = [
     name: "L & R",
     zhName: "L 与 R",
     mark: "lr",
-    accent: "#7251a5",
+    accent: "#7038df",
     blurb: t("Find the shape. Find your sound.", "找到舌形，发出你的声音。"),
     lessons: ["lr-start", "lr-more", "lr-clusters", "lr-end"],
   },
@@ -1535,7 +1536,7 @@ export const products: Product[] = [
     name: "English",
     zhName: "英语发音",
     mark: "ə",
-    accent: "#315eb7",
+    accent: "#2859dc",
     blurb: t(
       "Hear the small things that change a word.",
       "听见改变单词的细微差别。",
@@ -1568,7 +1569,7 @@ export const products: Product[] = [
     name: "Mandarin",
     zhName: "普通话发音",
     mark: "声",
-    accent: "#b35035",
+    accent: "#d63c27",
     blurb: t(
       "From a single sound to a natural phrase.",
       "从一个音，到自然的短句。",
@@ -1602,7 +1603,7 @@ export const products: Product[] = [
     name: "Korean",
     zhName: "韩语辨音",
     mark: "한",
-    accent: "#8a4b70",
+    accent: "#bd2678",
     blurb: t(
       "Remember the Hangul you mix up. Hear the sound that changes a word.",
       "记住易混韩文字母，听清改变词义的声音。",
@@ -1616,7 +1617,7 @@ export const products: Product[] = [
     name: "Arabic Letters",
     zhName: "阿拉伯字母",
     mark: "ب",
-    accent: "#826020",
+    accent: "#007b8e",
     blurb: t(
       "Similar shapes. Different letters. Learn the dots, joins and sounds.",
       "相似字形，不同字母。分清点、连写和声音。",
@@ -1624,6 +1625,11 @@ export const products: Product[] = [
     lessons: scriptLessons
       .filter((l) => l.language === "ar-SA")
       .map((l) => l.id),
+  },
+  {
+    id: 'cantonese', name: 'Cantonese', zhName: '粵語辨音', mark: '粵', accent: '#a64b00',
+    blurb: t('Small shifts in tone. A whole new meaning.', '聲調一點變化，意思大不相同。'),
+    lessons: cantoneseLessons.map((l) => l.id),
   },
 ];
 export const lessonById = (id: string) => lessons.find((l) => l.id === id)!;

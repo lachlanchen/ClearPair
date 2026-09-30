@@ -4,9 +4,10 @@ export type AppId =
   | "english"
   | "chinese"
   | "korean"
+  | "cantonese"
   | "arabic";
 export type Locale = "en" | "zh-Hans" | "zh-Hant";
-export type Language = "en-US" | "zh-CN" | "ko-KR" | "ar-SA";
+export type Language = "en-US" | "zh-CN" | "zh-HK" | "ko-KR" | "ar-SA";
 export type Text = { en: string; zh: string; hant?: string };
 export type Diagram = "vowel" | "air" | "tongue" | "tone" | "glyph";
 export interface Word {

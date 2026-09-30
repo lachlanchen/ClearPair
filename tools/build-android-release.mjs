@@ -10,7 +10,7 @@ const config = JSON.parse(await readFile(configFile, 'utf8'));
 const env = { ...process.env, CLEARPAIR_KEYSTORE: config.storeFile,
   CLEARPAIR_STOREPASS: config.storePassword, CLEARPAIR_KEYPASS: config.keyPassword,
   CLEARPAIR_KEYALIAS: config.keyAlias };
-const apps = ['handf', 'landr', 'english', 'chinese', 'korean', 'arabic'];
+const apps = ['handf', 'landr', 'english', 'chinese', 'korean', 'arabic', 'cantonese'];
 const init = resolve('tools/android-release.init.gradle');
 const version = JSON.parse(await readFile('package.json', 'utf8')).version;
 const commit = spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim();

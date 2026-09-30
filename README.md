@@ -6,22 +6,31 @@
 
 *Practise what you mix up. Learn the difference.*
 
-Six focused apps for easily confused sounds and letters, on iOS, Android and PWA. ClearPair is a working name; L & N is a separate app.
+Seven focused apps for easily confused sounds and letters, on iOS, Android and PWA. ClearPair is a working name; L & N is a separate app.
 
-## Six focused apps
+![ClearPair](docs/assets/seven-icons.png)
 
-| ClearPair | Six focused apps |
+## Seven focused apps
+
+| ClearPair | Focus |
 | --- | --- |
 | H & F | English and Mandarin h/f |
 | L & R | English l/r and clusters |
 | English | Vowels, TH, voicing and endings |
 | Mandarin | Initials, finals, aspiration and tones |
+| Cantonese | Jyutping, tone contrasts, vowels, aspiration and endings |
 | Korean | Hangul memory and confusing sounds |
 | Arabic Letters | Shapes, dots, joins and sounds |
 
 ## Development preview
 
 Listening quizzes, pair playback/looping, learning guides, spaced review, waveforms, recording history and export are implemented. English and Simplified Chinese interface settings are independent of the practice language.
+
+The latest source adds vivid full-bleed icons, cleaner colour-coded screens, optional
+learning animations, and five-question games with locally saved stars. Stars reward
+listening/recall, never unvalidated pronunciation scores. See the [Cantonese notes](docs/CANTONESE.md)
+for linguistic sources and voice safeguards. The existing [six-app beta](docs/BETA-0.1.0.md)
+does not yet contain this redesign or the seventh app.
 
 **Pronunciation grades are disabled pending model integration and human validation.** Signal quality is not pronunciation accuracy. Capacitor combines a React interface with native Swift/Java recording and speech playback; these are not separate SwiftUI/Compose interfaces.
 
@@ -40,7 +49,7 @@ npm run native:sync -- handf ios
 node tools/native-family.mjs --android-build
 ```
 
-The six app IDs are `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`; bundle IDs use `art.lazying.clearpair.<id>`. PWAs build into `dist/site`. Debug APKs are not Play releases. Test availability requires a verified store receipt.
+The seven app IDs are `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`, `cantonese`; bundle IDs use `art.lazying.clearpair.<id>`. PWAs build into `dist/site`. Debug APKs are not Play releases. Test availability requires a verified store receipt.
 
 ## Audio and privacy
 

@@ -103,7 +103,14 @@ public class ClearPairAudioPlugin: CAPPlugin, CAPBridgedPlugin, AVSpeechSynthesi
     @objc public func speak(_ call: CAPPluginCall) { DispatchQueue.main.async {
         self.stopVoice()
         let language = call.getString("language") ?? "en-US"
-        guard let selected = AVSpeechSynthesisVoice(language: language) else { call.reject("Install a voice for \(language) in Settings."); return }
+        let requestedVoice: AVSpeechSynthesisVoice?
+        if language == "zh-HK" {
+            requestedVoice = AVSpeechSynthesisVoice.speechVoices().first { voice in
+                let tag = voice.language.lowercased().replacingOccurrences(of: "_", with: "-")
+                return tag == "yue" || tag.hasPrefix("yue-") || tag == "zh-hk" || tag == "zh-hant-hk"
+            }
+        } else { requestedVoice = AVSpeechSynthesisVoice(language: language) }
+        guard let selected = requestedVoice else { call.reject("Install a voice for \(language) in Settings. Cantonese needs a Cantonese voice, not Mandarin."); return }
         do { let session = AVAudioSession.sharedInstance(); try session.setCategory(.playback, mode: .spokenAudio); try session.setActive(true) }
         catch { call.reject("The audio output is unavailable."); return }
         let speech = AVSpeechUtterance(string: call.getString("text") ?? "")

@@ -17,6 +17,8 @@ import {
   RotateCcw,
   ShieldCheck,
   Square,
+  Star,
+  Sparkles,
   Trash2,
   X,
 } from "lucide-react";
@@ -36,6 +38,9 @@ import { Player, type Clip } from "./player";
 import { Recorder } from "./recorder";
 import { inspectRecording, unavailableAnalysis } from "./analysis";
 import { shareNativeRecording } from "./export";
+import { Challenge } from './Challenge';
+import { LearnMotion } from './LearnMotion';
+import { completeGame, readGame, saveGame } from './game';
 import {
   deleteTake,
   getTake,
@@ -56,6 +61,7 @@ type Recording = "idle" | "starting" | "recording" | "saving";
 const product = productById(__APP_ID__),
   progressKey = `clearpair:${product.id}:progress:v1`;
 const courses = product.lessons.map(lessonById);
+const gameKey = `clearpair:${product.id}:game:v1`;
 function initialLocale(): Locale {
   try {
     return localStorage.getItem("clearpair:locale") === "zh-Hans"
@@ -69,6 +75,8 @@ function initialLocale(): Locale {
 export function App() {
   const [locale, setLocale] = useState<Locale>(initialLocale),
     [tab, setTab] = useState<Tab>("learn");
+  const [gameOpen, setGameOpen] = useState(false),
+    [gameProgress, setGameProgress] = useState(() => readGame(gameKey));
   const [lessonId, setLessonId] = useState(product.lessons[0]),
     [pairIndex, setPairIndex] = useState(0),
     [side, setSide] = useState<0 | 1>(0);
@@ -208,6 +216,7 @@ export function App() {
   function selectLesson(id: string) {
     if (busy) return;
     stop();
+    setGameOpen(false);
     setLessonId(id);
     setPairIndex(0);
     setSide(0);
@@ -221,6 +230,7 @@ export function App() {
   function selectTab(next: Tab) {
     if (busy) return;
     stop();
+    setGameOpen(false);
     setTab(next);
     setMessage("");
     if (next === "history") void loadHistory(true);
@@ -228,6 +238,10 @@ export function App() {
   function updateProgress(next: typeof progress) {
     setProgress(next);
     if (!storeProgress(progressKey, next)) setStorageWarning(true);
+  }
+  function startChallenge() {
+    if (busy || lesson.quizMode === 'none') return;
+    stop(); setMessage(''); setPicker(false); setTab('listen'); setGameOpen(true);
   }
   async function question() {
     stop();
@@ -496,6 +510,7 @@ export function App() {
   return (
     <div
       className={`app ${tab === "learn" ? "" : "focused"}`}
+      data-product={product.id}
       style={{ "--accent": product.accent } as CSSProperties}
     >
       <header className="topbar">
@@ -508,11 +523,9 @@ export function App() {
           }
           aria-label="ClearPair home"
         >
-          <span className="brand-symbol">
-            c<span>p</span>
-          </span>
+          <img className="brand-icon" src={`${import.meta.env.BASE_URL}icons/icon-192.png`} alt="" width="42" height="42"/>
           <span>
-            ClearPair<small>by LazyingArt</small>
+            ClearPair<small>{product.name}</small>
           </span>
         </a>
         <button
@@ -528,7 +541,7 @@ export function App() {
         <section className="intro">
           <div>
             <p className="eyebrow">
-              {product.name} <span> / {tr("CONTRAST LAB", "辨音练习")}</span>
+              {product.name} <span> / {tr("FIND YOUR SOUND", "找到你的声音")}</span>
             </p>
             <h1>
               {tr("Small difference.", "小小区别，")}
@@ -542,10 +555,7 @@ export function App() {
               )}
             </p>
           </div>
-          <div className="identity" aria-hidden="true">
-            {product.mark}
-            <span>↔</span>
-          </div>
+          <img className="identity" src={`${import.meta.env.BASE_URL}icons/icon-192.png`} alt="" width="130" height="130"/>
         </section>
         <div className="course-row">
           <button
@@ -561,6 +571,8 @@ export function App() {
                   ? "English"
                   : lesson.language === "zh-CN"
                     ? "普通话"
+                    : lesson.language === 'zh-HK'
+                      ? '粵語 · Jyutping'
                     : lesson.language === "ko-KR"
                       ? "한국어"
                       : "العربية"}
@@ -636,6 +648,30 @@ export function App() {
           ))}
         </nav>
 
+        {gameOpen && <Challenge key={lesson.id} lesson={lesson} player={player.current!} clip={clip} tr={tr}
+          onExit={() => { stop(); setGameOpen(false); }}
+          onPractice={() => selectTab('practice')}
+          onAnswer={(index, correct, isVisual) => {
+            const now = Date.now();
+            const key = `${lesson.id}/${isVisual ? 'visual' : 'listen'}/${index}`;
+            updateProgress({ ...progress, [lesson.id]: review(progress[lesson.id], correct, now), [key]: review(progress[key], correct, now) });
+          }}
+          onComplete={(answers) => {
+            const next = completeGame(gameProgress, answers);
+            setGameProgress(next);
+            if (!saveGame(gameKey, next)) setStorageWarning(true);
+          }} />}
+
+        {tab === 'learn' && <section className="game-invite" aria-label={tr('Quick challenge', '小挑战')}>
+          <div className="game-emblem"><Sparkles size={25}/></div>
+          <div><h2>{tr('A little play. A clearer ear.', '玩一小会，听得更清。')}</h2>
+            <p>{tr('5 questions. No timer. Just the tricky bits.', '五道题，不限时，专练易混点。')}</p>
+            <span className="game-stars"><Star size={14}/>{gameProgress.stars} {tr('stars collected', '颗练习星星')}</span></div>
+          <button className="primary" onClick={lesson.quizMode === 'none' ? () => selectTab('listen') : startChallenge}>
+            {lesson.quizMode === 'none' ? tr('Explore pair', '探索词对') : tr('Play a round', '玩一轮')}<ArrowRight size={18}/>
+          </button>
+        </section>}
+
         {tab === "learn" && (
           <section className="learn-grid">
             <div className="panel visual-panel">
@@ -686,7 +722,7 @@ export function App() {
           </section>
         )}
 
-        {(tab === "practice" || tab === "listen") && (
+        {!gameOpen && (tab === "practice" || tab === "listen") && (
           <section className="panel work-panel">
             <div className="section-label">
               <span>
@@ -1082,7 +1118,7 @@ export function App() {
           </section>
         )}
 
-        <div className="playback-dock">
+        <div className={`playback-dock ${tab === 'learn' && !active ? 'dormant' : ''}`}>
           <div className={active ? "play-indicator active" : "play-indicator"}>
             <AudioLines size={18} />
             <span>
@@ -1223,9 +1259,12 @@ function Diagram({
   lesson: Lesson;
   txt: (v: Text) => string;
 }) {
+  const [animate, setAnimate] = useState(false);
+  if (['lr-start', 'lr-more', 'lr-clusters', 'hf-en', 'hf-zh', 'yue-b-p', 'b-p'].includes(lesson.id))
+    return <LearnMotion key={lesson.id} lesson={lesson} txt={txt}/>;
   if (lesson.diagram === "vowel" && lesson.positions)
     return (
-      <div className="diagram">
+      <div className={`diagram vowel-diagram ${animate ? 'motion-on' : ''}`}>
         <svg
           viewBox="0 0 340 240"
           role="img"
@@ -1257,11 +1296,12 @@ function Diagram({
             </g>
           ))}
         </svg>
+        <button className="motion-toggle" aria-pressed={animate} onClick={() => setAnimate(!animate)}>{animate ? <Pause size={14}/> : <Play size={14}/>} {txt({en: 'Compare positions', zh: '比较舌位'})}</button>
       </div>
     );
   if (lesson.diagram === "tone" && lesson.tones)
     return (
-      <div className="diagram">
+      <div className={`diagram tone-diagram ${animate ? 'motion-on' : ''}`}>
         <svg
           viewBox="0 0 340 240"
           role="img"
@@ -1271,6 +1311,7 @@ function Diagram({
           {lesson.tones.map((points, i) => (
             <g key={i}>
               <polyline
+                pathLength="1"
                 points={points
                   .map(
                     (v, j) =>
@@ -1278,7 +1319,7 @@ function Diagram({
                   )
                   .join(" ")}
                 fill="none"
-                stroke={i ? "#bd764f" : "var(--accent)"}
+                stroke={i ? "var(--contrast)" : "var(--accent)"}
                 strokeWidth="5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -1289,6 +1330,7 @@ function Diagram({
             </g>
           ))}
         </svg>
+        <button className="motion-toggle" aria-pressed={animate} onClick={() => setAnimate(!animate)}>{animate ? <Pause size={14}/> : <Play size={14}/>} {txt({en: 'Trace the tones', zh: '观察声调走向'})}</button>
       </div>
     );
   return (

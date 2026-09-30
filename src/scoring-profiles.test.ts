@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { lessonById, products } from "./curriculum";
 import { assessmentPlan } from "./scoring-profiles";
 
-describe("six app-specific assessment plans", () => {
+describe("seven app-specific assessment plans", () => {
   for (const product of products)
     it(`${product.id}: every exercise has an explicit plan`, () => {
       for (const id of product.lessons)

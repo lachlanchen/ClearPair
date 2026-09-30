@@ -6,22 +6,27 @@
 
 *专练容易混淆的部分，真正学会分辨。*
 
-六款针对易混淆语音与字母的专项学习应用，支持iOS、Android和PWA。ClearPair是暂定品牌名，原有L & N继续作为独立应用。这里强调对比、辨音与区分，而不是泛泛的单词练习。
+七款针对易混淆语音与字母的专项学习应用，支持iOS、Android和PWA。ClearPair是暂定品牌名，原有L & N继续作为独立应用。这里强调对比、辨音与区分，而不是泛泛的单词练习。
 
-## 六款专项应用
+![ClearPair](../docs/assets/seven-icons.png)
 
-| ClearPair | 六款专项应用 |
+## 七款专项应用
+
+| ClearPair | 七款专项应用 |
 | --- | --- |
 | H & F | 英语与普通话h/f对比 |
 | L & R | 英语l/r与辅音组合 |
 | English | 英语元音、TH、清浊音与词尾 |
 | Mandarin | 普通话声母、韵母、送气与声调 |
+| Cantonese | 粤拼、声调对比、元音、送气与韵尾 |
 | Korean | 韩文字母记忆与易混淆语音 |
 | Arabic Letters | 阿拉伯字母形状、点位、连接与声音 |
 
 ## 开发预览状态
 
 已实现听辨测验、词对连续播放和循环、学习指导、间隔复习、录音波形、录音历史及导出。英语、简体中文两种界面语言与练习语言分别设置，选择中文界面并不意味着只能练习中文。
+
+最新源码新增鲜明大图标、更整洁的配色界面、可选学习动画，以及五道题一轮的小游戏；星星保存在本地。星星奖励听辨与回忆，不代表未经验证的发音分数。语言资料与语音保护措施见[粤语说明](../docs/CANTONESE.md)。现有[六款应用测试版](../docs/BETA-0.1.0.md)尚未包含本次设计或第七款应用。
 
 **发音评分尚未启用，须先完成模型接入与真人标注验证。** 信号质量不是发音准确度，也不能作为评分替代品。应用采用Capacitor，将React界面与Swift/Java原生录音及语音播放结合，并非分别开发的SwiftUI/Compose界面。
 
@@ -40,7 +45,7 @@ npm run native:sync -- handf ios
 node tools/native-family.mjs --android-build
 ```
 
-六个应用ID为`handf`、`landr`、`english`、`chinese`、`korean`、`arabic`，包名为`art.lazying.clearpair.<id>`。PWA构建输出到`dist/site`。调试APK不是Google Play发布包；测试版是否可安装必须以核实过的商店回执为准，不能仅凭编译成功判断。
+七个应用ID为`handf`、`landr`、`english`、`chinese`、`korean`、`arabic`、`cantonese`，包名为`art.lazying.clearpair.<id>`。PWA构建输出到`dist/site`。调试APK不是Google Play发布包；测试版是否可安装必须以核实过的商店回执为准，不能仅凭编译成功判断。
 
 ## 音频与隐私
 

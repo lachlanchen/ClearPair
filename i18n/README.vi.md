@@ -6,22 +6,27 @@
 
 *Luyện điều dễ nhầm. Học cách phân biệt.*
 
-Sáu ứng dụng tập trung vào âm và chữ dễ nhầm, dành cho iOS, Android và PWA. ClearPair là tên tạm; L & N là ứng dụng riêng.
+Bảy ứng dụng tập trung vào âm và chữ dễ nhầm, dành cho iOS, Android và PWA. ClearPair là tên tạm; L & N là ứng dụng riêng.
 
-## Sáu ứng dụng chuyên biệt
+![ClearPair](../docs/assets/seven-icons.png)
 
-| ClearPair | Sáu ứng dụng chuyên biệt |
+## Bảy ứng dụng chuyên biệt
+
+| ClearPair | Bảy ứng dụng chuyên biệt |
 | --- | --- |
 | H & F | h/f trong tiếng Anh và Quan thoại |
 | L & R | l/r và cụm phụ âm tiếng Anh |
 | English | Nguyên âm, TH, hữu thanh và âm cuối |
 | Mandarin | Thanh mẫu, vận mẫu, bật hơi và thanh điệu |
+| Cantonese | Jyutping, thanh điệu, nguyên âm, bật hơi và âm cuối tiếng Quảng Đông |
 | Korean | Ghi nhớ Hangul và các âm dễ nhầm |
 | Arabic Letters | Hình dạng, dấu chấm, nối chữ và âm |
 
 ## Bản xem trước phát triển
 
 Đã có bài nghe, phát cặp và lặp, hướng dẫn, ôn tập ngắt quãng, dạng sóng, lịch sử và xuất bản ghi. Ngôn ngữ giao diện Anh hoặc Trung giản thể độc lập với ngôn ngữ luyện tập.
+
+Mã nguồn mới bổ sung biểu tượng rực rỡ, giao diện màu sắc gọn gàng, hoạt ảnh học tập tùy chọn và trò chơi năm câu hỏi với sao lưu trên thiết bị. Sao thưởng cho nghe phân biệt và ghi nhớ, không phải điểm phát âm chưa kiểm chứng. Xem [ghi chú tiếng Quảng Đông](../docs/CANTONESE.md) để biết nguồn và biện pháp chọn giọng. [Bản beta sáu ứng dụng hiện có](../docs/BETA-0.1.0.md) chưa gồm thiết kế này hoặc ứng dụng thứ bảy.
 
 **Điểm phát âm đang tắt cho đến khi tích hợp mô hình và kiểm chứng với người thật.** Chất lượng tín hiệu không phải độ chính xác phát âm. Capacitor kết hợp React với ghi âm và giọng nói gốc Swift/Java, không phải giao diện SwiftUI/Compose riêng.
 
@@ -40,7 +45,7 @@ npm run native:sync -- handf ios
 node tools/native-family.mjs --android-build
 ```
 
-ID: `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`; ID gói dùng `art.lazying.clearpair.<id>`. PWA được tạo trong `dist/site`. APK gỡ lỗi không phải bản Play. Khả năng tham gia thử nghiệm cần xác nhận đã kiểm chứng từ cửa hàng.
+ID: `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`, `cantonese`; ID gói dùng `art.lazying.clearpair.<id>`. PWA được tạo trong `dist/site`. APK gỡ lỗi không phải bản Play. Khả năng tham gia thử nghiệm cần xác nhận đã kiểm chứng từ cửa hàng.
 
 ## Âm thanh và riêng tư
 

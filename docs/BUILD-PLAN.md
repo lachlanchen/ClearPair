@@ -3,12 +3,13 @@
 Working family name: **ClearPair** — “Practise what you mix up. Learn the difference.”
 Chinese descriptor: 辨音练习. This is a working product name, not trademark clearance.
 
-Six independently installable apps share one engine:
+Seven independently installable apps share one engine:
 
 - `handf`: English /h–f/ and Mandarin h/f (Mandarin h is not identical to English h).
 - `landr`: English /l–r/, including initial, medial/final and clusters.
 - `english`: vowel quality/height/backness/rounding, diphthongs, TH/s/z, voicing and endings.
 - `chinese`: Standard Mandarin initials, finals, aspiration, tones and connected-speech lessons.
+- `cantonese`: Jyutping, six-tone contrasts, aa/a, nasal and stop endings, aspiration and an ungraded n/l variation guide.
 - `korean`: smart Hangul recall, confusable shapes, aspiration/tension and syllable structure.
 - `arabic`: confusable letter families, dots, contextual forms and joining, with RTL script.
 
@@ -27,7 +28,7 @@ will point DNS at the L & N server. Deploy a separate site/root; do not change L
    local recording retention/export/delete, paginated history and honest storage warnings.
 4. Listening quizzes and adaptive review; never present signal quality or transcription as a
    validated phoneme score. Offline lessons/reference audio; no default cloud uploads.
-5. Six PWA builds and actual Android/iOS projects/builds; test supported runtimes.
+5. Seven PWA builds and actual Android/iOS projects/builds; test supported runtimes.
 6. Automated unit/browser regression, accessibility/phone/desktop checks, clean resource handoff.
 7. Reliable speaking assessment for **each app**, not only recording or transcription:
    language-specific acoustic heads, target-only word/sentence alignment, calibrated
