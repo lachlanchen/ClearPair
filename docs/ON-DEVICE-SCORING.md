@@ -41,7 +41,7 @@ lifecycle checks are automated; mobile speed and memory still need measurement.
 
 `src/local-models.ts` defines the artifact contract. The shipped registry is empty
 until actual artifacts qualify. `ScorePanel` shows that fact instead of an invented
-constant score. The eight beta4 apps include this flow, but no enabled numeric grade.
+constant score. The eight beta5 apps include this flow, but no enabled numeric grade.
 
 ## Actual encoder feasibility evidence
 
@@ -80,6 +80,37 @@ disjoint human speakers, measure real mobile memory/latency, then package only
 qualified models with attribution. Other language adapters/acoustic heads still
 require development; one English encoder does not establish Mandarin, Cantonese,
 Korean, Arabic or Japanese support. All-language offline scoring is still unfinished.
+
+## Human evaluation — 2026-10-01
+
+The exact weight-only English runtime was evaluated on 1,024 hash-selected adult
+recordings from pinned speechocean762. The model fit used 57 official-training
+speakers; calibration used ten different official-training speakers. The final
+official-test set contained 61 different speakers (488 clips; 486 within the
+predeclared duration/signal limits). No test-speaker recording was used to fit
+the classifier or calibration. `tools/qualify-english-scorer.py` preserves the plan.
+
+**This candidate failed the acceptance-error requirement.** Among 8,222 clearly
+rated held-out phones, 320 were rated incorrect. At the predeclared probability
+threshold of 0.8, 164 of those 320 incorrect phones were accepted (51.25%). The
+speaker-cluster bootstrap 95% interval was approximately 45.0–59.4%. The false
+rejection rate for correct phones was 1.44%. Low aggregate Brier error (0.0271)
+and AUC (0.9109) must not be substituted for acceptable error detection in this
+imbalanced corpus. Another 843 intermediate ratings were excluded from the binary
+analysis and reported separately, not relabeled as correct. Individual phone
+categories lack sufficient incorrect examples for a release claim.
+
+`tools/summarize-human-validation.py` reports fixed-threshold uncertainty and
+coverage without fitting or selecting thresholds. This final test is now a
+consumed evaluation set: any subsequent tuning needs fresh independent evaluation.
+No registry entry, release approval, app score, or production submission resulted.
+
+The separate pinned OMPAL Mandarin annotation audit found 656 detailed clip IDs
+absent from the canonical annotation mapping. They remain unresolved; no guessed
+renumbering or pairing with audio is permitted. The detailed file has mostly
+three ratings per item, not the overview's stated four. Canonical aggregate labels
+are retained separately from unanimous individual ratings. This is data validation,
+not a Mandarin model accuracy result. See `tools/prepare-mandarin-benchmark.mjs`.
 
 ## What each small part needs
 
