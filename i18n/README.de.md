@@ -12,6 +12,8 @@ Sieben gezielte Apps für leicht verwechselbare Laute und Buchstaben auf iOS, An
 
 ![ClearPair](../docs/assets/seven-icons.png)
 
+Der Quellcode-Kandidat 1.0.0 (3) behebt ein Rennen bei verzögerter Mikrofonfreigabe und ergänzt abgesicherte Store-Weiterleitung. Der [Veröffentlichungsplan](../store/REVIEW-PLAN.md) ist kein Beleg einer eingereichten Prüfung.
+
 ## Sieben spezialisierte Apps
 
 | ClearPair | Sieben spezialisierte Apps |
@@ -78,7 +80,7 @@ GitHub liest [CITATION.cff](../CITATION.cff) für „Cite this repository“. So
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.2.0},
+  version = {1.0.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

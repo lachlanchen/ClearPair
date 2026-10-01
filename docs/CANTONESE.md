@@ -41,7 +41,9 @@ the final-L lesson. Articulatory reference:
 
 ## Release boundary
 
-Local native iOS/Android projects and the scoped PWA are generated. Cantonese has
-no store app record, pricing receipt, signed upload or tester invitation in this
-change. Existing six-app TestFlight/internal builds retain their original icons and
-UI until a new build is uploaded. Do not overwrite their build-1 release evidence.
+All seven apps, including Cantonese, have signed **0.2.0 (2)** builds available in
+internal TestFlight and Google Play testing. Cantonese's store identity exists and
+its owner invitation was requested; internal testing is not public retail release.
+The scoped PWA is live at https://language-agent.lazying.art/cantonese/.
+See [the beta receipt and device-check limitations](BETA-0.2.0.md). Earlier icons,
+builds and release evidence are retained. Formal review is a separate release step.

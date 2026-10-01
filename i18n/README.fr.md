@@ -12,6 +12,8 @@ Sept applications ciblant les sons et lettres faciles à confondre, pour iOS, An
 
 ![ClearPair](../docs/assets/seven-icons.png)
 
+Le candidat source 1.0.0 (3) corrige une réponse tardive à l’autorisation du micro et ajoute une redirection protégée vers les boutiques. Le [plan de publication](../store/REVIEW-PLAN.md) ne prouve pas un envoi en examen.
+
 ## Sept applications ciblées
 
 | ClearPair | Sept applications ciblées |
@@ -78,7 +80,7 @@ GitHub utilise [CITATION.cff](../CITATION.cff) pour afficher « Cite this reposi
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.2.0},
+  version = {1.0.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

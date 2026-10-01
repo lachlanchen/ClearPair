@@ -12,6 +12,8 @@
 
 ![ClearPair](../docs/assets/seven-icons.png)
 
+يُصلح مرشّح المصدر 1.0.0 (3) تعارض استجابة إذن الميكروفون المتأخرة، ويضيف توجيهاً محمياً إلى المتجر. راجع [خطة الإصدار](../store/REVIEW-PLAN.md)؛ وهي ليست إثباتاً لإرسال التطبيق للمراجعة.
+
 ## سبعة تطبيقات متخصصة
 
 | ClearPair | سبعة تطبيقات متخصصة |
@@ -78,7 +80,7 @@ node tools/native-family.mjs --android-build
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.2.0},
+  version = {1.0.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

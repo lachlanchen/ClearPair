@@ -42,6 +42,10 @@ for (const [id, [name, mark, color]] of Object.entries(apps).filter(
     await writeFile(`${publicDir}/audio/manifest.json`,JSON.stringify(audioManifest));
   } catch (error) {
     if (error.code !== "ENOENT") throw error;
+    // A rights-unqualified installation intentionally uses device voices.
+    // Publish an explicit empty manifest instead of a recurring HTTP 404.
+    await mkdir(`${publicDir}/audio`,{recursive:true});
+    await writeFile(`${publicDir}/audio/manifest.json`,'{}');
   }
   const result = spawnSync(
     process.execPath,
@@ -79,4 +83,7 @@ if (!isNative) {
   await mkdir('dist/site', { recursive: true });
   const { homepage } = await import('./site.mjs');
   await writeFile('dist/site/index.html', homepage(apps));
+  const {privacyPage,supportPage}=await import('./legal-pages.mjs');
+  await writeFile('dist/site/privacy.html',privacyPage());
+  await writeFile('dist/site/support.html',supportPage());
 }

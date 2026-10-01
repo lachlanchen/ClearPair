@@ -1,0 +1,44 @@
+{
+  "handf": {
+    "name": "ClearPair H & F",
+    "subtitle": "Hear H/F. Feel the difference.",
+    "shortDescription": "Hear and practise easily confused H/F sounds in English and Mandarin.",
+    "focus": "English h/f and Mandarin h/f, with a separate final f/v lesson. Compare lip-teeth friction with breath or back-of-mouth friction, using hat/fat and Mandarin word pairs."
+  },
+  "landr": {
+    "name": "ClearPair L & R",
+    "subtitle": "English L/R, one clear pair",
+    "shortDescription": "Hear and practise easily confused English L/R sounds, from words to sentences.",
+    "focus": "English l/r at the start, in clusters and in word-final contexts. Explore tongue contact for L and alternative comfortable tongue shapes for R with pairs such as light/right."
+  },
+  "english": {
+    "name": "ClearPair English",
+    "subtitle": "Vowels, TH & tricky contrasts",
+    "shortDescription": "Practise easily confused English vowels, TH sounds and final consonants.",
+    "focus": "English vowel quality, TH contrasts and consonants that change meaning. Compare sheep/ship, bed/bad, full/fool and other contrasts. Accent-dependent distinctions are explained rather than treated as universal errors."
+  },
+  "chinese": {
+    "name": "ClearPair Mandarin",
+    "subtitle": "Initials, finals & tones",
+    "shortDescription": "Practise Mandarin sounds that are easy to confuse: initials, finals and tones.",
+    "focus": "Mandarin z/c/s, zh/ch/sh and j/q/x, aspiration, u/ü, nasal finals and tones. Read characters with Pinyin and learn the position or airflow difference, not just a spelling rule."
+  },
+  "korean": {
+    "name": "ClearPair Korean",
+    "subtitle": "Hangul & confusing sounds",
+    "shortDescription": "Explore easily confused Hangul letters and Korean sound contrasts.",
+    "focus": "Hangul shapes, plain/tense/aspirated sound families and Korean sound contrasts. Visual recall and optional device-voice listening are separate activities; modern pronunciation variation is acknowledged."
+  },
+  "arabic": {
+    "name": "ClearPair Arabic Letters",
+    "subtitle": "Dots, joins & sound families",
+    "shortDescription": "Tell confusing Arabic letters apart through dots, joins and sound families.",
+    "focus": "Arabic letter dots, joining forms and sound families. Visual letter recall is the default; optional listening depends on an installed Arabic voice and is not a specialist recitation model."
+  },
+  "cantonese": {
+    "name": "ClearPair Cantonese",
+    "subtitle": "Jyutping & tricky contrasts",
+    "shortDescription": "Explore Cantonese tones and confusing sounds with Jyutping and pair practice.",
+    "focus": "Cantonese tones 1/3, 2/5 and 4/6, aa/a, nasal finals, aspiration and unreleased stops. Traditional characters and Jyutping stay Cantonese regardless of the interface language. Initial n/l variation is an ungraded exploration, not a wrong-accent test."
+  }
+}

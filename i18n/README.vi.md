@@ -12,6 +12,8 @@ Bảy ứng dụng tập trung vào âm và chữ dễ nhầm, dành cho iOS, An
 
 ![ClearPair](../docs/assets/seven-icons.png)
 
+Mã nguồn ứng viên 1.0.0 (3) sửa lỗi phản hồi quyền micrô đến muộn và thêm chuyển hướng cửa hàng có điều kiện an toàn. [Kế hoạch phát hành](../store/REVIEW-PLAN.md) không phải biên nhận nộp xét duyệt.
+
 ## Bảy ứng dụng chuyên biệt
 
 | ClearPair | Bảy ứng dụng chuyên biệt |
@@ -78,7 +80,7 @@ GitHub đọc [CITATION.cff](../CITATION.cff) để hiển thị “Cite this re
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.2.0},
+  version = {1.0.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

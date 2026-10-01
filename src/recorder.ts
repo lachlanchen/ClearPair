@@ -10,19 +10,25 @@ export class Recorder {
   private chunks: Blob[] = [];
   private native = false;
   async start(meter: (rms: number) => void) {
-    const generation = ++this.generation;
     if (this.stream || this.media || this.native)
       throw new Error("A recording is already active.");
+    const generation = ++this.generation;
     this.native = hasNativeAudio();
     if (this.native) {
       try {
-        this.listener = await nativeAudio.addListener("meter", (e) =>
-          meter(e.rms),
-        );
+        const listener = await nativeAudio.addListener("meter", (e) => {
+          if (generation === this.generation) meter(e.rms);
+        });
+        // Registration and OS permission can both finish after cancellation.
+        // A stale attempt owns only its subscription, never the next take.
+        if (generation !== this.generation) {
+          await listener.remove();
+          return;
+        }
+        this.listener = listener;
         await nativeAudio.start();
-        if (generation !== this.generation) await this.cancel();
       } catch (error) {
-        await this.cancel();
+        if (generation === this.generation) await this.cancel();
         throw error;
       }
       return;
@@ -48,18 +54,22 @@ export class Recorder {
         return;
       }
       this.stream = stream;
-      this.context = new AudioContext();
-      await this.context.resume();
+      const context = new AudioContext();
+      this.context = context;
+      await context.resume();
       if (generation !== this.generation) {
-        await this.release();
+        // This attempt owns its context/stream, not a newer take's resources.
+        stream.getTracks().forEach((t) => t.stop());
+        await context.close().catch(() => {});
         return;
       }
-      const source = this.context.createMediaStreamSource(stream),
-        analyser = this.context.createAnalyser();
+      const source = context.createMediaStreamSource(stream),
+        analyser = context.createAnalyser();
       analyser.fftSize = 1024;
       source.connect(analyser);
       const frame = new Float32Array(analyser.fftSize);
       const tick = () => {
+        if (generation !== this.generation) return;
         analyser.getFloatTimeDomainData(frame);
         meter(Math.sqrt(frame.reduce((s, v) => s + v * v, 0) / frame.length));
         this.animation = requestAnimationFrame(tick);
@@ -79,11 +89,12 @@ export class Recorder {
       this.media.start(200);
     } catch (error) {
       stream?.getTracks().forEach((t) => t.stop());
-      await this.release();
+      if (generation === this.generation) await this.release();
       throw error;
     }
   }
   async stop(): Promise<Blob> {
+    this.generation++;
     if (this.native) {
       try {
         const result = await nativeAudio.stop();

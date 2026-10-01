@@ -12,6 +12,8 @@
 
 ![ClearPair](../docs/assets/seven-icons.png)
 
+源代码候选版 1.0.0 (3) 修复了延迟麦克风权限响应引发的竞态，并加入安全条件下的商店引导。[发布计划](../store/REVIEW-PLAN.md)不代表已经提交商店审核。
+
 ## 七款专项应用
 
 | ClearPair | 七款专项应用 |
@@ -78,7 +80,7 @@ GitHub读取[CITATION.cff](../CITATION.cff)以显示“Cite this repository”�
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.2.0},
+  version = {1.0.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

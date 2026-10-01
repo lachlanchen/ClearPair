@@ -12,6 +12,8 @@
 
 ![ClearPair](../docs/assets/seven-icons.png)
 
+ソース候補1.0.0 (3)では、遅れて返るマイク許可応答の競合を修正し、安全条件付きのストア誘導を追加しました。[リリース計画](../store/REVIEW-PLAN.md)は審査提出の証明ではありません。
+
 ## 七つの専門アプリ
 
 | ClearPair | 七つの専門アプリ |
@@ -78,7 +80,7 @@ GitHubは[CITATION.cff](../CITATION.cff)を読み、「Cite this repository」�
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.2.0},
+  version = {1.0.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

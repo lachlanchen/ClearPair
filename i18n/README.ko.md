@@ -12,6 +12,8 @@
 
 ![ClearPair](../docs/assets/seven-icons.png)
 
+소스 후보 1.0.0 (3)은 늦게 돌아온 마이크 권한 응답의 충돌을 수정하고 안전 조건을 갖춘 스토어 이동을 추가해요. [출시 계획](../store/REVIEW-PLAN.md)은 심사 제출 증빙이 아니에요.
+
 ## 일곱 가지 전문 앱
 
 | ClearPair | 일곱 가지 전문 앱 |
@@ -78,7 +80,7 @@ GitHub는 [CITATION.cff](../CITATION.cff)를 읽어 “Cite this repository”�
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.2.0},
+  version = {1.0.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

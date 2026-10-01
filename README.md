@@ -12,6 +12,8 @@ Seven focused apps for easily confused sounds and letters, on iOS, Android and P
 
 ![ClearPair](docs/assets/seven-icons.png)
 
+The 1.0.0 (3) source candidate fixes a delayed microphone-permission race and adds guarded store routing. Review preparation is documented in [the release plan](store/REVIEW-PLAN.md); it is not a store-submission receipt.
+
 ## Seven focused apps
 
 | ClearPair | Focus |
@@ -78,7 +80,7 @@ GitHub reads [CITATION.cff](CITATION.cff) to show “Cite this repository”. Ci
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.2.0},
+  version = {1.0.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

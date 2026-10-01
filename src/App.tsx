@@ -40,6 +40,7 @@ import { inspectRecording, unavailableAnalysis } from "./analysis";
 import { shareNativeRecording } from "./export";
 import { Challenge } from './Challenge';
 import { LearnMotion } from './LearnMotion';
+import { StoreRoute } from './StoreRoute';
 import {initialLocale,localeLabels,translate,text,sourceLocale} from './i18n';
 import { needsVoiceInstallation } from './ui-errors';
 import { completeGame, readGame, saveGame } from './game';
@@ -537,6 +538,7 @@ export function App() {
           </select>
         </label>
       </header>
+      <StoreRoute app={product.id} busy={busy||active!==null} tr={tr}/>
       <main>
         <section className="intro">
           <div>
@@ -1215,6 +1217,7 @@ export function App() {
             <p>
               ClearPair {__APP_VERSION__} ·{" "}
               <a href="mailto:support@lazying.art">support@lazying.art</a>
+              {' · '}<a href="https://language-agent.lazying.art/privacy.html">{tr('Privacy policy','隐私政策')}</a>
             </p>
           </details>
         </footer>

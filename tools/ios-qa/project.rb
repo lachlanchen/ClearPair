@@ -3,14 +3,15 @@ require 'xcodeproj'
 require 'fileutils'
 require 'pathname'
 root = File.expand_path('../..', __dir__)
-out = File.join(root, '.runtime/ios/qa')
+device_control = ARGV.include?('--device-control')
+out = File.join(root, device_control ? '.runtime/ios/device-qa' : '.runtime/ios/qa')
 FileUtils.mkdir_p(out)
 project = Xcodeproj::Project.new(File.join(out, 'ClearPairQA.xcodeproj'))
 host = project.new_target(:application, 'ClearPairQAHost', :ios, '15.0')
 tests = project.new_target(:ui_test_bundle, 'ClearPairUITests', :ios, '15.0')
 source = ->(name) { Pathname.new(File.join(root, 'tools/ios-qa', name)).relative_path_from(Pathname.new(out)).to_s }
 host.add_file_references([project.main_group.new_file(source.call('Host.swift'))])
-tests.add_file_references([project.main_group.new_file(source.call('FamilyUITests.swift'))])
+tests.add_file_references([project.main_group.new_file(source.call(device_control ? 'DeviceUITests.swift' : 'FamilyUITests.swift'))])
 tests.add_dependency(host)
 [host, tests].each do |target|
   target.build_configurations.each do |c|

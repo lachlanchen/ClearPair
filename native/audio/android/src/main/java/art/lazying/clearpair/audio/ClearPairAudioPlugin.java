@@ -25,6 +25,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @CapacitorPlugin(name="ClearPairAudio", permissions={@Permission(alias="microphone",strings={Manifest.permission.RECORD_AUDIO})})
 public class ClearPairAudioPlugin extends Plugin {
@@ -37,16 +39,21 @@ public class ClearPairAudioPlugin extends Plugin {
     private boolean ttsReady=false;
     private PluginCall speechCall;
     private String speechId;
-    private boolean cancelledPermission=false;
+    private final AtomicInteger captureGeneration=new AtomicInteger();
+    private final ConcurrentHashMap<String,Integer> permissionRequests=new ConcurrentHashMap<>();
 
     @PluginMethod public void start(PluginCall call) {
         if (recorder!=null) { call.reject("A recording is already active.");return; }
-        cancelledPermission=false;
-        if(getPermissionState("microphone")!=PermissionState.GRANTED){requestPermissionForAlias("microphone",call,"permissionDone");return;}
+        int token=captureGeneration.incrementAndGet();
+        if(getPermissionState("microphone")!=PermissionState.GRANTED){
+            permissionRequests.put(call.getCallbackId(),token);
+            requestPermissionForAlias("microphone",call,"permissionDone");return;
+        }
         begin(call);
     }
     @PermissionCallback private void permissionDone(PluginCall call){
-        if(cancelledPermission){call.reject("Recording cancelled.");return;}
+        Integer token=permissionRequests.remove(call.getCallbackId());
+        if(token==null||token!=captureGeneration.get()){call.reject("Recording cancelled.");return;}
         if(getPermissionState("microphone")==PermissionState.GRANTED)begin(call);
         else call.reject("Microphone permission is required. Enable it in Android Settings.");
     }
@@ -88,7 +95,7 @@ public class ClearPairAudioPlugin extends Plugin {
         wav.put(new byte[]{'d','a','t','a'}).putInt(data.length).put(data);
         JSObject result=new JSObject();result.put("base64",Base64.encodeToString(wav.array(),Base64.NO_WRAP));result.put("mimeType","audio/wav");call.resolve(result);
     }
-    @PluginMethod public void cancel(PluginCall call){cancelledPermission=true;endCapture();pcm=null;call.resolve();}
+    @PluginMethod public void cancel(PluginCall call){captureGeneration.incrementAndGet();endCapture();pcm=null;call.resolve();}
     @PluginMethod public void shareRecording(PluginCall call){
         String filename=call.getString("filename",""),mime=call.getString("mimeType",""),encoded=call.getString("base64","");
         if(filename.length()>120||!filename.matches("clearpair-[A-Za-z0-9._-]+\\.(wav|m4a|webm)")||
@@ -148,5 +155,5 @@ public class ClearPairAudioPlugin extends Plugin {
     private void failSpeech(String message){if(speechCall!=null){speechCall.reject(message);speechCall=null;}speechId=null;}
     private void stopVoice(){speechId=null;if(tts!=null)tts.stop();if(speechCall!=null){speechCall.resolve();speechCall=null;}}
     @PluginMethod public void stopSpeech(PluginCall call){getActivity().runOnUiThread(()->{stopVoice();call.resolve();});}
-    @Override protected void handleOnDestroy(){cancelledPermission=true;endCapture();stopVoice();if(tts!=null){tts.shutdown();tts=null;}super.handleOnDestroy();}
+    @Override protected void handleOnDestroy(){captureGeneration.incrementAndGet();permissionRequests.clear();endCapture();stopVoice();if(tts!=null){tts.shutdown();tts=null;}super.handleOnDestroy();}
 }

@@ -12,6 +12,8 @@
 
 ![ClearPair](../docs/assets/seven-icons.png)
 
+Кандидат исходного кода 1.0.0 (3) устраняет гонку при задержанном разрешении микрофона и добавляет безопасную переадресацию в магазин. [План выпуска](../store/REVIEW-PLAN.md) не подтверждает отправку на проверку.
+
 ## Семь специализированных приложений
 
 | ClearPair | Семь специализированных приложений |
@@ -78,7 +80,7 @@ GitHub читает [CITATION.cff](../CITATION.cff) и показывает «Ci
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.2.0},
+  version = {1.0.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

@@ -1,6 +1,6 @@
 {
-  "version": "0.2.0",
-  "build": 2,
-  "distribution": "internal-testing",
+  "version": "1.0.0",
+  "build": 3,
+  "distribution": "production-review-candidate",
   "apps": ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese"]
 }
