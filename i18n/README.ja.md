@@ -12,7 +12,7 @@
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-既存七アプリの1.0.0 (3)はAppleとGoogleの内部テストに提供済みです。ソース候補(4)では[日本語](../docs/JAPANESE-COURSE.md)、WAV解析、[端末内の発音評価](../docs/ON-DEVICE-SCORING.md)を追加しています。日本語は未アップロードで、正式審査も未提出です。ローカルモデルの検証が完了するまで発音点数は無効です。
+[日本語](../docs/JAPANESE-COURSE.md)を含む独立した8アプリの[内部テスト版1.0.0 (4)](../docs/BETA-1.0.0-4.md)がTestFlightとGoogle Playで利用できます。TestFlightの説明文も各アプリ専用に修正済みです。端末内モデルの検証中のため発音点数は無効です。その後の音声選択修正はソースのみで、ビルド4には含まれません。正式審査は未提出です。
 
 ## 八つの専門コース
 
@@ -50,7 +50,7 @@ npm run native:sync -- handf ios
 node tools/native-family.mjs --android-build
 ```
 
-アプリIDは`handf`、`landr`、`english`、`chinese`、`korean`、`arabic`、`cantonese`です。バンドルIDは`art.lazying.clearpair.<id>`。PWAは`dist/site`に出力します。デバッグAPKはPlay公開版ではありません。テスト配信の利用可否はストアの確認結果で判断します。
+アプリIDは`handf`、`landr`、`english`、`chinese`、`korean`、`arabic`、`cantonese`、`japanese`です。バンドルIDは`art.lazying.clearpair.<id>`。PWAは`dist/site`に出力します。デバッグAPKはPlay公開版ではありません。テスト配信の利用可否はストアの確認結果で判断します。
 
 ## 音声とプライバシー
 

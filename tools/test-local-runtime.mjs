@@ -7,28 +7,32 @@ import {createReadStream} from 'node:fs';
 import {readFile,stat,writeFile} from 'node:fs/promises';
 import {resolve,extname,sep} from 'node:path';
 import {spawnSync} from 'node:child_process';
-const root=resolve('.runtime/model-audit/local-export-english-v1'),dist=resolve('.runtime/local-runtime-probe');
+const variant=process.argv.find(a=>a.startsWith('--variant='))?.slice(10)||'original';
+if(!['original','range7','u8','weight-only','fp32'].includes(variant))throw Error('Unknown bounded quantization variant');
+const roots={original:'local-export-english-v1',fp32:'local-export-english-v1',range7:'local-export-english-v2-range7',u8:'local-export-english-v3-u8','weight-only':'local-export-english-v4-weight-only'};
+const root=resolve('.runtime/model-audit/'+roots[variant]),dist=resolve('.runtime/local-runtime-probe');
 const report=JSON.parse(await readFile(`${root}/regression.json`,'utf8'));
 if(report.approved!==false||report.released!==false)throw Error('Probe must not imply approval');
-const artifact=report.artifacts.find(a=>a.file==='english-int8.onnx');
+const artifact=report.artifacts.find(a=>a.file===(variant==='fp32'?'english-fp32.onnx':'english-int8.onnx'));
+if(!artifact)throw Error('Missing exact probe artifact');
 await build({configFile:false,base:'/',publicDir:false,build:{outDir:dist,emptyOutDir:true,
  rollupOptions:{input:'tools/local-runtime-probe.ts',output:{entryFileNames:'probe.js'}}}});
 await writeFile(`${dist}/index.html`,'<!doctype html><title>Private local encoder probe</title><script type="module" src="/probe.js"></script>');
 const clip=process.argv.find(a=>a.startsWith('--clip='))?.slice(7);
 if(clip&&!/^\d{9}$/.test(clip))throw Error('Invalid bounded development clip');
-const reference=spawnSync('/home/lachlan/ProjectsLFS/LocalSTT/.venv/bin/python',['tools/local-runtime-reference.py',...(clip?[clip]:[])],
+const reference=spawnSync('/home/lachlan/ProjectsLFS/LocalSTT/.venv/bin/python',['tools/local-runtime-reference.py',`--variant=${variant}`,...(clip?[`--clip=${clip}`]:[])],
  {encoding:'utf8',maxBuffer:10*1024*1024,timeout:60_000});
 if(reference.status!==0)throw Error(reference.stderr||'Independent CPU probe failed');
 const {samples,frames:expected}=JSON.parse(reference.stdout);
-const model={id:'english-int8-RESEARCH-NOT-APPROVED',language:'en-US',asset:'models/english-int8.onnx',
+const model={id:`english-${variant}-RESEARCH-NOT-APPROVED`,language:'en-US',asset:'models/'+artifact.file,
  sha256:artifact.sha256,bytes:artifact.bytes,rate:16000,preprocessing:'mono-sinc-zscore:v1',
  input:'input_values',logitsOutput:'logits',featureNames:[],vocabulary:expected[0].length,blank:report.blank,separators:report.separators,
  rights:{redistributionApproved:false,termsUrl:'https://huggingface.co/'+report.model},tasks:[]};
 const server=createServer(async(request,response)=>{
  try{
   const path=decodeURIComponent(new URL(request.url,'http://127.0.0.1').pathname);
-  const file=path==='/models/english-int8.onnx'?`${root}/english-int8.onnx`:resolve(dist,'.'+(path==='/'?'/index.html':path));
-  if(file!==`${root}/english-int8.onnx`&&!file.startsWith(dist+sep))throw Error('Unsafe test path');
+  const file=path==='/models/'+artifact.file?`${root}/${artifact.file}`:resolve(dist,'.'+(path==='/'?'/index.html':path));
+  if(file!==`${root}/${artifact.file}`&&!file.startsWith(dist+sep))throw Error('Unsafe test path');
   const info=await stat(file);if(!info.isFile())throw Error('Not a file');
   const types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.wasm':'application/wasm','.onnx':'application/octet-stream'};
   response.writeHead(200,{'Content-Type':types[extname(file)]||'application/octet-stream','Content-Length':info.size});
@@ -62,7 +66,7 @@ try{
   }
  }
  const compatible=maxDifference<=.03&&agreements/expected.length>=.98&&!external.length&&!errors.length;
- const evidence={at:new Date().toISOString(),purpose:`Real quantized encoder in packaged single-threaded browser WASM worker; ${clip?'adult training-split numerical probe':'synthetic input'}, NOT held-out human accuracy`,
+ const evidence={at:new Date().toISOString(),variant,purpose:`Real ${variant==='fp32'?'full-precision':'quantized'} encoder in packaged single-threaded browser WASM worker; ${clip?'adult training-split numerical probe':'synthetic input'}, NOT held-out human accuracy`,
   clip:clip??null,heldOut:false,
   approved:false,released:false,artifact,frames:expected.length,vocabulary:model.vocabulary,
   maxAbsoluteLogProbabilityDifference:maxDifference,meanAbsoluteLogProbabilityDifference:absolute/count,
@@ -70,8 +74,9 @@ try{
   maxProbabilityDifference,meanTotalVariation:totalVariation/expected.length,
   externalRequests:external,pageErrors:errors,compatible,
   caveat:'This strict numerical gate does not establish human accuracy. Failure is retained, never treated as approval.'};
- await writeFile(`${root}/${clip?`browser-wasm-development-${clip}`:'browser-wasm'}.json`,JSON.stringify(evidence,null,2)+'\n');
- await writeFile(`${root}/${clip?`browser-frames-development-${clip}`:'browser-frames-synthetic'}.json`,JSON.stringify(actual.frames)+'\n');
+ const suffix=variant==='fp32'?'-fp32':'';
+ await writeFile(`${root}/${clip?`browser-wasm-development-${clip}`:'browser-wasm'}${suffix}.json`,JSON.stringify(evidence,null,2)+'\n');
+ await writeFile(`${root}/${clip?`browser-frames-development-${clip}`:'browser-frames-synthetic'}${suffix}.json`,JSON.stringify(actual.frames)+'\n');
  console.log(JSON.stringify(evidence,null,2));
  if(!compatible)throw Error('WASM numerical regression failed; see preserved private evidence');
 }finally{await browser?.close();await new Promise(r=>server.close(r));}

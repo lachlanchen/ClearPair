@@ -13,7 +13,7 @@ describe('native iOS permission metadata', () => {
     expect(result).toMatch(/<key>ITSAppUsesNonExemptEncryption<\/key>\s*<false\/>/);
     expect(updateIosInfo(result)).toBe(result);
   });
-  it.each(['handf','landr','english','chinese','korean','arabic','cantonese'])('%s generated metadata stays canonical', (app) => {
+  it.each(['handf','landr','english','chinese','korean','arabic','cantonese','japanese'])('%s generated metadata stays canonical', (app) => {
     const text = readFileSync(`native/apps/${app}/ios/App/App/Info.plist`, 'utf8');
     expect(updateIosInfo(text)).toBe(text);
   });

@@ -40,8 +40,8 @@ release the worker. Cancelled results cannot attach to a successor take. These
 lifecycle checks are automated; mobile speed and memory still need measurement.
 
 `src/local-models.ts` defines the artifact contract. The shipped registry is empty
-until actual artifacts qualify. `ScorePanel` shows that fact instead of a invented
-constant score. Existing beta3 has no scoring flow; current source is a new candidate.
+until actual artifacts qualify. `ScorePanel` shows that fact instead of an invented
+constant score. The eight beta4 apps include this flow, but no enabled numeric grade.
 
 ## Actual encoder feasibility evidence
 
@@ -60,11 +60,26 @@ but maximum probability difference was about 0.055. Agreement on a top label doe
 not prove that likelihood-based pronunciation scoring is stable. No calibration
 has been approved, and neither probe is held-out accuracy or phone latency evidence.
 
-Next: investigate runtime/quantization differences, validate the exact deployed
-emissions and per-contrast calibration on disjoint human speakers, measure real
-mobile memory/latency, then package only qualified models with attribution. Other
-language adapters/acoustic heads still require development; one English encoder
-does not establish Mandarin, Cantonese, Korean, Arabic or Japanese support.
+The follow-up isolated the numerical difference to dynamic activation
+quantization: full-precision CPU/WASM inference passed the unchanged strict gate;
+reduced-range and unsigned dynamic variants still failed. A compact, per-channel
+**weight-only int8 / FP32-activation candidate (355,826,608 bytes)** then passed
+the same gate on synthetic input and four adult training-split speech clips.
+No external requests or browser errors occurred. These are numerical compatibility
+checks, not held-out pronunciation accuracy or mobile microphone evidence.
+
+`tools/export-weight-only-encoder.py` reuses the original verified ONNX export;
+`tools/requantize-local-encoder.py` retains the failed alternative trials. No source
+weights, SDKs or previous reports are deleted or downloaded again. Weight-only
+compression keeps package size down but may expand weights in runtime memory;
+physical-device peak memory and speed remain unverified. Desktop inference takes
+seconds, so this is not a proven fast mobile solution.
+
+Next: validate the exact runtime emissions and per-contrast calibration on
+disjoint human speakers, measure real mobile memory/latency, then package only
+qualified models with attribution. Other language adapters/acoustic heads still
+require development; one English encoder does not establish Mandarin, Cantonese,
+Korean, Arabic or Japanese support. All-language offline scoring is still unfinished.
 
 ## What each small part needs
 

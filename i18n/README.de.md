@@ -12,7 +12,7 @@ Acht gezielte Kurse für leicht verwechselbare Laute und Buchstaben auf iOS, And
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-Die sieben bisherigen Apps haben interne Testbuilds 1.0.0 (3) bei Apple und Google. Quellcode-Kandidat (4) ergänzt [Japanisch](../docs/JAPANESE-COURSE.md), WAV-Analyse und [Bewertung auf dem Gerät](../docs/ON-DEVICE-SCORING.md). Japanisch wurde noch nicht hochgeladen; keine formale Prüfung wurde eingereicht. Noten bleiben bis zur Validierung der lokalen Modelle deaktiviert.
+Alle acht eigenständigen Apps, einschließlich [Japanisch](../docs/JAPANESE-COURSE.md), sind als [interne Testversion 1.0.0 (4)](../docs/BETA-1.0.0-4.md) in TestFlight und Google Play verfügbar. Die TestFlight-Texte sind je App korrigiert. Aussprachebewertungen bleiben während der lokalen Modellvalidierung deaktiviert. Spätere Stimmzuordnungsfixes sind nur im Quellcode, nicht in Build 4. Die formale Prüfung steht noch aus.
 
 ## Acht spezialisierte Kurse
 
@@ -50,7 +50,7 @@ npm run native:sync -- handf ios
 node tools/native-family.mjs --android-build
 ```
 
-App-IDs: `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`, `cantonese`; Bundle-IDs: `art.lazying.clearpair.<id>`. PWAs entstehen in `dist/site`. Debug-APKs sind keine Play-Veröffentlichungen. Testverfügbarkeit benötigt einen verifizierten Store-Beleg.
+App-IDs: `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`, `cantonese`, `japanese`; Bundle-IDs: `art.lazying.clearpair.<id>`. PWAs entstehen in `dist/site`. Debug-APKs sind keine Play-Veröffentlichungen. Testverfügbarkeit benötigt einen verifizierten Store-Beleg.
 
 ## Audio und Datenschutz
 

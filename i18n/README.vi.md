@@ -12,7 +12,7 @@ Tám khóa tập trung vào âm và chữ dễ nhầm, dành cho iOS, Android v�
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-Bảy ứng dụng ban đầu có bản thử nội bộ 1.0.0 (3) trên Apple và Google. Mã nguồn ứng viên (4) thêm [tiếng Nhật](../docs/JAPANESE-COURSE.md), phân tích WAV và [đánh giá trên thiết bị](../docs/ON-DEVICE-SCORING.md). Tiếng Nhật chưa được tải lên; chưa nộp xét duyệt chính thức. Điểm phát âm vẫn tắt cho đến khi mô hình cục bộ được kiểm định.
+Cả tám ứng dụng độc lập, gồm [tiếng Nhật](../docs/JAPANESE-COURSE.md), đã có [bản thử nội bộ 1.0.0 (4)](../docs/BETA-1.0.0-4.md) trên TestFlight và Google Play. Mô tả TestFlight đã được sửa riêng cho từng ứng dụng. Điểm phát âm vẫn tắt trong khi kiểm định mô hình cục bộ. Sửa chọn giọng nói sau đó chỉ có trong mã nguồn, không trong bản 4. Chưa nộp xét duyệt chính thức.
 
 ## Tám khóa chuyên biệt
 
@@ -50,7 +50,7 @@ npm run native:sync -- handf ios
 node tools/native-family.mjs --android-build
 ```
 
-ID: `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`, `cantonese`; ID gói dùng `art.lazying.clearpair.<id>`. PWA được tạo trong `dist/site`. APK gỡ lỗi không phải bản Play. Khả năng tham gia thử nghiệm cần xác nhận đã kiểm chứng từ cửa hàng.
+ID: `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`, `cantonese`, `japanese`; ID gói dùng `art.lazying.clearpair.<id>`. PWA được tạo trong `dist/site`. APK gỡ lỗi không phải bản Play. Khả năng tham gia thử nghiệm cần xác nhận đã kiểm chứng từ cửa hàng.
 
 ## Âm thanh và riêng tư
 

@@ -1,6 +1,7 @@
 # Japanese: practise what you mix up
 
-Status: source implementation and testing, not a store release.
+Status: standalone iPhone/iPad and Android [internal beta 1.0.0 (4)](BETA-1.0.0-4.md),
+not a public store release or formal review approval.
 
 The eighth ClearPair course combines easily confused kana with contrasts that
 change meaning: vowel length, consonant holds, small kana and voicing. It includes
@@ -46,8 +47,8 @@ reading generator for arbitrary kanji. Romaji is a reading aid, not IPA.
 
 ## Release gate
 
-Native Android/iOS source sync and Android/unsigned iOS simulator compilation
-passed for candidate1.0.0(4). This is not a signed upload or physical-device test.
+Signed Android/iPhone/iPad builds and Apple validation passed for 1.0.0 (4);
+both internal tracks are verified available. This is not a physical-device test.
 Real microphone tests, qualified offline local-model inference,
 per-contrast human validation and paid-store review are still required. Do not
 describe source/unit tests as completed physical-device or pronunciation accuracy

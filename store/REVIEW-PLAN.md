@@ -1,15 +1,15 @@
-# Seven-app production review plan
+# Eight-app production review plan
 
 Each app focuses on easily confused sounds or letters, not generic vocabulary
 practice. The approved V4 identity and eleven interface languages are retained.
 Old icon originals and earlier release receipts must not be deleted.
 
-The current store candidate **0.2.0 (2)** is internal testing, not formal review.
-The next signed candidate is **1.0.0 (3)**; this version plan is not a submission
-receipt and does not imply that a store build has already been uploaded.
-The new microphone-permission race fix requires fresh signed builds; do not attach
-the older binary as if it contained that fix. Reuse no upload attempt with uncertain
-provider status. Each platform can proceed independently once its gates pass.
+All eight **1.0.0 (4)** builds are available in internal testing on both platforms,
+not formal review. [The verified beta receipt](artifacts/internal-beta-1.0.0-4.json)
+is distinct from a production submission. Later voice fixes and model work require
+a new tested build; do not label the older binary as containing those changes.
+Reuse no upload attempt with uncertain provider status. Each platform can proceed
+independently once its gates pass.
 
 ## Truthful product boundaries
 
@@ -41,4 +41,7 @@ package for automation. Hardware, simulator, mock-stream and phonetic audition c
 are different evidence. A zero-test rerun is not a pass. The currently connected MIX
 2S is a shared transport: wait for its owner's availability response before GUI QA.
 
-Japanese development is queued after this release is finished, not parallel scope.
+Japanese is a standalone eighth app. Its KanjiVG stroke data is licensed third-party
+content and must be reflected truthfully in content-rights declarations. Scoring
+qualification, native microphone checks, genuine listing screenshots, privacy,
+review contact, availability and paid-price readback remain submission gates.

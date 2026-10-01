@@ -12,7 +12,7 @@ Eight focused courses for easily confused sounds and letters, targeting iOS, And
 
 ![ClearPair](docs/assets/eight-icons-v4.png)
 
-The seven existing apps have 1.0.0 (3) internal-test builds on Apple and Google. Current source is a new build4 candidate: [Japanese](docs/JAPANESE-COURSE.md), direct native WAV analysis and an [on-device scoring flow](docs/ON-DEVICE-SCORING.md). Japanese has not been uploaded. Formal review is held until local pronunciation models and updated native builds pass validation. [The release plan](store/REVIEW-PLAN.md) is not a submission receipt.
+All eight standalone apps have [1.0.0 (4) internal-test builds](docs/BETA-1.0.0-4.md) on TestFlight and Google Play, including [Japanese](docs/JAPANESE-COURSE.md). App-specific TestFlight descriptions are verified. Pronunciation grades remain disabled; the [on-device scoring flow](docs/ON-DEVICE-SCORING.md) is under validation. Later voice-routing fixes are source work, not in build 4. Formal review remains pending; [the release plan](store/REVIEW-PLAN.md) is not a submission receipt.
 
 ## Eight focused courses
 

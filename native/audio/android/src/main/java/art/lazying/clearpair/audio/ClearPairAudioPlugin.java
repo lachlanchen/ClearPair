@@ -138,16 +138,20 @@ public class ClearPairAudioPlugin extends Plugin {
     private void startVoice(){
         if(speechCall==null)return;
         String language=speechCall.getString("language","en-US");
-        if("zh-HK".equals(language)){
-            android.speech.tts.Voice cantonese=null;
-            if(tts.getVoices()!=null)for(android.speech.tts.Voice voice:tts.getVoices()){
-                String tag=voice.getLocale().toLanguageTag().toLowerCase(Locale.ROOT);
-                if(tag.equals("yue")||tag.startsWith("yue-")||tag.equals("zh-hk")||tag.equals("zh-hant-hk")){cantonese=voice;break;}
+        android.speech.tts.Voice selected=null;
+        int selectedRank=Integer.MIN_VALUE;
+        if(tts.getVoices()!=null)for(android.speech.tts.Voice voice:tts.getVoices()){
+            String tag=voice.getLocale().toLanguageTag();
+            if(!PracticeVoicePolicy.matches(tag,language))continue;
+            if(voice.getFeatures()!=null&&voice.getFeatures().contains(TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED))continue;
+            int rank=voice.getQuality()+(PracticeVoicePolicy.tag(tag).equals(PracticeVoicePolicy.tag(language))?10000:0);
+            if(selected==null||rank>selectedRank||(rank==selectedRank&&voice.getName().compareTo(selected.getName())<0)){
+                selected=voice;selectedRank=rank;
             }
-            if(cantonese==null||tts.setVoice(cantonese)==TextToSpeech.ERROR){failSpeech("Install a Cantonese voice in Android text-to-speech settings. Mandarin cannot be used for this course.");return;}
-        }else{
-            int availability=tts.setLanguage(Locale.forLanguageTag(language));
-            if(availability==TextToSpeech.LANG_MISSING_DATA||availability==TextToSpeech.LANG_NOT_SUPPORTED){failSpeech("Install the practice language in Android text-to-speech settings.");return;}
+        }
+        if(selected==null||tts.setVoice(selected)==TextToSpeech.ERROR||tts.getVoice()==null||
+           !PracticeVoicePolicy.matches(tts.getVoice().getLocale().toLanguageTag(),language)){
+            failSpeech("Install the practice language in Android text-to-speech settings. Mandarin and Cantonese voices are not interchangeable.");return;
         }
         tts.setSpeechRate(speechCall.getFloat("rate",1.0f));speechId=UUID.randomUUID().toString();
         if(tts.speak(speechCall.getString("text",""),TextToSpeech.QUEUE_FLUSH,null,speechId)==TextToSpeech.ERROR)failSpeech("Voice playback could not start.");

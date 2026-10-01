@@ -12,7 +12,7 @@
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-للتطبيقات السبعة الأصلية نسخ اختبار داخلية 1.0.0 (3) لدى Apple وGoogle. يضيف مرشّح المصدر (4) [اليابانية](../docs/JAPANESE-COURSE.md) وتحليل WAV ومسار [التقييم على الجهاز](../docs/ON-DEVICE-SCORING.md). لم تُرفع اليابانية بعد، ولم يُرسل تحديث للمراجعة الرسمية. الدرجات معطلة إلى حين التحقق من النماذج المحلية.
+تتوفر التطبيقات الثمانية المستقلة، بما فيها [اليابانية](../docs/JAPANESE-COURSE.md)، في [الاختبار الداخلي 1.0.0 (4)](../docs/BETA-1.0.0-4.md) على TestFlight وGoogle Play. صُححت أوصاف TestFlight لكل تطبيق. درجات النطق معطلة أثناء التحقق من النماذج المحلية. إصلاحات اختيار الصوت اللاحقة في المصدر فقط وليست في النسخة 4. لم تُرسل المراجعة الرسمية بعد.
 
 ## ثمانية مسارات متخصصة
 
@@ -50,7 +50,7 @@ npm run native:sync -- handf ios
 node tools/native-family.mjs --android-build
 ```
 
-معرّفات التطبيقات السبعة: `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`, `cantonese`؛ ومعرّفات الحزم `art.lazying.clearpair.<id>`. ملفات PWA في `dist/site`. ملفات APK للتصحيح ليست إصدارات Play. لا تُؤكد إتاحة الاختبار إلا بإيصال موثّق من المتجر.
+معرّفات التطبيقات الثمانية: `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`, `cantonese`, `japanese`؛ ومعرّفات الحزم `art.lazying.clearpair.<id>`. ملفات PWA في `dist/site`. ملفات APK للتصحيح ليست إصدارات Play. لا تُؤكد إتاحة الاختبار إلا بإيصال موثّق من المتجر.
 
 ## الصوت والخصوصية
 

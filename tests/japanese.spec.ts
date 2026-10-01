@@ -20,6 +20,15 @@ test('Japanese map, semantic furigana, stroke replay and reduced motion',async({
  await expect(page.locator('.kana-focus .kana-word')).toHaveText('か');
  await expect(page.locator('.kana-focus .kana-stroke')).toHaveAttribute('aria-label','か');
  expect(await page.evaluate(()=>(window as unknown as {lastJapanese:string}).lastJapanese)).toBe('か');
+ await page.getByRole('button',{name:'は ha',exact:true}).click();
+ await expect(page.locator('.kana-focus .kana-word')).toHaveText('は');
+ expect(await page.evaluate(()=>(window as unknown as {lastJapanese:string}).lastJapanese)).toBe('ハ');
+ await page.locator('.kana-focus .kana-word').click();
+ expect(await page.evaluate(()=>(window as unknown as {lastJapanese:string}).lastJapanese)).toBe('ハ');
+ await page.getByRole('button',{name:'へ he',exact:true}).click();
+ expect(await page.evaluate(()=>(window as unknown as {lastJapanese:string}).lastJapanese)).toBe('ヘ');
+ await page.getByRole('button',{name:'を o',exact:true}).click();
+ expect(await page.evaluate(()=>(window as unknown as {lastJapanese:string}).lastJapanese)).toBe('オ');
  await page.getByRole('button',{name:'Katakana',exact:true}).click();
  await expect(page.locator('.kana-table button')).toHaveCount(46);
  await page.getByRole('button',{name:'シ shi',exact:true}).click();

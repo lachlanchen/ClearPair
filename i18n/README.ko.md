@@ -12,7 +12,7 @@
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-기존 일곱 앱의 1.0.0 (3)은 Apple과 Google 내부 테스트에 제공됐어요. 소스 후보 (4)는 [일본어](../docs/JAPANESE-COURSE.md), WAV 분석과 [기기 내 발음 평가](../docs/ON-DEVICE-SCORING.md)를 추가해요. 일본어는 아직 업로드하지 않았고 정식 심사도 제출하지 않았어요. 로컬 모델 검증이 끝날 때까지 발음 점수는 비활성화돼요.
+[일본어](../docs/JAPANESE-COURSE.md)를 포함한 독립 앱 8개가 TestFlight와 Google Play에서 [내부 테스트 1.0.0 (4)](../docs/BETA-1.0.0-4.md)로 제공돼요. TestFlight 설명도 각 앱에 맞게 수정했어요. 로컬 모델 검증 중이라 발음 점수는 아직 비활성화돼요. 이후 음성 선택 수정은 소스에만 있으며 빌드 4에는 없어요. 정식 심사는 아직 제출하지 않았어요.
 
 ## 여덟 가지 전문 코스
 
@@ -50,7 +50,7 @@ npm run native:sync -- handf ios
 node tools/native-family.mjs --android-build
 ```
 
-앱 ID는 `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`, `cantonese`이며 번들 ID는 `art.lazying.clearpair.<id>`입니다. PWA는 `dist/site`에 생성됩니다. 디버그 APK는 Play 출시본이 아닙니다. 테스트 배포 여부는 검증된 스토어 응답으로 확인해야 합니다.
+앱 ID는 `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`, `cantonese`, `japanese`이며 번들 ID는 `art.lazying.clearpair.<id>`입니다. PWA는 `dist/site`에 생성됩니다. 디버그 APK는 Play 출시본이 아닙니다. 테스트 배포 여부는 검증된 스토어 응답으로 확인해야 합니다.
 
 ## 오디오와 개인정보
 

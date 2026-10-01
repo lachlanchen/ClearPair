@@ -12,7 +12,7 @@
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-原有七款應用的 1.0.0 (3) 已提供 Apple 和 Google 內部測試。原始碼候選版 (4) 新增[日語](../docs/JAPANESE-COURSE.md)、WAV 分析及[裝置端評分流程](../docs/ON-DEVICE-SCORING.md)。日語尚未上傳，也未提交正式審核。發音分數在本地模型通過驗證前保持關閉。
+包含獨立[日語應用](../docs/JAPANESE-COURSE.md)的八款應用，均已提供 TestFlight 和 Google Play [內部測試版 1.0.0 (4)](../docs/BETA-1.0.0-4.md)。TestFlight 說明已按各應用分別修正。本地模型仍在驗證，發音分數尚未啟用。後續語音選擇修復目前僅在原始碼中，不屬於已上傳的構建 4。正式審核尚未提交。
 
 ## 八門專項課程
 
@@ -50,7 +50,7 @@ npm run native:sync -- handf ios
 node tools/native-family.mjs --android-build
 ```
 
-七個應用ID為`handf`、`landr`、`english`、`chinese`、`korean`、`arabic`、`cantonese`，套件名稱為`art.lazying.clearpair.<id>`。PWA建置輸出至`dist/site`。偵錯APK不是Google Play發布套件；測試版是否可安裝必須以核實過的商店回執為準，不能僅憑編譯成功判斷。
+八個應用ID為`handf`、`landr`、`english`、`chinese`、`korean`、`arabic`、`cantonese`、`japanese`，套件名稱為`art.lazying.clearpair.<id>`。PWA建置輸出至`dist/site`。偵錯APK不是Google Play發布套件；測試版是否可安裝必須以核實過的商店回執為準，不能僅憑編譯成功判斷。
 
 ## 音訊與隱私
 

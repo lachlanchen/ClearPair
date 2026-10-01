@@ -103,20 +103,45 @@ public class ClearPairAudioPlugin: CAPPlugin, CAPBridgedPlugin, AVSpeechSynthesi
     @objc public func speak(_ call: CAPPluginCall) { DispatchQueue.main.async {
         self.stopVoice()
         let language = call.getString("language") ?? "en-US"
-        let requestedVoice: AVSpeechSynthesisVoice?
-        if language == "zh-HK" {
-            requestedVoice = AVSpeechSynthesisVoice.speechVoices().first { voice in
-                let tag = voice.language.lowercased().replacingOccurrences(of: "_", with: "-")
-                return tag == "yue" || tag.hasPrefix("yue-") || tag == "zh-hk" || tag == "zh-hant-hk"
-            }
-        } else { requestedVoice = AVSpeechSynthesisVoice(language: language) }
-        guard let selected = requestedVoice else { call.reject("Install a voice for \(language) in Settings. Cantonese needs a Cantonese voice, not Mandarin."); return }
+        var candidates = AVSpeechSynthesisVoice.speechVoices().filter { Self.isPracticeVoice($0, language) }
+        // The direct lookup may expose a voice not yet in the enumerated list;
+        // validate its actual language as well, never use the system UI voice.
+        if let direct = AVSpeechSynthesisVoice(language: language), Self.isPracticeVoice(direct, language),
+           !candidates.contains(where: { $0.identifier == direct.identifier }) { candidates.append(direct) }
+        let requested = language.lowercased()
+        candidates.sort { left, right in
+            let leftExact = left.language.lowercased().replacingOccurrences(of: "_", with: "-") == requested
+            let rightExact = right.language.lowercased().replacingOccurrences(of: "_", with: "-") == requested
+            if leftExact != rightExact { return leftExact }
+            if left.quality.rawValue != right.quality.rawValue { return left.quality.rawValue > right.quality.rawValue }
+            return left.identifier < right.identifier
+        }
+        guard let selected = candidates.first else { call.reject("Install a voice for \(language) in Settings. Mandarin and Cantonese voices are not interchangeable."); return }
         do { let session = AVAudioSession.sharedInstance(); try session.setCategory(.playback, mode: .spokenAudio); try session.setActive(true) }
         catch { call.reject("The audio output is unavailable."); return }
         let speech = AVSpeechUtterance(string: call.getString("text") ?? "")
         speech.voice = selected; speech.rate = AVSpeechUtteranceDefaultSpeechRate * Float(call.getDouble("rate") ?? 1)
         self.voice.delegate = self; self.speechCall = call; self.utterance = speech; self.voice.speak(speech)
     }}
+    private static func isPracticeVoice(_ voice: AVSpeechSynthesisVoice, _ requested: String) -> Bool {
+        // Character/effect voices are not pronunciation references. Personal
+        // voices are private, require separate consent and are not course models.
+        if #available(iOS 17.0, *) {
+            if voice.voiceTraits.contains(.isNoveltyVoice) || voice.voiceTraits.contains(.isPersonalVoice) { return false }
+        }
+        return matchesPracticeVoice(voice.language, requested)
+    }
+    private static func matchesPracticeVoice(_ available: String, _ requested: String) -> Bool {
+        let tag = available.lowercased().replacingOccurrences(of: "_", with: "-")
+        let wanted = requested.lowercased()
+        let cantonese = tag == "yue" || tag.hasPrefix("yue-") || tag == "zh-hk" || tag == "zh-hant-hk"
+        if wanted == "zh-hk" { return cantonese }
+        if wanted == "zh-cn" {
+            return !cantonese && (["zh-cn", "zh-sg", "zh-tw", "zh-hant-tw", "zh-hans", "cmn"].contains(tag)
+                || tag.hasPrefix("zh-hans-") || tag.hasPrefix("cmn-"))
+        }
+        return tag.split(separator: "-").first == wanted.split(separator: "-").first
+    }
     @objc public func stopSpeech(_ call: CAPPluginCall) { DispatchQueue.main.async { self.stopVoice(); call.resolve() }}
     private func stopVoice() { utterance = nil; voice.stopSpeaking(at: .immediate); speechCall?.resolve(); speechCall = nil }
     public func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish speech: AVSpeechUtterance) {

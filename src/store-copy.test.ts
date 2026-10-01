@@ -1,9 +1,9 @@
 import {describe,expect,it} from 'vitest';
 // @ts-expect-error Repository tooling uses JavaScript.
-import {listings,fullDescription} from '../tools/store-copy.mjs';
+import {listings,fullDescription,betaDescription,betaNotes} from '../tools/store-copy.mjs';
 import {products} from './curriculum';
 describe('source-grounded store metadata',()=>{
- it('covers exactly the seven existing courses',()=>{
+ it('covers exactly the eight standalone courses',()=>{
   expect(Object.keys(listings).sort()).toEqual(products.map(p=>p.id).sort());
  });
  it.each(products.map(p=>p.id))('%s fits both stores and avoids unreleased scoring claims',id=>{
@@ -15,5 +15,17 @@ describe('source-grounded store metadata',()=>{
   expect(description).toContain('Speech accuracy scoring is not enabled');
   expect(description).toContain('No account, ads or recording uploads');
   expect(description).toContain('eleven') ;
+ });
+ it.each(products.map(p=>p.id))('%s beta copy describes its own standalone course',id=>{
+  const description=betaDescription(id),notes=betaNotes(id);
+  for(const text of [description,notes,betaNotes(id,5)]){
+   expect(text).toContain(listings[id].name);
+   expect(text).toContain(listings[id].focus);
+   expect(text.length).toBeLessThanOrEqual(4000);
+   expect(text).toContain('speech accuracy scoring');
+   if(id!=='japanese')expect(text).not.toMatch(/Japanese|kana|furigana/);
+  }
+  expect(description).toContain('standalone app');
+  if(id==='japanese')expect(notes).toContain('standalone Japanese beta');
  });
 });

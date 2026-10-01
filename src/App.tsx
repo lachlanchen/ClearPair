@@ -35,6 +35,7 @@ import type {
   Word,
 } from "./types";
 import { Player, type Clip } from "./player";
+import { pronunciationText } from './pronunciation-text';
 import { Recorder } from "./recorder";
 import { inspectRecording, unavailableAnalysis } from "./analysis";
 import { shareNativeRecording } from "./export";
@@ -180,10 +181,10 @@ export function App() {
     } catch {}
   }, [locale,product.name,product.zhName]);
   function clip(w: Word, sentence = false): Clip {
-    const key = audioKey(w, lesson.language) + (sentence ? "-context" : "");
+    const key = audioKey(w, lesson.language, sentence);
     return {
       key,
-      text: sentence ? w.sentence : w.spoken || w.text,
+      text: pronunciationText(w, lesson.language, sentence),
       language: lesson.language,
       url: clips.current[key]
         ? `${import.meta.env.BASE_URL}audio/${clips.current[key]}`
@@ -356,7 +357,7 @@ export function App() {
         analysis: unavailableAnalysis(seconds),
         reading: lesson.language==='ja-JP'?word.reading:undefined,
         assessment: {pair:pairIndex,side,sentence:context,
-          spokenPrompt:context?word.sentence:word.spoken||word.text,
+          spokenPrompt:pronunciationText(word,lesson.language,context),
           calibrationKey:plan.mode==='contrast'?plan.calibrationKey:undefined},
       };
       // Preserve capture before either analysis or durable storage can fail.

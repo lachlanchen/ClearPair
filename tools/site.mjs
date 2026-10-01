@@ -10,7 +10,7 @@ export function homepage(apps) {
   <p class="intro">Not another vocabulary app. Play with the sounds and letters that are easy to confuse—then listen, compare and try them yourself.</p>
   <div class="grid">${cards}</div>
   <aside class="note"><strong>Short rounds. No timer. No pressure.</strong>Five-question challenges reward listening and recall. Recording signal quality is not a pronunciation grade; speech scoring is still being validated.</aside>
-  <footer>Development preview · Eleven interface languages · Seven original apps have 1.0.0 (3) internal-test builds. Japanese and on-device scoring are new source work, not submitted releases.<br>
+  <footer>Development preview · Eleven interface languages · Eight standalone apps, including Japanese, have 1.0.0 (4) internal-test builds. <a href="https://github.com/lachlanchen/ClearPair/blob/main/docs/BETA-1.0.0-4.md">Testing guide</a>. Pronunciation grades remain disabled; no formal review is claimed.<br>
   No account required. Recordings stay on your device. Device speech providers may use a network voice.<br>
   <a href="https://github.com/lachlanchen/ClearPair/blob/main/docs/ON-DEVICE-SCORING.md">On-device scoring status</a> · <a href="https://l-and-n.lazying.art/">Also explore L &amp; N</a> · <a href="/support.html">Support</a> · <a href="/privacy.html">Privacy policy</a></footer></main></body></html>`;
 }

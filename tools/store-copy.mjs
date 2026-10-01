@@ -1,5 +1,18 @@
 import {readFileSync} from 'node:fs';
 export const listings=JSON.parse(readFileSync('store/listings.json','utf8'));
+export function betaDescription(app){
+ const row=listings[app];if(!row)throw Error('Unknown course');
+ return `${row.name}: practise the sounds and letters that are easy to confuse.\n\n${row.focus}\n\nThis is a standalone app with its own course, recordings and progress. Learn the contrast, listen to pairs, play short recall rounds, and record privately with waveform and local History/replay. Eleven interface languages are separate from the course language. Game stars and recording signal quality are not pronunciation grades; speech accuracy scoring is not enabled in this beta. Device reference voice quality and offline availability vary. No microphone uploads.`;
+}
+export function betaNotes(app,build=4){
+ const row=listings[app];if(!row)throw Error('Unknown course');
+ const changes=build>=5
+  ?`Reference playback hardening: correct practice-language voices, no iOS novelty/personal voices, and installed Android voices only.${app==='japanese'?' Isolated kana use explicit Japanese sound readings; displayed kana and contextual furigana stay unchanged.':''}`
+  :app==='japanese'
+  ?'First standalone Japanese beta: confusing kana, contextual furigana, mora beats and modern stroke replay. Learn cues follow the selected word pair.'
+  :'Updated on-device runtime integration, V4 artwork and eleven interface languages, independent of the practice language.';
+ return `${row.name}\n\n${row.focus}\n\n${changes}\n\nPlease test repeated pair replay/loop/stop, consecutive microphone takes, waveform, local History/replay and export on iPhone/iPad. On-device scoring remains under validation: game stars and signal quality are not pronunciation grades; speech accuracy scoring is disabled. Device reference voice quality and offline availability vary. No microphone uploads. Internal test build, not a public release. Update in place to preserve earlier recordings; do not uninstall.`;
+}
 export function fullDescription(app){
  const row=listings[app];if(!row)throw Error('Unknown course');
  return `${row.name}: practise what you mix up. Learn the difference.

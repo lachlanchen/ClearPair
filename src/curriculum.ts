@@ -2,6 +2,7 @@ import type { Lesson, Product, Text, Word } from "./types";
 import { scriptLessons } from "./script-curriculum";
 import { cantoneseLessons } from "./cantonese-curriculum";
 import { japaneseLessons } from './japanese-curriculum';
+import { pronunciationText } from './pronunciation-text';
 
 const t = (en: string, zh: string): Text => ({ en, zh });
 const e = (text: string, ipa: string, sentence?: string): Word => ({
@@ -1641,7 +1642,9 @@ export const products: Product[] = [
 export const lessonById = (id: string) => lessons.find((l) => l.id === id)!;
 export const productById = (id: string) =>
   products.find((p) => p.id === id) || products[2];
-export const audioKey = (word: Word, language: string) =>
-  `${language}-${Array.from(word.text)
-    .map((c) => c.codePointAt(0)!.toString(16))
-    .join("-")}`;
+export const audioKey = (word: Word, language: Lesson['language'], sentence = false) => {
+  const encode = (value: string) => Array.from(value).map(c => c.codePointAt(0)!.toString(16)).join('-');
+  const spoken = pronunciationText(word, language, sentence);
+  // A changed authored reading or example sentence must not reuse old audio.
+  return `${language}-${encode(word.text)}${sentence ? '-context' : ''}${spoken !== word.text ? '-spoken-' + encode(spoken) : ''}`;
+};
