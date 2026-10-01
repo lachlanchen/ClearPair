@@ -7,7 +7,7 @@ export function fullDescription(app){
 ${row.focus}
 
 LEARN THE CONTRAST
-Explore clear, original schematic pictures and optional learning motion. Use short cues to compare the part that is easy to confuse. Pictures illustrate a principle, not your individual anatomy.
+${app==='japanese'?'Compare easily confused kana, explicit furigana readings and mora beats. Replay modern stroke order from attributed KanjiVG data. Source-backed kana origins are distinct from memory cues; the animation does not reconstruct historical handwriting.':'Explore clear, original schematic pictures and optional learning motion. Use short cues to compare the part that is easy to confuse. Pictures illustrate a principle, not your individual anatomy.'}
 
 LISTEN, REPEAT, REMEMBER
 Play both sides back to back. Repeat a pair until you stop, slow the reference, or use a sentence. Short, untimed five-question rounds reward listening or visual recall. Review prioritizes contrasts you have practised.

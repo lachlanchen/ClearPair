@@ -7,6 +7,7 @@ const names: Record<string, string> = {
   korean: "Korean",
   arabic: "Arabic Letters",
   cantonese: "Cantonese",
+  japanese: "Japanese",
 };
 const app = process.env.CLEARPAIR_APP || "english";
 if (!names[app]) throw new Error("Unknown ClearPair app");

@@ -41,6 +41,10 @@ import { shareNativeRecording } from "./export";
 import { Challenge } from './Challenge';
 import { LearnMotion } from './LearnMotion';
 import { StoreRoute } from './StoreRoute';
+import { JapaneseStudy } from './JapaneseStudy';
+import { WordText } from './WordText';
+import { ScorePanel } from './ScorePanel';
+import { assessmentPlan } from './scoring-profiles';
 import {initialLocale,localeLabels,translate,text,sourceLocale} from './i18n';
 import { needsVoiceInstallation } from './ui-errors';
 import { completeGame, readGame, saveGame } from './game';
@@ -337,6 +341,7 @@ export function App() {
     clearTimeout(limit.current);
     try {
       const audio = await recorder.current.stop();
+      const plan=assessmentPlan(product.id,lesson.id,pairIndex,side,context);
       const entry: Take = {
         id: crypto.randomUUID(),
         app: product.id,
@@ -348,6 +353,10 @@ export function App() {
         mimeType: audio.type,
         audio,
         analysis: unavailableAnalysis(seconds),
+        reading: lesson.language==='ja-JP'?word.reading:undefined,
+        assessment: {pair:pairIndex,side,sentence:context,
+          spokenPrompt:context?word.sentence:word.spoken||word.text,
+          calibrationKey:plan.mode==='contrast'?plan.calibrationKey:undefined},
       };
       // Preserve capture before either analysis or durable storage can fail.
       setTake({ ...entry, storage: "session" });
@@ -577,6 +586,8 @@ export function App() {
                       ? `${tr('Cantonese','粤语')} · Jyutping`
                     : lesson.language === "ko-KR"
                       ? tr('Korean','韩语')
+                      : lesson.language === "ja-JP"
+                        ? tr('Japanese','日语')
                       : tr('Arabic Letters','阿拉伯字母')}
               </small>
               <strong>{txt(lesson.title)}</strong>
@@ -681,7 +692,9 @@ export function App() {
                 <span>{tr("SEE THE DIFFERENCE", "看见区别")}</span>
                 <span>01 / 03</span>
               </div>
-              <Diagram lesson={lesson} txt={txt} />
+              {lesson.language==='ja-JP'
+                ? <JapaneseStudy lesson={lesson} pair={pair} play={words=>playWords(words,false,false)} tr={tr}/>
+                : <Diagram lesson={lesson} txt={txt} />}
               {sourceLocale(locale,lesson.cue)!==locale&&<span className="reference-label">{tr('Reference notes','参考说明')} · English</span>}
               <h2 lang={sourceLocale(locale,lesson.cue)}>{txt(lesson.cue)}</h2>
               <p className="muted">
@@ -829,7 +842,7 @@ export function App() {
                     className="word"
                     dir={lesson.language === "ar-SA" ? "rtl" : "auto"}
                   >
-                    {w.text}
+                    <WordText value={w.text} reading={lesson.language==='ja-JP'?w.reading:undefined}/>
                   </span>
                   <span className="ipa" dir="ltr">
                     {w.ipa}
@@ -902,7 +915,8 @@ export function App() {
                   lang={lesson.language}
                   dir={lesson.language === "ar-SA" ? "rtl" : "auto"}
                 >
-                  {context ? word.sentence : word.text}
+                  <WordText value={context ? word.sentence : word.text}
+                    reading={lesson.language==='ja-JP' ? context ? word.sentenceReading : word.reading : undefined}/>
                 </div>
                 <Waveform
                   label={tr(recording==='recording'?'Live microphone level':'Recorded waveform',recording==='recording'?'实时麦克风音量':'录音波形')}
@@ -978,6 +992,8 @@ export function App() {
                     </span>
                   </div>
                 </div>
+                <ScorePanel take={take} busy={busy} tr={tr} onSaved={setTake}
+                  onStorageWarning={()=>setStorageWarning(true)}/>
               </>
             ) : (
               <div className="quiz-result" aria-live="polite">
@@ -1076,7 +1092,7 @@ export function App() {
             {history.map((t) => (
               <article className="history-item" key={t.id}>
                 <div>
-                  <strong dir="auto">{t.word}</strong>
+                  <strong dir="auto"><WordText value={t.word} reading={t.reading}/></strong>
                   <small>
                     {new Date(t.createdAt).toLocaleString(locale)} ·{" "}
                     {t.analysis.seconds.toFixed(1)}s
@@ -1084,6 +1100,7 @@ export function App() {
                       ? tr(" · temporary", " · 临时")
                       : ""}
                   </small>
+                  {t.score?.status==='scored'&&<small>{tr('Pronunciation assessment','发音评分')}: {t.score.score} / 100</small>}
                 </div>
                 <button
                   className="icon-button"

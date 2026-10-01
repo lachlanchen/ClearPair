@@ -8,15 +8,15 @@
 
 *Übe, was du verwechselst. Lerne den Unterschied.*
 
-Sieben gezielte Apps für leicht verwechselbare Laute und Buchstaben auf iOS, Android und als PWA. ClearPair ist ein Arbeitsname; L & N bleibt eine eigenständige App.
+Acht gezielte Kurse für leicht verwechselbare Laute und Buchstaben auf iOS, Android und als PWA. ClearPair ist ein Arbeitsname; L & N bleibt eine eigenständige App.
 
-![ClearPair](../docs/assets/seven-icons.png)
+![ClearPair](../docs/assets/eight-icons-v4.png)
 
-Der Quellcode-Kandidat 1.0.0 (3) behebt ein Rennen bei verzögerter Mikrofonfreigabe und ergänzt abgesicherte Store-Weiterleitung. Der [Veröffentlichungsplan](../store/REVIEW-PLAN.md) ist kein Beleg einer eingereichten Prüfung.
+Die sieben bisherigen Apps haben interne Testbuilds 1.0.0 (3) bei Apple und Google. Quellcode-Kandidat (4) ergänzt [Japanisch](../docs/JAPANESE-COURSE.md), WAV-Analyse und [Bewertung auf dem Gerät](../docs/ON-DEVICE-SCORING.md). Japanisch wurde noch nicht hochgeladen; keine formale Prüfung wurde eingereicht. Noten bleiben bis zur Validierung der lokalen Modelle deaktiviert.
 
-## Sieben spezialisierte Apps
+## Acht spezialisierte Kurse
 
-| ClearPair | Sieben spezialisierte Apps |
+| ClearPair | Acht spezialisierte Kurse |
 | --- | --- |
 | H & F | Englisches und mandarinchinesisches h/f |
 | L & R | Englisches l/r und Konsonantengruppen |
@@ -25,6 +25,7 @@ Der Quellcode-Kandidat 1.0.0 (3) behebt ein Rennen bei verzögerter Mikrofonfrei
 | Cantonese | Jyutping, Töne, Vokale, Aspiration und Endlaute |
 | Korean | Hangul-Merktraining und verwechselbare Laute |
 | Arabic Letters | Formen, Punkte, Verbindungen und Laute |
+| Japanese | Verwechselbare Kana, Strichfolge, Furigana und Moren |
 
 ## Entwicklungsvorschau
 

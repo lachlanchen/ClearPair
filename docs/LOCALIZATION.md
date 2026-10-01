@@ -1,6 +1,6 @@
 # Eleven interface languages
 
-All seven ClearPair apps share one interface catalog: English, Arabic, Spanish,
+All eight ClearPair courses share one interface catalog: English, Arabic, Spanish,
 French, Japanese, Korean, Vietnamese, Simplified Chinese, Traditional Chinese,
 German and Russian. Selecting it does not alter the practice language, target
 words, IPA, selected contrast, recording data or listening-game answers.

@@ -8,15 +8,15 @@
 
 *Luyện điều dễ nhầm. Học cách phân biệt.*
 
-Bảy ứng dụng tập trung vào âm và chữ dễ nhầm, dành cho iOS, Android và PWA. ClearPair là tên tạm; L & N là ứng dụng riêng.
+Tám khóa tập trung vào âm và chữ dễ nhầm, dành cho iOS, Android và PWA. ClearPair là tên tạm; L & N là ứng dụng riêng.
 
-![ClearPair](../docs/assets/seven-icons.png)
+![ClearPair](../docs/assets/eight-icons-v4.png)
 
-Mã nguồn ứng viên 1.0.0 (3) sửa lỗi phản hồi quyền micrô đến muộn và thêm chuyển hướng cửa hàng có điều kiện an toàn. [Kế hoạch phát hành](../store/REVIEW-PLAN.md) không phải biên nhận nộp xét duyệt.
+Bảy ứng dụng ban đầu có bản thử nội bộ 1.0.0 (3) trên Apple và Google. Mã nguồn ứng viên (4) thêm [tiếng Nhật](../docs/JAPANESE-COURSE.md), phân tích WAV và [đánh giá trên thiết bị](../docs/ON-DEVICE-SCORING.md). Tiếng Nhật chưa được tải lên; chưa nộp xét duyệt chính thức. Điểm phát âm vẫn tắt cho đến khi mô hình cục bộ được kiểm định.
 
-## Bảy ứng dụng chuyên biệt
+## Tám khóa chuyên biệt
 
-| ClearPair | Bảy ứng dụng chuyên biệt |
+| ClearPair | Tám khóa chuyên biệt |
 | --- | --- |
 | H & F | h/f trong tiếng Anh và Quan thoại |
 | L & R | l/r và cụm phụ âm tiếng Anh |
@@ -25,6 +25,7 @@ Mã nguồn ứng viên 1.0.0 (3) sửa lỗi phản hồi quyền micrô đến
 | Cantonese | Jyutping, thanh điệu, nguyên âm, bật hơi và âm cuối tiếng Quảng Đông |
 | Korean | Ghi nhớ Hangul và các âm dễ nhầm |
 | Arabic Letters | Hình dạng, dấu chấm, nối chữ và âm |
+| Japanese | Kana dễ nhầm, thứ tự nét, furigana theo ngữ cảnh và nhịp mora |
 
 ## Bản xem trước phát triển
 

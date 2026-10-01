@@ -8,15 +8,15 @@
 
 *专练容易混淆的部分，真正学会分辨。*
 
-七款针对易混淆语音与字母的专项学习应用，支持iOS、Android和PWA。ClearPair是暂定品牌名，原有L & N继续作为独立应用。这里强调对比、辨音与区分，而不是泛泛的单词练习。
+八门针对易混淆语音与字母的专项课程，支持iOS、Android和PWA。ClearPair是暂定品牌名，原有L & N继续作为独立应用。这里强调对比、辨音与区分，而不是泛泛的单词练习。
 
-![ClearPair](../docs/assets/seven-icons.png)
+![ClearPair](../docs/assets/eight-icons-v4.png)
 
-源代码候选版 1.0.0 (3) 修复了延迟麦克风权限响应引发的竞态，并加入安全条件下的商店引导。[发布计划](../store/REVIEW-PLAN.md)不代表已经提交商店审核。
+原有七款应用的 1.0.0 (3) 已提供 Apple 和 Google 内部测试。源代码候选版 (4) 新增[日语](../docs/JAPANESE-COURSE.md)、WAV 分析及[设备端评分流程](../docs/ON-DEVICE-SCORING.md)。日语尚未上传，也未提交正式审核。发音分数在本地模型通过验证前保持关闭。
 
-## 七款专项应用
+## 八门专项课程
 
-| ClearPair | 七款专项应用 |
+| ClearPair | 八门专项课程 |
 | --- | --- |
 | H & F | 英语与普通话h/f对比 |
 | L & R | 英语l/r与辅音组合 |
@@ -25,6 +25,7 @@
 | Cantonese | 粤拼、声调对比、元音、送气与韵尾 |
 | Korean | 韩文字母记忆与易混淆语音 |
 | Arabic Letters | 阿拉伯字母形状、点位、连接与声音 |
+| Japanese | 易混假名、笔顺、语境注音及拍的对比 |
 
 ## 开发预览状态
 

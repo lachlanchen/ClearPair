@@ -1,4 +1,5 @@
 import type { Analysis } from "./types";
+import { decodeRecording } from './pcm';
 export function analyze(samples: Float32Array, rate: number): Analysis {
   if (!Number.isFinite(rate) || rate <= 0)
     throw new Error("Invalid sample rate");
@@ -73,23 +74,8 @@ export function analyze(samples: Float32Array, rate: number): Analysis {
   };
 }
 export async function analyzeBlob(blob: Blob): Promise<Analysis> {
-  const ctx = new AudioContext();
-  let timeout: ReturnType<typeof setTimeout> | undefined;
-  try {
-    const decoded = await Promise.race([
-      blob.arrayBuffer().then((data) => ctx.decodeAudioData(data)),
-      new Promise<never>((_, reject) => {
-        timeout = setTimeout(
-          () => reject(new Error("Audio decoder timed out")),
-          3000,
-        );
-      }),
-    ]);
-    return analyze(decoded.getChannelData(0), decoded.sampleRate);
-  } finally {
-    clearTimeout(timeout);
-    await ctx.close().catch(() => {});
-  }
+  const {samples,rate}=await decodeRecording(blob);
+  return analyze(samples,rate);
 }
 
 /** A decoder failure is not silence. Keep the original capture for replay/export. */

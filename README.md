@@ -8,13 +8,13 @@
 
 *Practise what you mix up. Learn the difference.*
 
-Seven focused apps for easily confused sounds and letters, on iOS, Android and PWA. ClearPair is a working name; L & N is a separate app.
+Eight focused courses for easily confused sounds and letters, targeting iOS, Android and PWA. ClearPair is a working name; L & N is a separate app.
 
-![ClearPair](docs/assets/seven-icons.png)
+![ClearPair](docs/assets/eight-icons-v4.png)
 
-The 1.0.0 (3) source candidate fixes a delayed microphone-permission race and adds guarded store routing. Review preparation is documented in [the release plan](store/REVIEW-PLAN.md); it is not a store-submission receipt.
+The seven existing apps have 1.0.0 (3) internal-test builds on Apple and Google. Current source is a new build4 candidate: [Japanese](docs/JAPANESE-COURSE.md), direct native WAV analysis and an [on-device scoring flow](docs/ON-DEVICE-SCORING.md). Japanese has not been uploaded. Formal review is held until local pronunciation models and updated native builds pass validation. [The release plan](store/REVIEW-PLAN.md) is not a submission receipt.
 
-## Seven focused apps
+## Eight focused courses
 
 | ClearPair | Focus |
 | --- | --- |
@@ -25,6 +25,7 @@ The 1.0.0 (3) source candidate fixes a delayed microphone-permission race and ad
 | Cantonese | Jyutping, tone contrasts, vowels, aspiration and endings |
 | Korean | Hangul memory and confusing sounds |
 | Arabic Letters | Shapes, dots, joins and sounds |
+| Japanese | Confusing kana, stroke order, contextual furigana and mora contrasts |
 
 ## Development preview
 
@@ -32,7 +33,7 @@ Listening quizzes, pair playback/looping, learning guides, spaced review, wavefo
 
 V4 icons now guide the in-app palette: light backgrounds, flowing color, tidy cards and steady recording/playback controls. Earlier icon versions are retained. Optional animations and five-question games award local stars for listening/recall, never unvalidated pronunciation scores. See the [localization scope](docs/LOCALIZATION.md) and [Cantonese notes](docs/CANTONESE.md). The [seven-app 0.2.0 (2) beta](docs/BETA-0.2.0.md) includes V4, all 11 UI languages and Cantonese.
 
-**Pronunciation grades are disabled pending model integration and human validation.** Signal quality is not pronunciation accuracy. Capacitor combines a React interface with native Swift/Java recording and speech playback; these are not separate SwiftUI/Compose interfaces.
+**Pronunciation grades remain disabled pending validated local model artifacts.** The recording screen now has an assessment flow and explains missing/uncertain models without inventing a grade. It has no backend fallback. Signal quality is not pronunciation accuracy. Capacitor combines a React interface with native Swift/Java recording and speech playback; these are not separate SwiftUI/Compose interfaces.
 
 ## Build and test
 
@@ -49,7 +50,7 @@ npm run native:sync -- handf ios
 node tools/native-family.mjs --android-build
 ```
 
-The seven app IDs are `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`, `cantonese`; bundle IDs use `art.lazying.clearpair.<id>`. PWAs build into `dist/site`. Debug APKs are not Play releases. Test availability requires a verified store receipt.
+The eight app IDs are `handf`, `landr`, `english`, `chinese`, `korean`, `arabic`, `cantonese`, `japanese`; bundle IDs use `art.lazying.clearpair.<id>`. PWAs build into `dist/site`. Debug APKs are not Play releases. Test availability requires a verified store receipt.
 
 ## Audio and privacy
 

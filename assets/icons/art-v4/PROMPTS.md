@@ -1,5 +1,16 @@
 # V4 — balanced expressive icon family
 
+## Japanese addition — 2026-10-01
+
+Built-in image-generation tool; transparent output. Selected original is preserved
+at `foreground/japanese.png`. Opaque store exports compose it on a pale blush/ivory
+background; adaptive exports preserve the alpha channel and enforce safe bounds.
+No earlier original, export or review sheet was deleted or replaced.
+
+Exact generation prompt:
+
+> Use case: logo-brand. Asset type: new Japanese app icon foreground for ClearPair, square 1024 composition. Reference style: sophisticated playful sculptural lettering, polished satin ceramic like the ClearPair English ae icon seen in conversation, no cheap plastic gloss. Exact subject: one correctly formed Japanese hiragana あ, unmistakable three-stroke kana anatomy, soft rounded confident lettering, airy but lively movement, elegant subtle perspective, its crossing and loop clearly readable. Smooth coral-rose to deeper raspberry gradient, small warm peach highlights, highly restrained palette. Genuine transparent background, no tile, no border, no shadow outside the character, no flecks or decorative motifs, no extra text, no flags, no watermark. The character occupies about 78 percent of the square with generous adaptive-icon safe margin. It should be artistic but tidy and typographically correct; never turn あ into 安, お, or a Latin letter.
+
 Generated individually using the built-in image-generation tool on 2026-10-01. V4 balances the owner's preferred sculptural V2 lettering with V3's tidy light backgrounds and smooth foreground gradients. The Chinese, Cantonese, Korean and Arabic structures were referenced against standard glyphs and visually checked. The owner explicitly authorized programmatic export-pixel cleanup; original complete artwork is untouched. Earlier drafts are private, not release assets.
 
 ## handf

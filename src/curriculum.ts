@@ -1,6 +1,7 @@
 import type { Lesson, Product, Text, Word } from "./types";
 import { scriptLessons } from "./script-curriculum";
 import { cantoneseLessons } from "./cantonese-curriculum";
+import { japaneseLessons } from './japanese-curriculum';
 
 const t = (en: string, zh: string): Text => ({ en, zh });
 const e = (text: string, ipa: string, sentence?: string): Word => ({
@@ -1506,7 +1507,7 @@ export const lessons: Lesson[] = [
   ),
 ];
 
-lessons.push(...scriptLessons, ...cantoneseLessons);
+lessons.push(...scriptLessons, ...cantoneseLessons, ...japaneseLessons);
 for (const lesson of lessons) {
   if (["tone-context", "v-merger"].includes(lesson.id))
     lesson.quizMode = "none";
@@ -1630,6 +1631,11 @@ export const products: Product[] = [
     id: 'cantonese', name: 'Cantonese', zhName: '粵語辨音', mark: '粵', accent: '#a64b00',
     blurb: t('Small shifts in tone. A whole new meaning.', '聲調一點變化，意思大不相同。'),
     lessons: cantoneseLessons.map((l) => l.id),
+  },
+  {
+    id: 'japanese', name: 'Japanese', zhName: '日语假名与辨音', mark: 'あ', accent: '#b33460',
+    blurb: t('Remember the shape. Hear the beat that changes a word.', '记住易混字形，听清改变词义的一拍。'),
+    lessons: japaneseLessons.map(l => l.id),
   },
 ];
 export const lessonById = (id: string) => lessons.find((l) => l.id === id)!;

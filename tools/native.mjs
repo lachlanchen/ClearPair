@@ -6,7 +6,7 @@ const [app, platform] = process.argv.slice(2);
 const release=JSON.parse(await readFile('store/release.json','utf8'));
 if(release.version!==JSON.parse(await readFile('package.json','utf8')).version || !Number.isSafeInteger(release.build) || release.build<1) throw new Error('Invalid release identity');
 if (
-  !["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese"].includes(app) ||
+  !["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese", "japanese"].includes(app) ||
   !["android", "ios"].includes(platform)
 )
   throw new Error("Usage: npm run native:sync -- <app> <android|ios>");

@@ -8,15 +8,15 @@
 
 *Practica lo que confundes. Aprende la diferencia.*
 
-Siete aplicaciones centradas en sonidos y letras fáciles de confundir, para iOS, Android y PWA. ClearPair es un nombre provisional; L & N es otra aplicación.
+Ocho cursos centrados en sonidos y letras fáciles de confundir, para iOS, Android y PWA. ClearPair es un nombre provisional; L & N es otra aplicación.
 
-![ClearPair](../docs/assets/seven-icons.png)
+![ClearPair](../docs/assets/eight-icons-v4.png)
 
-El candidato de código 1.0.0 (3) corrige una respuesta tardía del permiso del micrófono y añade redirección protegida a las tiendas. El [plan de publicación](../store/REVIEW-PLAN.md) no es un recibo de envío a revisión.
+Las siete apps originales tienen versiones 1.0.0 (3) de prueba interna en Apple y Google. El candidato de código (4) añade [japonés](../docs/JAPANESE-COURSE.md), análisis WAV y [evaluación en el dispositivo](../docs/ON-DEVICE-SCORING.md). Japonés aún no se ha subido; no se ha enviado una revisión formal. Las notas siguen desactivadas hasta validar los modelos locales.
 
-## Siete aplicaciones especializadas
+## Ocho cursos especializados
 
-| ClearPair | Siete aplicaciones especializadas |
+| ClearPair | Ocho cursos especializados |
 | --- | --- |
 | H & F | h/f en inglés y mandarín |
 | L & R | l/r y grupos consonánticos ingleses |
@@ -25,6 +25,7 @@ El candidato de código 1.0.0 (3) corrige una respuesta tardía del permiso del 
 | Cantonese | Jyutping, tonos, vocales, aspiración y terminaciones |
 | Korean | Memoria de hangul y sonidos confundibles |
 | Arabic Letters | Formas, puntos, enlaces y sonidos |
+| Japanese | Kana confundibles, trazos, furigana y contrastes de mora |
 
 ## Versión preliminar
 

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ClearPair Japanese</string>
+    <string name="title_activity_main">ClearPair Japanese</string>
+    <string name="package_name">art.lazying.clearpair.japanese</string>
+    <string name="custom_url_scheme">art.lazying.clearpair.japanese</string>
+</resources>

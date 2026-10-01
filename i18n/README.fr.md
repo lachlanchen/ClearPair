@@ -8,15 +8,15 @@
 
 *Entraînez ce que vous confondez. Apprenez la différence.*
 
-Sept applications ciblant les sons et lettres faciles à confondre, pour iOS, Android et PWA. ClearPair est un nom provisoire ; L & N reste une application distincte.
+Huit cours ciblant les sons et lettres faciles à confondre, pour iOS, Android et PWA. ClearPair est un nom provisoire ; L & N reste une application distincte.
 
-![ClearPair](../docs/assets/seven-icons.png)
+![ClearPair](../docs/assets/eight-icons-v4.png)
 
-Le candidat source 1.0.0 (3) corrige une réponse tardive à l’autorisation du micro et ajoute une redirection protégée vers les boutiques. Le [plan de publication](../store/REVIEW-PLAN.md) ne prouve pas un envoi en examen.
+Les sept applications initiales ont des builds de test interne 1.0.0 (3) chez Apple et Google. Le candidat source (4) ajoute le [japonais](../docs/JAPANESE-COURSE.md), l’analyse WAV et une [évaluation sur l’appareil](../docs/ON-DEVICE-SCORING.md). Le japonais n’est pas encore téléversé ; aucun examen formel n’a été demandé. Les notes restent désactivées jusqu’à la validation des modèles locaux.
 
-## Sept applications ciblées
+## Huit cours ciblés
 
-| ClearPair | Sept applications ciblées |
+| ClearPair | Huit cours ciblés |
 | --- | --- |
 | H & F | h/f en anglais et mandarin |
 | L & R | l/r et groupes consonantiques anglais |
@@ -25,6 +25,7 @@ Le candidat source 1.0.0 (3) corrige une réponse tardive à l’autorisation du
 | Cantonese | Jyutping, tons, voyelles, aspiration et finales |
 | Korean | Mémorisation du hangeul et sons proches |
 | Arabic Letters | Formes, points, liaisons et sons |
+| Japanese | Kana proches, ordre des traits, furigana et mores |
 
 ## Version de développement
 

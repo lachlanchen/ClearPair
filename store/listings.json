@@ -35,6 +35,12 @@
     "shortDescription": "Tell confusing Arabic letters apart through dots, joins and sound families.",
     "focus": "Arabic letter dots, joining forms and sound families. Visual letter recall is the default; optional listening depends on an installed Arabic voice and is not a specialist recitation model."
   },
+  "japanese": {
+    "name": "ClearPair Japanese",
+    "subtitle": "Kana, furigana & tricky sounds",
+    "shortDescription": "Remember confusing kana and practise Japanese vowel length and consonant holds.",
+    "focus": "Confusing hiragana and katakana, a basic kana map, contextual furigana, vowel length, small kana and consonant holds. Modern stroke animations are attributed to KanjiVG; source-backed kana origins are separate from memory cues. Same-sound script pairs use visual recall, not an impossible sound distinction test."
+  },
   "cantonese": {
     "name": "ClearPair Cantonese",
     "subtitle": "Jyutping & tricky contrasts",

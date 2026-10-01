@@ -8,15 +8,15 @@
 
 *헷갈리는 부분을 연습하고, 차이를 익히세요.*
 
-혼동하기 쉬운 소리와 글자에 집중하는 일곱 앱으로, iOS·Android·PWA를 지원합니다. ClearPair는 임시 이름이며 기존 L & N과 별개입니다.
+혼동하기 쉬운 소리와 글자에 집중하는 여덟 코스로, iOS·Android·PWA를 지원합니다. ClearPair는 임시 이름이며 기존 L & N과 별개입니다.
 
-![ClearPair](../docs/assets/seven-icons.png)
+![ClearPair](../docs/assets/eight-icons-v4.png)
 
-소스 후보 1.0.0 (3)은 늦게 돌아온 마이크 권한 응답의 충돌을 수정하고 안전 조건을 갖춘 스토어 이동을 추가해요. [출시 계획](../store/REVIEW-PLAN.md)은 심사 제출 증빙이 아니에요.
+기존 일곱 앱의 1.0.0 (3)은 Apple과 Google 내부 테스트에 제공됐어요. 소스 후보 (4)는 [일본어](../docs/JAPANESE-COURSE.md), WAV 분석과 [기기 내 발음 평가](../docs/ON-DEVICE-SCORING.md)를 추가해요. 일본어는 아직 업로드하지 않았고 정식 심사도 제출하지 않았어요. 로컬 모델 검증이 끝날 때까지 발음 점수는 비활성화돼요.
 
-## 일곱 가지 전문 앱
+## 여덟 가지 전문 코스
 
-| ClearPair | 일곱 가지 전문 앱 |
+| ClearPair | 여덟 가지 전문 코스 |
 | --- | --- |
 | H & F | 영어와 중국어의 h/f |
 | L & R | 영어 l/r 및 자음군 |
@@ -25,6 +25,7 @@
 | Cantonese | 광둥어 월병(Jyutping), 성조, 모음, 기식 및 어말 소리 |
 | Korean | 한글 기억과 헷갈리는 소리 |
 | Arabic Letters | 아랍 문자 모양, 점, 연결, 소리 |
+| Japanese | 헷갈리는 가나, 획순, 문맥별 후리가나와 모라 대비 |
 
 ## 개발 미리보기
 

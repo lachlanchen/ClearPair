@@ -5,7 +5,7 @@ async function gameVoice(page: Page, cantonese = true) {
     let timer: ReturnType<typeof setTimeout>;
     Object.defineProperty(window, 'SpeechSynthesisUtterance', { value: class { constructor(public text: string) {} } });
     Object.defineProperty(window, 'speechSynthesis', { value: {
-      getVoices: () => ['en-US','zh-CN', ...(cantonese ? ['zh-HK'] : [])].map(lang => ({lang})),
+      getVoices: () => ['en-US','zh-CN','ja-JP', ...(cantonese ? ['zh-HK'] : [])].map(lang => ({lang})),
       speak: (speech: SpeechSynthesisUtterance) => {
         (window as unknown as { lastSpoken: string }).lastSpoken = speech.text;
         timer = setTimeout(() => speech.onend?.(new Event('end') as SpeechSynthesisEvent), 200);
@@ -59,13 +59,14 @@ test('interrupting audio does not unlock an unanswered game question', async ({p
   await expect(page.getByRole('button',{name:'Play the mystery word',exact:true})).toBeVisible();
 });
 
-test('seven families fit small phones and iPad; reduced motion stays still', async ({page}) => {
-  for (const width of [320, 768]) for (const id of ['handf','landr','english','chinese','korean','arabic','cantonese']) {
+test('eight families fit small phones and iPad; reduced motion stays still', async ({page}) => {
+  for (const width of [320, 768]) for (const id of ['handf','landr','english','chinese','korean','arabic','cantonese','japanese']) {
     await page.setViewportSize({width,height:1024}); await page.goto(`/${id}/`);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     await expect(page.locator('.brand-icon')).toBeVisible();
     if(width===768 && id==='cantonese') await page.screenshot({path:'.runtime/screenshots/cantonese-ipad.png',fullPage:true});
   }
+  await page.goto('/cantonese/');
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.getByRole('button',{name:'Trace the tones'}).click();
   expect(await page.locator('.motion-toggle svg').evaluate(el=>el.getBoundingClientRect().width)).toBe(14);

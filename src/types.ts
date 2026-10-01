@@ -5,9 +5,10 @@ export type AppId =
   | "chinese"
   | "korean"
   | "cantonese"
+  | "japanese"
   | "arabic";
 export type Locale = "en" | "ar" | "es" | "fr" | "ja" | "ko" | "vi" | "zh-Hans" | "zh-Hant" | "de" | "ru";
-export type Language = "en-US" | "zh-CN" | "zh-HK" | "ko-KR" | "ar-SA";
+export type Language = "en-US" | "zh-CN" | "zh-HK" | "ko-KR" | "ar-SA" | "ja-JP";
 export type Text = { en: string; zh: string; hant?: string };
 export type Diagram = "vowel" | "air" | "tongue" | "tone" | "glyph";
 export interface Word {
@@ -16,6 +17,8 @@ export interface Word {
   gloss?: string;
   sentence: string;
   sentenceReading?: string;
+  /** Explicit, course-authored reading. Never guess kanji readings from glyphs. */
+  reading?: string;
   audioKey?: string;
   spoken?: string;
 }
@@ -72,6 +75,10 @@ export interface Take {
   audio: Blob;
   analysis: Analysis;
   storage?: "device" | "session";
+  reading?: string;
+  /** Frozen recording target, independent of whatever card is selected later. */
+  assessment?: { pair: number; side: 0 | 1; sentence: boolean; spokenPrompt?:string; calibrationKey?:string };
+  score?: import('./scoring').ScoreResult;
 }
 export type TakeMeta = Omit<Take, "audio">;
 export interface LessonProgress {

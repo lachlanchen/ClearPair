@@ -7,7 +7,10 @@ export type ScoreReason =
   | "unsupported-contrast"
   | "unaligned"
   | "uncertain"
-  | "invalid-evidence";
+  | "invalid-evidence"
+  | "ungraded-exercise"
+  | "cancelled"
+  | "model-unavailable";
 export interface ScoreEvidence {
   model: string;
   profile: string;
@@ -18,7 +21,7 @@ export interface ScoreEvidence {
   coverage: number;
   contentConfidence: number;
   outOfDistribution: number;
-  // The acoustic backend supplies likelihoods, never ASR string equality.
+  // The on-device phonetic encoder supplies likelihoods, never ASR string equality.
   targetLogLikelihood: number;
   competitorLogLikelihoods: number[];
   otherLogLikelihood: number;

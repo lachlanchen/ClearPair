@@ -4,6 +4,7 @@ import type { Lesson, Word } from './types';
 import type { Clip, Player } from './player';
 import { createChallenge, starsFor } from './game';
 import { needsVoiceInstallation } from './ui-errors';
+import { WordText } from './WordText';
 
 export function Challenge({ lesson, player, clip, tr, onExit, onAnswer, onComplete, onPractice }: {
   lesson: Lesson; player: Player; clip: (word: Word, sentence?: boolean) => Clip;
@@ -75,7 +76,7 @@ export function Challenge({ lesson, player, clip, tr, onExit, onAnswer, onComple
       <div className="pair-cards" lang={lesson.language}>{pair.map((w, i) => <button key={i}
         className={`word-card ${choice !== null && question.target === i ? 'correct' : ''} ${choice === i && choice !== question.target ? 'incorrect' : ''}`}
         disabled={choice !== null || playing || (!visual && !heard)} onClick={() => respond(i as 0 | 1)}>
-        <span className="word" dir={lesson.language === 'ar-SA' ? 'rtl' : 'auto'}>{w.text}</span><span className="ipa" dir="ltr">{w.ipa}</span>
+        <span className="word" dir={lesson.language === 'ar-SA' ? 'rtl' : 'auto'}><WordText value={w.text} reading={lesson.language==='ja-JP'?w.reading:undefined}/></span><span className="ipa" dir="ltr">{w.ipa}</span>
         <span className="card-foot">{tr('Choose', '選擇')}<span>{i + 1}</span></span>
       </button>)}</div>
       <div className="challenge-feedback" aria-live="polite">{choice === null ? <p>{tr('One small difference. A new meaning.', '一點區別，不同意思。')}</p> : <>

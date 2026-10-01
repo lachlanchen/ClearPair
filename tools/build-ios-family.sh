@@ -10,7 +10,7 @@ if pgrep -x xcodebuild >/dev/null; then
   exit 1
 fi
 mkdir -p .runtime/ios/artifacts
-for clearpair_app in handf landr english chinese korean arabic cantonese; do
+for clearpair_app in handf landr english chinese korean arabic cantonese japanese; do
   xcodebuild -project "native/apps/$clearpair_app/ios/App/App.xcodeproj" \
     -scheme App -configuration Debug -destination 'generic/platform=iOS Simulator' \
     -derivedDataPath .runtime/ios/family \

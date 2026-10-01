@@ -4,10 +4,10 @@ import type { Locale } from '../src/types';
 const uiLocales: Locale[] = ['en','ar','es','fr','ja','ko','vi','zh-Hans','zh-Hant','de','ru'];
 const recordLabel = (locale: Locale) => locale === 'en' ? 'Record your voice' : locale === 'zh-Hans'
   ? '录下你的声音' : uiCatalog['Record your voice'][translatedLocales.indexOf(locale as typeof translatedLocales[number])];
-const ids = ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese"];
+const ids = ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese", "japanese"];
 async function fakeVoice(page: Page) {
   await page.addInitScript(() => {
-    const languages = ["en-US", "zh-CN", "zh-HK", "ko-KR", "ar-SA"];
+    const languages = ["en-US", "zh-CN", "zh-HK", "ko-KR", "ar-SA", "ja-JP"];
     let timer: ReturnType<typeof setTimeout>;
     Object.defineProperty(window, "SpeechSynthesisUtterance", {
       value: class {
@@ -256,7 +256,7 @@ test("microphone failure shows an error without a fake score", async ({
   ).toBeEnabled();
   await expect(page.getByText("58", { exact: true })).toHaveCount(0);
 });
-test("seven manifests keep separate installation scopes and maskable icons", async ({ request }) => {
+test("eight manifests keep separate installation scopes and maskable icons", async ({ request }) => {
   for (const id of ids) {
     const response = await request.get(`/${id}/manifest.webmanifest`);
     expect(response.ok()).toBe(true);

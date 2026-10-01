@@ -3,9 +3,9 @@ import sharp from 'sharp';
 // @ts-expect-error Repository tooling is JavaScript.
 import { iconSvg, iconThemes } from '../tools/icons.mjs';
 
-describe('seven vivid, platform-safe icons', () => {
-  it('keeps all seven identities and omits the tiny brand wordmark', () => {
-    expect(Object.keys(iconThemes)).toHaveLength(7);
+describe('eight vivid, platform-safe icons', () => {
+  it('keeps all eight identities and omits the tiny brand wordmark', () => {
+    expect(Object.keys(iconThemes)).toHaveLength(8);
     for(const id of Object.keys(iconThemes)) {
       expect(iconSvg(id)).not.toContain('<text');
       expect(iconSvg(id)).toContain('data:image/png;base64,');

@@ -9,6 +9,7 @@ const apps = {
   korean: ["Korean", "한", "#8a4b70", "Hangul and sound contrasts"],
   arabic: ["Arabic Letters", "ب", "#826020", "Dots, joins and sound families"],
   cantonese: ["Cantonese", "粵", "#a64b00", "Jyutping, tones and easily confused sounds"],
+  japanese: ["Japanese", "あ", "#b33460", "Confusing kana, furigana and mora contrasts"],
 };
 const appArg = process.argv.find((v) => v.startsWith("--app="))?.slice(6);
 if (appArg && !apps[appArg]) throw new Error("Unknown app");

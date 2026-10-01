@@ -12,6 +12,7 @@ const titles: Record<string, string> = {
   korean: "Korean",
   arabic: "Arabic Letters",
   cantonese: "Cantonese",
+  japanese: "Japanese",
 };
 const base = process.env.CLEARPAIR_BASE || "/";
 export default defineConfig({
@@ -51,9 +52,9 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,png,svg,json,mp3,woff2}"],
+        globPatterns: ["**/*.{js,mjs,wasm,css,html,png,svg,json,mp3,woff2}"],
         navigateFallback: `${base}index.html`,
-        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
+        maximumFileSizeToCacheInBytes: 32 * 1024 * 1024,
       },
     }),
   ],

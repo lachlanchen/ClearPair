@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "build": 3,
-  "distribution": "production-review-candidate",
-  "apps": ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese"]
+  "build": 4,
+  "distribution": "development-local-scoring-candidate-not-submitted",
+  "apps": ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese", "japanese"]
 }

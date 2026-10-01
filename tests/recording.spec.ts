@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 
 // A generated browser stream verifies capture/storage/lifecycle, not pronunciation
 // accuracy, a real microphone, or a native permission dialog.
-for(const id of ['handf','landr','english','chinese','korean','arabic','cantonese']) {
+for(const id of ['handf','landr','english','chinese','korean','arabic','cantonese','japanese']) {
   test(`${id}: repeated capture, fixed controls, waveform, and retained history`,async({page})=>{
     await page.setViewportSize({width:390,height:844});
     await page.addInitScript(()=>{
@@ -32,6 +32,10 @@ for(const id of ['handf','landr','english','chinese','korean','arabic','cantones
       await finish.click();
       await expect(page.getByText('Saved on device',{exact:true})).toBeVisible();
       await expect(page.getByRole('button',{name:'My recording',exact:true})).toBeEnabled();
+      expect(await record.evaluate(el=>el.getBoundingClientRect().top+scrollY)).toBeCloseTo(initial,0);
+      await page.getByRole('button',{name:'Assess my pronunciation',exact:true}).click();
+      await expect(page.getByText('The on-device pronunciation models are still being validated. No grade is invented.',{exact:true})).toBeVisible();
+      await expect(page.locator('.local-grade')).toHaveCount(0);
       expect(await record.evaluate(el=>el.getBoundingClientRect().top+scrollY)).toBeCloseTo(initial,0);
       await page.getByRole('button',{name:'My recording',exact:true}).click();
       await expect(page.getByText('Ready when you are',{exact:true})).toBeVisible();

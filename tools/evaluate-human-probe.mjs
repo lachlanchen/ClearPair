@@ -11,7 +11,8 @@ const {contrastLatticeEvidence}=await import(pathToFileURL(resolve(`${directory}
 const report=JSON.parse(await readFile(`${directory}/report.json`,'utf8'));
 if(report.model!=='vitouphy/wav2vec2-xls-r-300m-timit-phoneme'||report.revision!=='efb7ae9b88f13db0d42eac8cedbba19739e2a278')throw new Error('Wrong model adapter');
 const vocab=Object.fromEntries(Object.entries(report.vocabulary).map(([id,token])=>[token,Number(id)]));
-const inventory=Object.entries(vocab).filter(([token])=>!['|',' ','[UNK]','[PAD]'].includes(token)).map(([,id])=>id);
+// BOS/EOS are tokenizer controls, not competing spoken phones.
+const inventory=Object.entries(vocab).filter(([token])=>!['|',' ','[UNK]','[PAD]','<s>','</s>'].includes(token)).map(([,id])=>id);
 const ipa={AA:'ɑ',AE:'æ',AH:'ə',AO:'ɑ',AW:'aʊ',AY:'aɪ',B:'b',CH:'ʧ',D:'d',DH:'ð',EH:'ɛ',ER:'ɝ',EY:'eɪ',F:'f',G:'g',HH:'h',IH:'ɪ',IY:'i',JH:'ʤ',K:'k',L:'l',M:'m',N:'n',NG:'ŋ',OW:'oʊ',OY:'ɔɪ',P:'p',R:'ɹ',S:'s',SH:'ʃ',T:'t',TH:'θ',UH:'ʊ',UW:'u',V:'v',W:'w',Y:'j',Z:'z'};
 const competitors={HH:['F'],F:['HH','V'],L:['R','W'],R:['L','W'],IY:['IH'],IH:['IY','EH'],EH:['AE','IH'],AE:['EH','AH'],UH:['UW'],UW:['UH'],AH:['AA','AE'],AA:['AH'],TH:['S','F','T'],DH:['D','Z','V'],V:['W','F'],W:['V','R'],N:['NG'],NG:['N'],S:['TH','SH','Z'],SH:['S','CH'],CH:['SH','JH'],Z:['S','DH'],T:['D'],D:['T','DH']};
 const rows=[],skipped=[];
@@ -60,7 +61,8 @@ const summaries=[...new Set(rows.map(r=>r.category))].sort().map(category=>{
     exploratoryAUC:positive.length>=5&&negative.length>=5?wins/(positive.length*negative.length):null,
     heldOut:false,approved:false};
 });
-await writeFile(`${directory}/contrast-report.json`,JSON.stringify({at:new Date().toISOString(),
+// Preserve the original exploratory receipt when the adapter is corrected.
+await writeFile(`${directory}/contrast-report-v2.json`,JSON.stringify({at:new Date().toISOString(),
   corpus:'speechocean762',sourceRevision:'613968e3b0b789fc33936fb5eba1973176ba7d11',
   model:report.model,modelRevision:report.revision,modelSha256:report.modelSha256,
   purpose:'Exploratory adult development probe. Deliberately selected expert-low/high examples; not held-out accuracy.',

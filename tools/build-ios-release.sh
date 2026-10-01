@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 clearpair_app=${1:?Pass one ClearPair app ID}
-case "$clearpair_app" in handf|landr|english|chinese|korean|arabic|cantonese) ;; *) exit 2 ;; esac
+case "$clearpair_app" in handf|landr|english|chinese|korean|arabic|cantonese|japanese) ;; *) exit 2 ;; esac
 test "$(uname -s)" = Darwin
 if pgrep -x xcodebuild >/dev/null; then echo 'Another Xcode job is active; coordinate first.' >&2; exit 1; fi
 : "${CLEARPAIR_TEAM_ID:?}" "${CLEARPAIR_PROFILE:?}" "${CLEARPAIR_SIGNING_KEYCHAIN:?}"

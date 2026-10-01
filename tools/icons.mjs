@@ -12,12 +12,13 @@ export const iconThemes = {
   korean: ['#FBF0F4', '#FFFCF5', '#A92F5B', '한'],
   arabic: ['#EDF8F8', '#FFFCF2', '#08758F', 'ب'],
   cantonese: ['#FCF6E9', '#FFFEF5', '#B35700', '粵'],
+  japanese: ['#FCF0F3', '#FFFCF5', '#B33460', 'あ'],
 };
 
 const artwork = new Map();
 for (const app of Object.keys(iconThemes)) {
   const source = readFileSync(resolve(`assets/icons/art-v4/foreground/${app}.png`));
-  const full=readFileSync(resolve(`assets/icons/art-v4/${app}.png`));
+  const full=app==='japanese' ? source : readFileSync(resolve(`assets/icons/art-v4/${app}.png`));
   const {data,info}=await sharp(source).ensureAlpha().raw().toBuffer({resolveWithObject:true});
   if(info.width!==info.height) throw new Error(`Non-square icon artwork: ${app}`);
   let radius=0, transparent=0;
@@ -36,6 +37,7 @@ export function iconSvg(app, variant = 'full') {
   if(!['full','adaptive','maskable'].includes(variant)) throw new Error('Unknown icon variant');
   const [bright, deep] = theme;
   const art=artwork.get(app);
+  if(app==='japanese' && variant==='full')return `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024"><defs><linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${bright}"/><stop offset="1" stop-color="${deep}"/></linearGradient></defs><path fill="url(#paper)" d="M0 0h1024v1024H0z"/><image href="${art.uri}" x="61" y="61" width="902" height="902"/></svg>`;
   if(variant==='full')return `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024"><image href="${art.fullUri}" width="1024" height="1024"/></svg>`;
   // Android: 108dp layers, recognisable art inside the central 66dp circle.
   // PWA maskable: all essential details inside the 80%-diameter safe circle.

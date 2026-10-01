@@ -19,7 +19,7 @@ describe('eleven interface languages, independent of practice language',()=>{
  });
  it('has all non-Chinese interface strings, including accessible diagram labels',()=>{
   const missing=new Set<string>();
-  for(const file of ['App.tsx','Challenge.tsx','LearnMotion.tsx']){
+  for(const file of ['App.tsx','Challenge.tsx','LearnMotion.tsx','JapaneseStudy.tsx','ScorePanel.tsx']){
    const code=readFileSync(`src/${file}`,'utf8'),tree=ts.createSourceFile(file,code,ts.ScriptTarget.Latest,true);
    function visit(node:ts.Node){
     if(ts.isCallExpression(node)&&node.expression.getText(tree)==='tr'&&node.arguments[0]&&ts.isStringLiteral(node.arguments[0])){

@@ -2,7 +2,7 @@ import { lessonById, productById, products } from "./curriculum";
 import type { AppId, Language, Text, Word } from "./types";
 import type { ScoreEvidence } from "./scoring";
 
-/** Versioned requirements, not hand-tuned scoring weights. A trained backend must
+/** Versioned requirements, not hand-tuned scoring weights. An on-device encoder must
  * supply these measurements and pass separate calibration for each routed task. */
 export interface ScoringProfile {
   id: string;
@@ -30,6 +30,26 @@ const profile = (
 });
 
 export const scoringProfiles = {
+  japaneseKana: profile('ja-kana', 'ja-JP', 'phone',
+    ['phone-likelihood','vowel-transition','mora-context','content-confidence'],
+    ['target','displayed-confusion','omission','other'],
+    'Assess the spoken kana, never infer which script was intended from sound.', '评估假名读音，不根据声音猜测使用哪套字形。'),
+  japaneseVoicing: profile('ja-voicing', 'ja-JP', 'phone',
+    ['phone-likelihood','closure-release','relative-onset-f0','periodicity','mora-context'],
+    ['target','voiced','voiceless','omission','other'],
+    'Use contextual voicing evidence, including accepted Japanese allophones.', '结合语境评估清浊，保留日语允许的音位变体。'),
+  japaneseHBP: profile('ja-h-b-p', 'ja-JP', 'phone',
+    ['phone-likelihood','frication-spectrum','closure-release','vowel-context'],
+    ['h-series','b-series','p-series','omission','other'],
+    'Compare all three categories with the vowel-dependent h-series realizations.', '比较三类，并考虑 h 行随元音变化的具体音值。'),
+  japaneseTiming: profile('ja-mora-timing', 'ja-JP', 'phone',
+    ['phone-likelihood','relative-mora-duration','closure-duration','vowel-duration','utterance-rate','mora-context'],
+    ['short','long','combined-kana','separate-kana','omission','other'],
+    'Align vowel length, consonant holds and combined kana within the mora context.', '在拍的语境中对齐元音长短、辅音停留和拗音。'),
+  japaneseReadings: profile('ja-contextual-reading', 'ja-JP', 'phone',
+    ['phone-likelihood','word-alignment','accepted-contextual-readings','content-confidence'],
+    ['target','accepted-reading','different-word','omission','other'],
+    'Use the explicitly supplied word reading and accepted variants, not single-character guesses.', '使用明确提供的词语读音和允许变体，不猜测单字读音。'),
   cantoneseTones: profile('yue-tones', 'zh-HK', 'tone',
     ['relative-f0-contour', 'tone-context', 'voicing-confidence', 'speaker-normalization'],
     ['tone-1', 'tone-2', 'tone-3', 'tone-4', 'tone-5', 'tone-6', 'other'],
@@ -303,6 +323,11 @@ function route(head: ProfileName, ids: string[]) {
   }
 }
 route("englishHF", ["hf-en"]);
+route('japaneseKana', ['ja-hira-loops','ja-kata-direction']);
+route('japaneseVoicing', ['ja-dakuten']);
+route('japaneseHBP', ['ja-h-b-p']);
+route('japaneseTiming', ['ja-long-vowels','ja-small-tsu','ja-small-y']);
+route('japaneseReadings', ['ja-furigana']);
 route('cantoneseTones', ['yue-tone-1-3', 'yue-tone-2-5', 'yue-tone-4-6']);
 route('cantoneseVowels', ['yue-aa-a']);
 route('cantoneseConsonants', ['yue-n-ng', 'yue-b-p', 'yue-p-t']);
@@ -372,7 +397,7 @@ route("arabicNames", [
 route("arabicVowels", ["ar-vowels"]);
 
 export type AssessmentPlan =
-  | { mode: "explore"; reason: "accent-merger" | "connected-speech-guide" }
+  | { mode: "explore"; reason: "accent-merger" | "connected-speech-guide" | "same-sound-scripts" }
   | {
       mode: "contrast";
       /** Includes app, exercise, side and prompt mode: no accidental cross-task calibration. */
@@ -408,6 +433,7 @@ export function assessmentPlan(
     return { mode: "explore", reason: "accent-merger" };
   if (lessonId === "tone-context")
     return { mode: "explore", reason: "connected-speech-guide" };
+  if (lessonId === 'ja-script-bridge') return { mode:'explore',reason:'same-sound-scripts' };
   const pair = lesson.pairs[pairIndex];
   const head =
     lessonId === "ko-corners" && pairIndex === 0
