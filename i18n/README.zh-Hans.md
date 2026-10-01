@@ -4,6 +4,8 @@
 
 # ClearPair by LazyingArt
 
+[![11 UI languages](https://img.shields.io/badge/UI-11_languages-456BA4?style=for-the-badge)](../docs/LOCALIZATION.md) [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-lachlanchen-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/lachlanchen)
+
 *专练容易混淆的部分，真正学会分辨。*
 
 七款针对易混淆语音与字母的专项学习应用，支持iOS、Android和PWA。ClearPair是暂定品牌名，原有L & N继续作为独立应用。这里强调对比、辨音与区分，而不是泛泛的单词练习。
@@ -24,9 +26,9 @@
 
 ## 开发预览状态
 
-已实现听辨测验、词对连续播放和循环、学习指导、间隔复习、录音波形、录音历史及导出。英语、简体中文两种界面语言与练习语言分别设置，选择中文界面并不意味着只能练习中文。
+已实现听辨测验、词对连读与循环、学习指南、间隔复习、波形、录音历史与导出。源代码支持个人资料中的全部11种界面语言，独立于练习语言。专业语音学说明仍为英中双语；未翻译的说明会明确标为英语。
 
-最新源码新增鲜明大图标、更整洁的配色界面、可选学习动画，以及五道题一轮的小游戏；星星保存在本地。星星奖励听辨与回忆，不代表未经验证的发音分数。语言资料与语音保护措施见[粤语说明](../docs/CANTONESE.md)。现有[六款应用测试版](../docs/BETA-0.1.0.md)尚未包含本次设计或第七款应用。
+V4图标带动应用配色：浅色背景、柔和流动色彩、整洁卡片及位置稳定的录音/播放操作。旧版图标均保留。可选动画与五题游戏为听辨、记忆提供本地星星奖励，绝不当作未验证的发音分数。参阅[本地化范围](../docs/LOCALIZATION.md)及[粤语说明](../docs/CANTONESE.md)。[当前六应用测试版](../docs/BETA-0.1.0.md)尚未包含此次改良及第七款应用。
 
 **发音评分尚未启用，须先完成模型接入与真人标注验证。** 信号质量不是发音准确度，也不能作为评分替代品。应用采用Capacitor，将React界面与Swift/Java原生录音及语音播放结合，并非分别开发的SwiftUI/Compose界面。
 
@@ -76,7 +78,7 @@ GitHub读取[CITATION.cff](../CITATION.cff)以显示“Cite this repository”�
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.1.0},
+  version = {0.2.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

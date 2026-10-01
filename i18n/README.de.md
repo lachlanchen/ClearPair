@@ -4,6 +4,8 @@
 
 # ClearPair by LazyingArt
 
+[![11 UI languages](https://img.shields.io/badge/UI-11_languages-456BA4?style=for-the-badge)](../docs/LOCALIZATION.md) [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-lachlanchen-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/lachlanchen)
+
 *Übe, was du verwechselst. Lerne den Unterschied.*
 
 Sieben gezielte Apps für leicht verwechselbare Laute und Buchstaben auf iOS, Android und als PWA. ClearPair ist ein Arbeitsname; L & N bleibt eine eigenständige App.
@@ -24,9 +26,9 @@ Sieben gezielte Apps für leicht verwechselbare Laute und Buchstaben auf iOS, An
 
 ## Entwicklungsvorschau
 
-Hörquiz, Paarwiedergabe mit Schleife, Lernhinweise, verteilte Wiederholung, Wellenformen, Aufnahmeverlauf und Export sind umgesetzt. Die englische oder vereinfachte chinesische Oberfläche ist unabhängig von der Übungssprache.
+Hörquiz, Paarwiedergabe/Schleifen, Lernguides, zeitversetzte Wiederholung, Wellenformen, Aufnahmeverlauf und Export sind implementiert. Der Quellcode unterstützt alle 11 Profilsprachen unabhängig von der Übungssprache. Fachliche Phonetikhinweise bleiben Englisch/Chinesisch; unübersetzte Hinweise sind ausdrücklich als Englisch gekennzeichnet.
 
-Der aktuelle Quellstand ergänzt kräftige Icons, übersichtliche farbcodierte Ansichten, optionale Lernanimationen und Fünf-Fragen-Runden mit lokal gespeicherten Sternen. Sterne belohnen Hörunterscheidung und Erinnerung, keine unvalidierte Aussprache. Die [Kantonesisch-Hinweise](../docs/CANTONESE.md) nennen Quellen und Sprachsicherungen. Die bestehende [Beta mit sechs Apps](../docs/BETA-0.1.0.md) enthält weder dieses Redesign noch die siebte App.
+V4-Icons prägen die Palette: helle Hintergründe, fließende Farben, aufgeräumte Karten und stabile Aufnahme-/Wiedergabesteuerung. Frühere Icons bleiben erhalten. Optionale Animationen und Fünf-Fragen-Spiele vergeben lokale Sterne fürs Hören/Erinnern, nie unvalidierte Aussprachenoten. Siehe [Sprachumfang](../docs/LOCALIZATION.md) und [kantonesische Hinweise](../docs/CANTONESE.md). Die [bestehende Sechs-App-Beta](../docs/BETA-0.1.0.md) enthält diese Überarbeitung und die siebte App noch nicht.
 
 **Aussprachebewertungen bleiben bis zur Modellintegration und menschlichen Validierung deaktiviert.** Signalqualität ist keine Aussprachegenauigkeit. Capacitor verbindet React mit nativer Swift/Java-Aufnahme und Sprachausgabe; es sind keine getrennten SwiftUI/Compose-Oberflächen.
 
@@ -76,7 +78,7 @@ GitHub liest [CITATION.cff](../CITATION.cff) für „Cite this repository“. So
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.1.0},
+  version = {0.2.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

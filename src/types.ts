@@ -6,7 +6,7 @@ export type AppId =
   | "korean"
   | "cantonese"
   | "arabic";
-export type Locale = "en" | "zh-Hans" | "zh-Hant";
+export type Locale = "en" | "ar" | "es" | "fr" | "ja" | "ko" | "vi" | "zh-Hans" | "zh-Hant" | "de" | "ru";
 export type Language = "en-US" | "zh-CN" | "zh-HK" | "ko-KR" | "ar-SA";
 export type Text = { en: string; zh: string; hant?: string };
 export type Diagram = "vowel" | "air" | "tongue" | "tone" | "glyph";

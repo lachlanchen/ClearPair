@@ -4,6 +4,8 @@
 
 # ClearPair by LazyingArt
 
+[![11 UI languages](https://img.shields.io/badge/UI-11_languages-456BA4?style=for-the-badge)](../docs/LOCALIZATION.md) [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-lachlanchen-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/lachlanchen)
+
 *Luyện điều dễ nhầm. Học cách phân biệt.*
 
 Bảy ứng dụng tập trung vào âm và chữ dễ nhầm, dành cho iOS, Android và PWA. ClearPair là tên tạm; L & N là ứng dụng riêng.
@@ -24,9 +26,9 @@ Bảy ứng dụng tập trung vào âm và chữ dễ nhầm, dành cho iOS, An
 
 ## Bản xem trước phát triển
 
-Đã có bài nghe, phát cặp và lặp, hướng dẫn, ôn tập ngắt quãng, dạng sóng, lịch sử và xuất bản ghi. Ngôn ngữ giao diện Anh hoặc Trung giản thể độc lập với ngôn ngữ luyện tập.
+Đã có câu đố nghe, phát/lặp cặp từ, hướng dẫn, ôn giãn cách, dạng sóng, lịch sử và xuất bản ghi. Mã nguồn hỗ trợ 11 ngôn ngữ giao diện của hồ sơ, độc lập với ngôn ngữ luyện. Ghi chú ngữ âm chuyên sâu vẫn dùng Anh/Trung; phần chưa dịch được ghi rõ là tiếng Anh.
 
-Mã nguồn mới bổ sung biểu tượng rực rỡ, giao diện màu sắc gọn gàng, hoạt ảnh học tập tùy chọn và trò chơi năm câu hỏi với sao lưu trên thiết bị. Sao thưởng cho nghe phân biệt và ghi nhớ, không phải điểm phát âm chưa kiểm chứng. Xem [ghi chú tiếng Quảng Đông](../docs/CANTONESE.md) để biết nguồn và biện pháp chọn giọng. [Bản beta sáu ứng dụng hiện có](../docs/BETA-0.1.0.md) chưa gồm thiết kế này hoặc ứng dụng thứ bảy.
+Biểu tượng V4 dẫn dắt bảng màu: nền sáng, màu mềm, thẻ gọn và nút ghi/phát giữ vị trí ổn định. Biểu tượng cũ được giữ lại. Hoạt ảnh tùy chọn và trò chơi năm câu trao sao cục bộ cho nghe/nhớ, không phải điểm phát âm chưa được kiểm chứng. Xem [phạm vi ngôn ngữ](../docs/LOCALIZATION.md) và [ghi chú Quảng Đông](../docs/CANTONESE.md). [Bản beta sáu ứng dụng hiện tại](../docs/BETA-0.1.0.md) chưa có thiết kế mới hoặc ứng dụng thứ bảy.
 
 **Điểm phát âm đang tắt cho đến khi tích hợp mô hình và kiểm chứng với người thật.** Chất lượng tín hiệu không phải độ chính xác phát âm. Capacitor kết hợp React với ghi âm và giọng nói gốc Swift/Java, không phải giao diện SwiftUI/Compose riêng.
 
@@ -76,7 +78,7 @@ GitHub đọc [CITATION.cff](../CITATION.cff) để hiển thị “Cite this re
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.1.0},
+  version = {0.2.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

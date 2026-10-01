@@ -1,4 +1,5 @@
-/* ClearPair vivid family. Layout-critical recording controls remain in style.css. */
+/* V4: softly sculpted colour, spacious surfaces, and clear everyday controls.
+   Layout-critical recording slots remain fixed in style.css. */
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;color:#24293d;background:#f7f8fc;--contrast:#c6512e}
 .app{--tint:color-mix(in srgb,var(--accent) 7%,white);--line:#e5e8f0;max-width:1040px}
 .topbar{height:auto;min-height:82px;border-color:var(--line);padding-top:env(safe-area-inset-top)}
@@ -34,3 +35,45 @@ h1{font-family:inherit;font-size:clamp(29px,4vw,42px);font-weight:780;letter-spa
 .app[data-product=cantonese] .game-invite{background-color:#ffbd24;color:#482600}
 .app[data-product=cantonese] .game-invite p,.app[data-product=cantonese] .game-stars{color:#482600}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* Each app carries the palette of its selected V4 artwork. */
+.app{--shade:#173b31;--soft:#e6f3ec;--paper:#f7faf7;--light:#44ac83;--deep:#146957;--tint:var(--soft);--line:color-mix(in srgb,var(--accent) 12%,#edf0f2)}
+.app[data-product=landr]{--shade:#3d285a;--soft:#efe9f8;--paper:#faf8fc;--light:#a676d1;--deep:#62348e}
+.app[data-product=english]{--shade:#213962;--soft:#e9f1fc;--paper:#f7f9fd;--light:#58b9e1;--deep:#2e4f9f}
+.app[data-product=chinese]{--shade:#603b30;--soft:#faece5;--paper:#fdf9f5;--light:#ed9b7b;--deep:#a3412b}
+.app[data-product=korean]{--shade:#653546;--soft:#f9eaf0;--paper:#fcf8fa;--light:#e082a4;--deep:#9d335d}
+.app[data-product=arabic]{--shade:#23474b;--soft:#e4f4f4;--paper:#f7fbfa;--light:#54c4c8;--deep:#087d8c}
+.app[data-product=cantonese]{--shade:#614522;--soft:#fbf1d9;--paper:#fdfbf6;--light:#e9b756;--deep:#9d510f}
+body{background:#f8f9fc}
+.app{background:radial-gradient(ellipse at 90% 3%,var(--soft),transparent 32%),var(--paper);min-height:100svh;color:var(--shade)}
+.topbar{min-height:76px;gap:12px;border-bottom-color:var(--line)}
+.brand-icon{box-shadow:0 3px 9px #24304b08;border:1px solid #fff}
+.language{padding:6px 9px;border-radius:14px;background:#ffffffc7;max-width:164px;gap:5px;flex-shrink:0}
+.language select{font:inherit;font-size:11px;font-weight:550;background:transparent;color:var(--shade);border:0;min-width:0;width:100%;min-height:32px;cursor:pointer}
+.language select:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.intro{padding:24px 0 22px}.intro>div{min-width:0}.intro h1{font-weight:700;letter-spacing:-1.3px;color:var(--shade)}
+.intro h1 em{color:var(--accent);background:linear-gradient(115deg,var(--deep),var(--accent));background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700}
+.identity{transform:rotate(3deg);border-radius:29%;box-shadow:0 12px 24px color-mix(in srgb,var(--accent) 9%,transparent);border:1px solid #fff}
+.tabs{background:color-mix(in srgb,var(--soft) 60%,#f0f2f6);margin:16px 0}.tabs button{color:#536176;min-width:0;text-wrap:balance}.tabs button[aria-current]{color:var(--deep);box-shadow:0 3px 9px #23304409}
+.course-select{background:#ffffffd9}.course-select strong{color:var(--shade)}.course-row>button{min-width:0}.course-select{flex:1}.course-select>span{min-width:0}.review-next{flex-shrink:0}
+.panel{box-shadow:0 5px 20px #26324b03;border-color:var(--line)}.visual-panel{background:linear-gradient(155deg,#fff 36%,var(--soft));border-radius:26px}
+.primary,.record,.listen-question{background:linear-gradient(118deg,var(--accent),var(--deep));box-shadow:0 3px 8px color-mix(in srgb,var(--deep) 16%,transparent)}
+.record.recording{background:linear-gradient(110deg,#d64564,#b72642)}
+.game-invite,.app[data-product=cantonese] .game-invite{background:linear-gradient(118deg,var(--soft),#fff);color:var(--shade);border:1px solid var(--line);padding:21px 24px;box-shadow:0 5px 20px #23304403}
+.game-invite p,.app[data-product=cantonese] .game-invite p{color:#5c687d}.game-emblem{background:#ffffffc7;border:1px solid #fff;color:var(--deep)}
+.game-stars,.app[data-product=cantonese] .game-stars{color:var(--deep)}.game-invite .primary{background:linear-gradient(118deg,var(--accent),var(--deep));color:white;box-shadow:0 3px 8px color-mix(in srgb,var(--deep) 16%,transparent)}
+.word-card{background:linear-gradient(148deg,var(--soft),#ffffffa0);border-color:var(--line)}.word-card:nth-child(2){background:linear-gradient(145deg,#fff0e7,#fffcf8)}
+.word-card.selected{background:linear-gradient(148deg,var(--soft),#fff);box-shadow:inset 0 0 0 1px var(--accent)}
+.word-card.active::after{background:var(--accent)}.pair-play,.review-next,.secondary-button{background:var(--soft);color:var(--deep)}
+.word,.record-prompt{letter-spacing:-.6px}.record-controls{align-items:center}.record{flex:1;min-width:0;max-width:350px;min-height:58px;height:auto;padding:12px 18px;line-height:1.4}.timer{flex-shrink:0;direction:ltr}
+.result-area{min-height:200px}.take-actions{flex-wrap:wrap;gap:8px}.take-actions>span{width:100%;min-height:20px}.quiz-result{min-height:180px}.quiz-result .primary{flex-shrink:0;max-width:48%;text-wrap:balance}
+.reference-label{display:block;font-size:10px;color:#647187;margin-bottom:7px}.cue p,.tip p,.practice-tip p{overflow-wrap:anywhere}.history-item>div{min-width:0}.history-item strong{overflow-wrap:anywhere}
+.mouth-pair>div{background:#ffffffa8;box-shadow:inset 0 1px 0 #fff}.round-track span{background:var(--soft)}.round-track .current{background:var(--accent)}
+.challenge-top .eyebrow{max-width:80%}.challenge-feedback{height:auto;min-height:110px}.challenge-heading h2{font-weight:700}.challenge .word-card{direction:ltr}
+.family-links{flex-wrap:wrap}.playback-dock{background:#fffffff2;backdrop-filter:blur(12px)}
+[dir=rtl] .app{background:radial-gradient(ellipse at 10% 3%,var(--soft),transparent 32%),var(--paper)}
+[dir=rtl] .eyebrow,[lang=ja] .eyebrow,[lang=ko] .eyebrow,[lang^=zh] .eyebrow{letter-spacing:0}
+[dir=rtl] .lesson-picker>button{text-align:right}[dir=rtl] .mouth-pair svg,[dir=rtl] .diagram svg{direction:ltr}
+[dir=rtl] .word-card{direction:ltr}[dir=rtl] .word-card .card-foot{direction:rtl}
+@media(max-width:700px){.app{padding:0 18px}.topbar{min-height:72px}.brand{font-size:19px}.brand small{max-width:130px}.language{max-width:138px}.intro{gap:12px;padding:22px 0}.intro h1{font-size:29px;letter-spacing:-1px;overflow-wrap:normal}.identity{width:76px;height:76px}.eyebrow{font-size:9px}.tabs button{flex-direction:column;gap:5px;font-size:11px;padding:9px 3px;min-height:59px}.tabs button svg{height:17px;width:17px}.game-invite{padding:19px}.record{min-width:0;max-width:none}.record-controls{gap:9px}.course-row{gap:8px}.course-select{padding:12px}.review-next{padding:12px 9px}.history-item{gap:3px}.history-item .icon-button{min-width:34px}.quiz-result{align-items:flex-start;gap:12px}.small-controls{flex-wrap:wrap}.small-controls button{font-size:11px;flex:1 1 auto;white-space:normal}.play-indicator{min-width:0;gap:6px}.play-indicator span{font-size:11px;line-height:1.4}.playback-dock>button{flex-shrink:0}}
+@media(max-width:360px){.app{padding:0 12px}.topbar{gap:7px}.brand{gap:7px}.brand-icon{width:35px;height:35px}.brand small{max-width:110px;font-size:10px}.language{max-width:122px;padding:5px 6px}.language select{font-size:10px}.intro h1{font-size:25px}.identity{width:64px;height:64px}.course-select strong{font-size:12px}.review-next{font-size:10px;gap:4px}.word{font-size:29px}.record{font-size:12px;padding:10px}.work-panel{padding:18px 13px}.tabs button{font-size:10px}}

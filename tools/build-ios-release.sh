@@ -5,7 +5,7 @@ case "$clearpair_app" in handf|landr|english|chinese|korean|arabic|cantonese) ;;
 test "$(uname -s)" = Darwin
 if pgrep -x xcodebuild >/dev/null; then echo 'Another Xcode job is active; coordinate first.' >&2; exit 1; fi
 : "${CLEARPAIR_TEAM_ID:?}" "${CLEARPAIR_PROFILE:?}" "${CLEARPAIR_SIGNING_KEYCHAIN:?}"
-clearpair_output="$PWD/.runtime/ios/release/$clearpair_app"
+clearpair_output="${CLEARPAIR_RELEASE_OUTPUT:-$PWD/.runtime/ios/release}/$clearpair_app"
 mkdir -p "$clearpair_output"
 case "${2:-archive}" in
 archive)

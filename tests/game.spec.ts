@@ -32,7 +32,7 @@ for (const id of ['english', 'cantonese']) test(`${id}: a complete round awards 
     await page.getByRole('button', {name:i===4 ? 'See results' : 'Continue', exact:true}).click();
   }
   await expect(page.getByRole('heading', {name:'A little clearer.'})).toBeVisible();
-  await expect(page.getByLabel('3 stars', {exact:true})).toBeVisible();
+  await expect(page.getByLabel('3 stars collected', {exact:true})).toBeVisible();
   await page.screenshot({path:`.runtime/screenshots/${id}-game-complete.png`,fullPage:true});
   expect(await page.evaluate((id)=>JSON.parse(localStorage.getItem(`clearpair:${id}:game:v1`)!),id)).toEqual({rounds:1,stars:3,best:5});
   await page.reload();
@@ -43,7 +43,7 @@ test('Cantonese refuses Mandarin-only speech without unlocking an answer', async
   await gameVoice(page,false); await page.goto('/cantonese/');
   await page.getByRole('button',{name:'Play a round',exact:true}).click();
   await page.getByRole('button',{name:'Play mystery sound',exact:true}).click();
-  await expect(page.getByText('Install a zh-HK voice', {exact:false})).toBeVisible();
+  await expect(page.getByText('Install a voice for the practice language in device settings, then reopen the app. (zh-HK)', {exact:true})).toBeVisible();
   await expect(page.locator('.challenge .word-card').first()).toBeDisabled();
   expect(await page.evaluate(()=>localStorage.getItem('clearpair:cantonese:game:v1'))).toBeNull();
 });

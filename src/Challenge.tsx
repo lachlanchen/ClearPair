@@ -3,6 +3,7 @@ import { ArrowRight, Headphones, Play, RotateCcw, Star, Trophy, X } from 'lucide
 import type { Lesson, Word } from './types';
 import type { Clip, Player } from './player';
 import { createChallenge, starsFor } from './game';
+import { needsVoiceInstallation } from './ui-errors';
 
 export function Challenge({ lesson, player, clip, tr, onExit, onAnswer, onComplete, onPractice }: {
   lesson: Lesson; player: Player; clip: (word: Word, sentence?: boolean) => Clip;
@@ -25,8 +26,10 @@ export function Challenge({ lesson, player, clip, tr, onExit, onAnswer, onComple
     try {
       const completed = await player.play(words.map((word) => clip(word, false)));
       if (completed && token === run.current) setHeard(true);
-    } catch (e) {
-      if (token === run.current) setError(e instanceof Error ? e.message : 'Playback unavailable');
+    } catch (error) {
+      if (token === run.current) setError(needsVoiceInstallation(error)
+        ? tr('Install a voice for the practice language in device settings, then reopen the app.', '请在设备设置中安装练习语言的语音，然后重新打开应用。') + ` (${lesson.language})`
+        : tr('Playback is unavailable. Check sound and installed voices, then retry.', '播放不可用。请检查音量和已安装的语音，然后重试。'));
     } finally { if (token === run.current) setPlaying(false); }
   }
   function respond(value: 0 | 1) {
@@ -59,7 +62,7 @@ export function Challenge({ lesson, player, clip, tr, onExit, onAnswer, onComple
     </div>
     {done ? <div className="challenge-finish" aria-live="polite">
       <div className="prize"><Trophy size={46}/></div>
-      <div className="earned-stars" aria-label={`${starsFor(correct)} stars`}>{[1,2,3].map((n) => <Star key={n} size={34} fill={n <= starsFor(correct) ? 'currentColor' : 'none'}/>)}</div>
+      <div className="earned-stars" aria-label={`${starsFor(correct)} ${tr('stars collected','颗练习星星')}`}>{[1,2,3].map((n) => <Star key={n} size={34} fill={n <= starsFor(correct) ? 'currentColor' : 'none'}/>)}</div>
       <h2>{tr('A little clearer.', '又清楚了一點。')}</h2>
       <p>{correct} / 5 {tr('answers correct', '題答對')} · {tr('Round complete', '完成一輪')}</p>
       <p className="muted">{tr('Stars celebrate listening and recall—not a pronunciation grade.', '星星代表聽辨與回憶練習，不是發音評分。')}</p>

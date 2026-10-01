@@ -1,0 +1,6 @@
+{
+  "version": "0.2.0",
+  "build": 2,
+  "distribution": "internal-testing",
+  "apps": ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese"]
+}

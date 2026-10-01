@@ -4,6 +4,8 @@
 
 # ClearPair by LazyingArt
 
+[![11 UI languages](https://img.shields.io/badge/UI-11_languages-456BA4?style=for-the-badge)](../docs/LOCALIZATION.md) [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-lachlanchen-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/lachlanchen)
+
 *混同しやすいところを練習し、違いを身につける。*
 
 紛らわしい音や文字に特化した七つのアプリ。iOS、Android、PWAに対応します。ClearPairは仮称であり、既存のL & Nとは別のアプリ群です。一般的な単語練習ではなく、聞き分けと発音の対比を中心にしています。
@@ -24,9 +26,9 @@
 
 ## 開発プレビュー
 
-聞き取りクイズ、ペアの連続再生とループ、学習ガイド、間隔反復、波形表示、録音履歴、書き出しを実装しています。英語・簡体字中国語の表示言語と、練習する言語は独立して選択できます。
+聴き取りクイズ、ペアの再生・ループ、学習ガイド、間隔を空けた復習、波形、録音履歴、書き出しを実装しています。ソースはプロフィールの11表示言語に対応し、練習言語とは独立しています。専門的な音声学の説明は英語・中国語のままで、未翻訳の説明には英語と明示します。
 
-最新のソースには、鮮やかなアイコン、すっきりした色分け画面、任意の学習アニメーション、星を端末に保存する5問のゲームを追加しました。星は聞き分けと想起の練習への報酬であり、未検証の発音点数ではありません。出典と音声の安全策は[広東語の説明](../docs/CANTONESE.md)をご覧ください。既存の[6アプリのベータ版](../docs/BETA-0.1.0.md)には、このデザイン変更や7番目のアプリはまだ含まれていません。
+V4アイコンに合わせ、明るい背景、なめらかな色、整ったカード、位置の安定した録音・再生操作を使います。以前のアイコンも保存しています。任意のアニメーションと5問ゲームは聴き取り・記憶に端末内の星を与え、未検証の発音点数にはしません。[翻訳範囲](../docs/LOCALIZATION.md)と[広東語の説明](../docs/CANTONESE.md)を参照してください。[現在の6アプリのベータ](../docs/BETA-0.1.0.md)には、この改良と7つ目のアプリはまだ含まれていません。
 
 **発音点数は、モデルの組み込みと人による検証が完了するまで無効です。** 信号品質は発音の正確さではありません。CapacitorのReact画面にSwift/Javaによるネイティブ録音・音声再生を組み合わせています。個別のSwiftUI/Compose画面ではありません。
 
@@ -76,7 +78,7 @@ GitHubは[CITATION.cff](../CITATION.cff)を読み、「Cite this repository」�
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.1.0},
+  version = {0.2.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

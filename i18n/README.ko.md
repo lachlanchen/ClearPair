@@ -4,6 +4,8 @@
 
 # ClearPair by LazyingArt
 
+[![11 UI languages](https://img.shields.io/badge/UI-11_languages-456BA4?style=for-the-badge)](../docs/LOCALIZATION.md) [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-lachlanchen-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/lachlanchen)
+
 *헷갈리는 부분을 연습하고, 차이를 익히세요.*
 
 혼동하기 쉬운 소리와 글자에 집중하는 일곱 앱으로, iOS·Android·PWA를 지원합니다. ClearPair는 임시 이름이며 기존 L & N과 별개입니다.
@@ -24,9 +26,9 @@
 
 ## 개발 미리보기
 
-듣기 퀴즈, 쌍 재생과 반복, 학습 안내, 간격 반복, 파형, 녹음 기록과 내보내기를 구현했습니다. 영어·중국어 간체 UI 언어는 연습 언어와 별도로 설정합니다.
+듣기 퀴즈, 단어쌍 재생/반복, 학습 안내, 간격 복습, 파형, 녹음 기록과 내보내기를 구현했어요. 소스는 프로필의 11개 UI 언어를 지원하며 연습 언어와 독립적이에요. 전문 음성학 설명은 영어/중국어로 남아 있고, 미번역 설명은 영어라고 명시해요.
 
-최신 소스에는 선명한 아이콘, 깔끔한 색상별 화면, 선택형 학습 애니메이션, 별을 기기에 저장하는 5문제 게임을 추가했습니다. 별은 듣기와 회상 연습을 보상하며 검증되지 않은 발음 점수가 아닙니다. 출처와 음성 안전장치는 [광둥어 안내](../docs/CANTONESE.md)를 확인하세요. 기존 [6개 앱 베타](../docs/BETA-0.1.0.md)에는 이번 디자인과 일곱 번째 앱이 아직 포함되지 않습니다.
+V4 아이콘에 맞춰 밝은 배경, 부드러운 색, 정돈된 카드와 위치가 안정된 녹음/재생 조작을 사용해요. 이전 아이콘도 보존했어요. 선택적 애니메이션과 5문항 게임은 듣기/기억에 로컬 별을 주며 검증되지 않은 발음 점수는 주지 않아요. [번역 범위](../docs/LOCALIZATION.md)와 [광둥어 설명](../docs/CANTONESE.md)을 확인하세요. [현재 6개 앱 베타](../docs/BETA-0.1.0.md)에는 이 개선이나 7번째 앱이 아직 없어요.
 
 **발음 점수는 모델 통합과 사람의 검증이 끝날 때까지 비활성화됩니다.** 신호 품질은 발음 정확도가 아닙니다. Capacitor는 React 화면에 Swift/Java 네이티브 녹음과 음성을 결합합니다. 별도의 SwiftUI/Compose 인터페이스는 아닙니다.
 
@@ -76,7 +78,7 @@ GitHub는 [CITATION.cff](../CITATION.cff)를 읽어 “Cite this repository”�
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.1.0},
+  version = {0.2.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

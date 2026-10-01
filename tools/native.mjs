@@ -3,6 +3,8 @@ import { access, readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
 import { exportNativeIcons } from './icons.mjs';
 import { updateIosInfo } from './native-metadata.mjs';
 const [app, platform] = process.argv.slice(2);
+const release=JSON.parse(await readFile('store/release.json','utf8'));
+if(release.version!==JSON.parse(await readFile('package.json','utf8')).version || !Number.isSafeInteger(release.build) || release.build<1) throw new Error('Invalid release identity');
 if (
   !["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese"].includes(app) ||
   !["android", "ios"].includes(platform)
@@ -34,9 +36,13 @@ if (platform === "ios") {
   await writeFile(file, updateIosInfo(text));
   await exportNativeIcons(app, platform);
   const project=`native/apps/${app}/ios/App/App.xcodeproj/project.pbxproj`;
-  await writeFile(project,(await readFile(project,'utf8')).replaceAll('MARKETING_VERSION = 1.0;', 'MARKETING_VERSION = 0.1.0;'));
+  await writeFile(project,(await readFile(project,'utf8'))
+    .replaceAll(/MARKETING_VERSION = [\d.]+;/g,`MARKETING_VERSION = ${release.version};`)
+    .replaceAll(/CURRENT_PROJECT_VERSION = \d+;/g,`CURRENT_PROJECT_VERSION = ${release.build};`));
 } else {
   await exportNativeIcons(app, platform);
   const gradle=`native/apps/${app}/android/app/build.gradle`;
-  await writeFile(gradle,(await readFile(gradle,'utf8')).replace('versionName "1.0"','versionName "0.1.0"'));
+  await writeFile(gradle,(await readFile(gradle,'utf8'))
+    .replace(/versionName "[\d.]+"/,`versionName "${release.version}"`)
+    .replace(/versionCode \d+/,`versionCode ${release.build}`));
 }

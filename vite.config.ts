@@ -1,6 +1,7 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import pkg from './package.json';
 
 const app = process.env.CLEARPAIR_APP || "english";
 const titles: Record<string, string> = {
@@ -18,7 +19,7 @@ export default defineConfig({
   publicDir: process.env.CLEARPAIR_PUBLIC || "public",
   define: {
     __APP_ID__: JSON.stringify(app),
-    __APP_VERSION__: JSON.stringify("0.1.0"),
+    __APP_VERSION__: JSON.stringify(pkg.version),
   },
   plugins: [
     react(),

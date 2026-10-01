@@ -3,8 +3,10 @@
 ![The seven ClearPair icons](assets/seven-icons.png)
 
 The family now includes H & F, L & R, English, Mandarin, Korean, Arabic Letters
-and Cantonese. Each has a vivid, full-bleed icon with an oversized glyph and no
-small brand text. White panels, compact navigation and two-tone word cards keep
+and Cantonese. Each has individually generated V4 lettering, balancing flowing
+sculptural shapes with tidy light backgrounds and smooth foreground gradients.
+Chinese, Cantonese, Korean and Arabic retain their standard glyph structure.
+There is no small brand text. White panels and two-tone word cards keep
 the practice interface uncluttered. The inactive playback dock is hidden on Learn.
 
 ## Play without pressure
@@ -33,8 +35,13 @@ See [Cantonese and illustration sources](CANTONESE.md).
 `tools/icons.mjs` generates opaque iOS/store artwork, web favicons/touch icons,
 maskable PWA artwork and separate transparent Android adaptive foreground layers
 at 108dp per density. A pixel-level regression checks the adaptive safe circle.
-The OS applies its own corner mask. The generator uses installed DejaVu Sans and
-Noto Sans CJK HK; the native PNG exports are checked in for consistent packaging.
+The OS applies its own corner mask. The generator uses opaque originals from
+`assets/icons/art-v4` and transparent layers from its `foreground` subfolder,
+measuring alpha bounds for safe-circle sizing.
+The original complete icon is preserved; an owner-authorized deterministic matte
+creates packaging layers without the extraction tool's stray chroma flecks.
+No font-generated icon is used. Full exports are in `assets/icons/app-icons`;
+native PNG exports are checked in for consistent packaging.
 Android sizing follows the [official adaptive-icon specification](https://developer.android.com/develop/ui/compose/system/icon_design_adaptive).
 
 ## Validation and release boundary
@@ -46,7 +53,8 @@ web builds, Android debug compilation and unsigned iOS simulator compilation.
 Browser speech is mocked to test UI lifecycle, not actual voice quality.
 
 This source update is not a store upload or a public web deployment. The existing
-six TestFlight/Play internal builds remain 0.1.0 (1). Cantonese needs a separate
-store record and release preparation. Version/build numbers must be advanced for
-the existing apps before another upload. Real-device audio checks and human
+six TestFlight/Play internal builds remain 0.1.0 (1). Cantonese store records and
+its internal Apple tester group are prepared; its first binary remains pending.
+The next beta is configured as 0.2.0 (2), with V4 artwork and eleven interface
+languages. See [localization coverage and limits](LOCALIZATION.md). Real-device audio checks and human
 speech-score validation remain open; compilation does not establish either.

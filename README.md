@@ -4,6 +4,8 @@
 
 # ClearPair by LazyingArt
 
+[![11 UI languages](https://img.shields.io/badge/UI-11_languages-456BA4?style=for-the-badge)](docs/LOCALIZATION.md) [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-lachlanchen-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/lachlanchen)
+
 *Practise what you mix up. Learn the difference.*
 
 Seven focused apps for easily confused sounds and letters, on iOS, Android and PWA. ClearPair is a working name; L & N is a separate app.
@@ -24,13 +26,9 @@ Seven focused apps for easily confused sounds and letters, on iOS, Android and P
 
 ## Development preview
 
-Listening quizzes, pair playback/looping, learning guides, spaced review, waveforms, recording history and export are implemented. English and Simplified Chinese interface settings are independent of the practice language.
+Listening quizzes, pair playback/looping, learning guides, spaced review, waveforms, recording history and export are implemented. The source supports all 11 profile UI languages, independent of practice language. Specialist phonetic notes remain English/Chinese; untranslated notes are explicitly labeled English.
 
-The latest source adds vivid full-bleed icons, cleaner colour-coded screens, optional
-learning animations, and five-question games with locally saved stars. Stars reward
-listening/recall, never unvalidated pronunciation scores. See the [Cantonese notes](docs/CANTONESE.md)
-for linguistic sources and voice safeguards. The existing [six-app beta](docs/BETA-0.1.0.md)
-does not yet contain this redesign or the seventh app.
+V4 icons now guide the in-app palette: light backgrounds, flowing color, tidy cards and steady recording/playback controls. Earlier icon versions are retained. Optional animations and five-question games award local stars for listening/recall, never unvalidated pronunciation scores. See the [localization scope](docs/LOCALIZATION.md) and [Cantonese notes](docs/CANTONESE.md). The [existing six-app beta](docs/BETA-0.1.0.md) does not yet include this redesign or the seventh app.
 
 **Pronunciation grades are disabled pending model integration and human validation.** Signal quality is not pronunciation accuracy. Capacitor combines a React interface with native Swift/Java recording and speech playback; these are not separate SwiftUI/Compose interfaces.
 
@@ -80,7 +78,7 @@ GitHub reads [CITATION.cff](CITATION.cff) to show “Cite this repository”. Ci
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.1.0},
+  version = {0.2.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

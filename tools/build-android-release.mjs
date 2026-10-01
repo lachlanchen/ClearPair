@@ -12,7 +12,8 @@ const env = { ...process.env, CLEARPAIR_KEYSTORE: config.storeFile,
   CLEARPAIR_KEYALIAS: config.keyAlias };
 const apps = ['handf', 'landr', 'english', 'chinese', 'korean', 'arabic', 'cantonese'];
 const init = resolve('tools/android-release.init.gradle');
-const version = JSON.parse(await readFile('package.json', 'utf8')).version;
+const {version,build}=JSON.parse(await readFile('store/release.json','utf8'));
+if(version!==JSON.parse(await readFile('package.json','utf8')).version) throw new Error('Version mismatch');
 const commit = spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim();
 const receipts = [];
 await mkdir('.runtime/artifacts', { recursive: true });
@@ -21,16 +22,16 @@ function run(command, args, cwd) {
   if (r.status !== 0) throw new Error(`${command} failed (${r.status}).`);
 }
 for (const app of apps) {
-  for (const platform of ['android', 'ios']) run(process.execPath, ['tools/native.mjs', app, platform]);
+  run(process.execPath, ['tools/native.mjs', app, 'android']);
   const project = `native/apps/${app}/android`;
   run('./gradlew', ['--no-daemon', '--max-workers=2', '-Dorg.gradle.jvmargs=-Xmx2048m',
     '--init-script', init, ':app:bundleRelease'], project);
-  const file = `.runtime/artifacts/clearpair-${app}-${version}-1.aab`;
+  const file = `.runtime/artifacts/clearpair-${app}-${version}-${build}.aab`;
   await copyFile(`${project}/app/build/outputs/bundle/release/app-release.aab`, file);
   run('jarsigner', ['-verify', file]);
-  receipts.push({ app, packageId: `art.lazying.clearpair.${app}`, version, build: 1,
+  receipts.push({ app, packageId: `art.lazying.clearpair.${app}`, version, build,
     sourceCommit: commit || null, file, sha256: createHash('sha256').update(await readFile(file)).digest('hex'),
     uploaded: false });
-  await writeFile('.runtime/artifacts/android-release.json', JSON.stringify(receipts, null, 2) + '\n');
+  await writeFile(`.runtime/artifacts/android-release-${version}-${build}.json`, JSON.stringify(receipts, null, 2) + '\n');
   console.log(`${app}: signed release bundle verified`);
 }

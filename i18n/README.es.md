@@ -4,6 +4,8 @@
 
 # ClearPair by LazyingArt
 
+[![11 UI languages](https://img.shields.io/badge/UI-11_languages-456BA4?style=for-the-badge)](../docs/LOCALIZATION.md) [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-lachlanchen-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/lachlanchen)
+
 *Practica lo que confundes. Aprende la diferencia.*
 
 Siete aplicaciones centradas en sonidos y letras fáciles de confundir, para iOS, Android y PWA. ClearPair es un nombre provisional; L & N es otra aplicación.
@@ -24,9 +26,9 @@ Siete aplicaciones centradas en sonidos y letras fáciles de confundir, para iOS
 
 ## Versión preliminar
 
-Ya funcionan los ejercicios de escucha, reproducción y bucle de pares, guías, repaso espaciado, ondas, historial y exportación de grabaciones. La interfaz en inglés o chino simplificado es independiente del idioma practicado.
+Están implementados los cuestionarios auditivos, reproducción y bucle de pares, guías, repaso espaciado, ondas, historial y exportación. El código admite los 11 idiomas de interfaz del perfil, independientes del idioma practicado. Las notas fonéticas especializadas siguen en inglés/chino; las no traducidas se identifican como inglesas.
 
-El código más reciente añade iconos vivos, pantallas más limpias, animaciones educativas opcionales y rondas de cinco preguntas con estrellas guardadas localmente. Las estrellas premian la escucha y el recuerdo, no una pronunciación sin validar. Consulta las [notas de cantonés](../docs/CANTONESE.md) para las fuentes y protecciones de voz. La [beta existente de seis aplicaciones](../docs/BETA-0.1.0.md) todavía no incluye este rediseño ni la séptima aplicación.
+Los iconos V4 guían la paleta: fondos claros, color fluido, tarjetas ordenadas y controles estables de grabación/reproducción. Se conservan los iconos anteriores. Animaciones opcionales y juegos de cinco preguntas otorgan estrellas locales por escuchar/recordar, nunca notas de pronunciación no validadas. Consulta el [alcance de idiomas](../docs/LOCALIZATION.md) y las [notas cantonesas](../docs/CANTONESE.md). La [beta actual de seis apps](../docs/BETA-0.1.0.md) aún no incluye esta renovación ni la séptima app.
 
 **Las notas de pronunciación están desactivadas hasta integrar y validar los modelos con personas.** La calidad de señal no mide pronunciación. Capacitor combina React con grabación y voz nativas Swift/Java; no son interfaces SwiftUI/Compose independientes.
 
@@ -76,7 +78,7 @@ GitHub lee [CITATION.cff](../CITATION.cff) para mostrar «Cite this repository»
   author = {Chen, Lachlan},
   title = {ClearPair: Practise What You Mix Up},
   year = {2026},
-  version = {0.1.0},
+  version = {0.2.0},
   url = {https://github.com/lachlanchen/ClearPair}
 }
 ```

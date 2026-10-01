@@ -6,7 +6,10 @@ import { iconSvg, iconThemes } from '../tools/icons.mjs';
 describe('seven vivid, platform-safe icons', () => {
   it('keeps all seven identities and omits the tiny brand wordmark', () => {
     expect(Object.keys(iconThemes)).toHaveLength(7);
-    for(const id of Object.keys(iconThemes)) expect(iconSvg(id)).not.toContain('CLEARPAIR');
+    for(const id of Object.keys(iconThemes)) {
+      expect(iconSvg(id)).not.toContain('<text');
+      expect(iconSvg(id)).toContain('data:image/png;base64,');
+    }
     expect(() => iconSvg('unknown')).toThrow();
   });
   for(const id of Object.keys(iconThemes)) it(`${id}: opaque store icon and safe adaptive artwork`, async () => {

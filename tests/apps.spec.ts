@@ -1,4 +1,9 @@
 import { test, expect, type Page } from "@playwright/test";
+import { uiCatalog, translatedLocales } from '../src/ui-catalog';
+import type { Locale } from '../src/types';
+const uiLocales: Locale[] = ['en','ar','es','fr','ja','ko','vi','zh-Hans','zh-Hant','de','ru'];
+const recordLabel = (locale: Locale) => locale === 'en' ? 'Record your voice' : locale === 'zh-Hans'
+  ? '录下你的声音' : uiCatalog['Record your voice'][translatedLocales.indexOf(locale as typeof translatedLocales[number])];
 const ids = ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese"];
 async function fakeVoice(page: Page) {
   await page.addInitScript(() => {
@@ -30,6 +35,32 @@ async function fakeVoice(page: Page) {
   });
 }
 for (const id of ids) {
+  test(`${id}: all eleven UI languages keep practice content and fit a small phone`, async ({page}) => {
+    await page.setViewportSize({width:320,height:740});
+    await fakeVoice(page);
+    const errors: string[] = [];
+    page.on('pageerror',error=>errors.push(error.message));
+    await page.goto(`/${id}/`);
+    await expect(page.getByTestId('ui-language').locator('option')).toHaveCount(11);
+    await page.locator('.tabs button').nth(2).click();
+    const word=await page.locator('.word').first().textContent();
+    for(const locale of uiLocales){
+      await page.getByTestId('ui-language').selectOption(locale);
+      await expect(page.getByRole('button',{name:recordLabel(locale),exact:true})).toBeVisible();
+      expect(await page.locator('.word').first().textContent()).toBe(word);
+      await expect(page.locator('html')).toHaveAttribute('dir',locale==='ar'?'rtl':'ltr');
+      for(const tab of [0,1,3,2]){
+        await page.locator('.tabs button').nth(tab).click();
+        expect(await page.evaluate(()=>document.documentElement.scrollWidth),`${locale}, tab ${tab}`).toBeLessThanOrEqual(320);
+      }
+      expect(await page.locator('.word').first().textContent()).toBe(word);
+      if(locale==='ar')await page.screenshot({path:`.runtime/screenshots/${id}-ar-320.png`,fullPage:true});
+    }
+    await page.getByTestId('ui-language').selectOption('ja');
+    await page.reload();
+    await expect(page.getByTestId('ui-language')).toHaveValue('ja');
+    expect(errors).toEqual([]);
+  });
   test(`${id}: phone layout, lessons, navigation, local UI language`, async ({
     page,
   }) => {
@@ -67,12 +98,12 @@ for (const id of ids) {
     await expect(
       page.getByText("Ready when you are", { exact: true }),
     ).toBeVisible();
-    await page.getByRole("button", { name: "Switch UI to Chinese" }).click();
+    await page.getByTestId('ui-language').selectOption('zh-Hans');
     await expect(
       page.getByRole("button", { name: "录下你的声音", exact: true }),
     ).toBeVisible();
     expect(await page.locator(".word").first().textContent()).toBe(first);
-    await page.getByRole("button", { name: "切换界面为英文" }).click();
+    await page.getByTestId('ui-language').selectOption('en');
     await page.getByRole("button", { name: "History", exact: true }).click();
     await expect(
       page.getByText("Your first recording belongs here."),
@@ -218,7 +249,7 @@ test("microphone failure shows an error without a fake score", async ({
     .getByRole("button", { name: "Record your voice", exact: true })
     .click();
   await expect(
-    page.getByText("Permission denied", { exact: true }),
+    page.getByText("Allow microphone access in settings, then retry.", { exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Record your voice", exact: true }),

@@ -40,6 +40,8 @@ import { inspectRecording, unavailableAnalysis } from "./analysis";
 import { shareNativeRecording } from "./export";
 import { Challenge } from './Challenge';
 import { LearnMotion } from './LearnMotion';
+import {initialLocale,localeLabels,translate,text,sourceLocale} from './i18n';
+import { needsVoiceInstallation } from './ui-errors';
 import { completeGame, readGame, saveGame } from './game';
 import {
   deleteTake,
@@ -62,15 +64,6 @@ const product = productById(__APP_ID__),
   progressKey = `clearpair:${product.id}:progress:v1`;
 const courses = product.lessons.map(lessonById);
 const gameKey = `clearpair:${product.id}:game:v1`;
-function initialLocale(): Locale {
-  try {
-    return localStorage.getItem("clearpair:locale") === "zh-Hans"
-      ? "zh-Hans"
-      : "en";
-  } catch {
-    return "en";
-  }
-}
 
 export function App() {
   const [locale, setLocale] = useState<Locale>(initialLocale),
@@ -117,8 +110,8 @@ export function App() {
     busy = recording !== "idle",
     visual =
       lesson.quizMode === "visual" && !(lesson.allowAudioQuiz && audioQuiz);
-  const tr = (en: string, zh: string) => (locale === "en" ? en : zh),
-    txt = (v: Text) => (locale === "en" ? v.en : v.zh);
+  const tr = (en: string, zh: string) => translate(locale,en,zh),
+    txt = (v: Text) => text(locale,v);
   const {
     needRefresh: [needRefresh],
     updateServiceWorker,
@@ -131,14 +124,22 @@ export function App() {
       setActive(key);
       setLoop(repeating);
     });
-  const fail = (error: unknown) =>
-    setMessage(
-      error instanceof Error
-        ? error.message
-        : tr("Something went wrong. Please retry.", "操作失败，请重试。"),
-    );
+  const fail = (error: unknown, action: 'general' | 'playback' | 'recording' = 'general') => {
+    const detail = error instanceof Error ? `${error.name} ${error.message}` : '';
+    const permission = action === 'recording' && /NotAllowedError|permission|microphone.*denied/i.test(detail);
+    setMessage(needsVoiceInstallation(error)
+      ? tr('Install a voice for the practice language in device settings, then reopen the app.', '请在设备设置中安装练习语言的语音，然后重新打开应用。') + ` (${lesson.language})`
+      : permission
+      ? tr('Allow microphone access in settings, then retry.', '请在设置中允许麦克风权限，然后重试。')
+      : detail.includes('Recording is no longer available.') || detail.includes('Recording not found')
+        ? tr('Recording is no longer available.', '录音已不可用。')
+        : action === 'playback'
+          ? tr('Playback is unavailable. Check sound and installed voices, then retry.', '播放不可用。请检查音量和已安装的语音，然后重试。')
+          : action === 'recording'
+            ? tr('Could not record usable audio. Check your microphone and retry.', '未能录到可用音频。请检查麦克风后重试。')
+            : tr('Something went wrong. Please retry.', '操作失败，请重试。'));
+  };
   useEffect(() => {
-    document.title = `ClearPair ${product.name} · Practise what you mix up`;
     fetch(`${import.meta.env.BASE_URL}audio/manifest.json`)
       .then((r) => (r.ok ? r.json() : {}))
       .then((data) => {
@@ -166,10 +167,12 @@ export function App() {
   }, []);
   useEffect(() => {
     document.documentElement.lang = locale;
+    document.documentElement.dir = locale==='ar'?'rtl':'ltr';
+    document.title = `ClearPair ${translate(locale,product.name,product.zhName)} · ${translate(locale,'Practise what you mix up. Learn the difference.','专练易混的部分，真正分清区别。')}`;
     try {
       localStorage.setItem("clearpair:locale", locale);
     } catch {}
-  }, [locale]);
+  }, [locale,product.name,product.zhName]);
   function clip(w: Word, sentence = false): Clip {
     const key = audioKey(w, lesson.language) + (sentence ? "-context" : "");
     return {
@@ -191,7 +194,7 @@ export function App() {
         repeat,
         slow ? 0.8 : 1,
       )
-      .catch(fail);
+      .catch(error => fail(error, 'playback'));
   }
   function stop() {
     generation.current++;
@@ -256,7 +259,7 @@ export function App() {
       );
       if (run === generation.current) setHeard(true);
     } catch (error) {
-      fail(error);
+      fail(error, 'playback');
     }
   }
   function respond(choice: 0 | 1) {
@@ -311,7 +314,7 @@ export function App() {
       limit.current = setTimeout(() => void finishRef.current(), 12_000);
     } catch (error) {
       if (run === generation.current) {
-        fail(error);
+        fail(error, 'recording');
         recordingState.current = "idle";
         setRecording("idle");
       }
@@ -393,9 +396,7 @@ export function App() {
     try {
       const t = await getTake(id);
       if (!t)
-        throw new Error(
-          tr("Recording is no longer available.", "录音已不可用。"),
-        );
+        throw new Error('Recording is no longer available.');
       await player.current!.blob(t.audio);
     } catch (error) {
       fail(error);
@@ -433,9 +434,9 @@ export function App() {
     if (
       !confirm(
         tr(
-          `Delete the recording “${t.word}”? This cannot be undone.`,
-          `删除“${t.word}”的录音？此操作不可撤销。`,
-        ),
+          'Delete this recording? This cannot be undone.',
+          '删除这段录音？此操作不可撤销。',
+        ) + `\n\u2068${t.word}\u2069`,
       )
     )
       return;
@@ -521,27 +522,26 @@ export function App() {
               ? "https://language-agent.lazying.art/"
               : "../"
           }
-          aria-label="ClearPair home"
+          aria-label={tr('ClearPair home','ClearPair 首页')}
         >
           <img className="brand-icon" src={`${import.meta.env.BASE_URL}icons/icon-192.png`} alt="" width="42" height="42"/>
           <span>
-            ClearPair<small>{product.name}</small>
+            ClearPair<small>{tr(product.name,product.zhName)}</small>
           </span>
         </a>
-        <button
-          className="language"
-          onClick={() => setLocale(locale === "en" ? "zh-Hans" : "en")}
-          aria-label={tr("Switch UI to Chinese", "切换界面为英文")}
-        >
+        <label className="language">
           <Languages size={18} />
-          {locale === "en" ? "中文" : "EN"}
-        </button>
+          <select data-testid="ui-language" value={locale} aria-label={tr('Interface language','界面语言')}
+            onChange={(event)=>setLocale(event.target.value as Locale)}>
+            {Object.entries(localeLabels).map(([code,label])=><option key={code} value={code}>{label}</option>)}
+          </select>
+        </label>
       </header>
       <main>
         <section className="intro">
           <div>
             <p className="eyebrow">
-              {product.name} <span> / {tr("FIND YOUR SOUND", "找到你的声音")}</span>
+              {tr(product.name,product.zhName)} <span> / {tr("FIND YOUR SOUND", "找到你的声音")}</span>
             </p>
             <h1>
               {tr("Small difference.", "小小区别，")}
@@ -568,14 +568,14 @@ export function App() {
               <small>
                 {tr("YOUR FOCUS", "当前重点")} ·{" "}
                 {lesson.language === "en-US"
-                  ? "English"
+                  ? tr('English','英语')
                   : lesson.language === "zh-CN"
-                    ? "普通话"
+                    ? tr('Mandarin','普通话')
                     : lesson.language === 'zh-HK'
-                      ? '粵語 · Jyutping'
+                      ? `${tr('Cantonese','粤语')} · Jyutping`
                     : lesson.language === "ko-KR"
-                      ? "한국어"
-                      : "العربية"}
+                      ? tr('Korean','韩语')
+                      : tr('Arabic Letters','阿拉伯字母')}
               </small>
               <strong>{txt(lesson.title)}</strong>
             </span>
@@ -680,7 +680,8 @@ export function App() {
                 <span>01 / 03</span>
               </div>
               <Diagram lesson={lesson} txt={txt} />
-              <h2>{txt(lesson.cue)}</h2>
+              {sourceLocale(locale,lesson.cue)!==locale&&<span className="reference-label">{tr('Reference notes','参考说明')} · English</span>}
+              <h2 lang={sourceLocale(locale,lesson.cue)}>{txt(lesson.cue)}</h2>
               <p className="muted">
                 {tr(
                   "A learning guide, not a measurement of your mouth.",
@@ -704,12 +705,12 @@ export function App() {
                   >
                     {lesson.sounds[i]}
                   </button>
-                  <p>{txt(s)}</p>
+                  <p lang={sourceLocale(locale,s)}>{txt(s)}</p>
                 </div>
               ))}
               <div className="tip">
                 <span>✦</span>
-                <p>{txt(lesson.tip)}</p>
+                <p lang={sourceLocale(locale,lesson.tip)}>{txt(lesson.tip)}</p>
               </div>
               {lesson.caution && (
                 <p className="caution">{txt(lesson.caution)}</p>
@@ -902,6 +903,7 @@ export function App() {
                   {context ? word.sentence : word.text}
                 </div>
                 <Waveform
+                  label={tr(recording==='recording'?'Live microphone level':'Recorded waveform',recording==='recording'?'实时麦克风音量':'录音波形')}
                   values={
                     recording === "recording"
                       ? meter
@@ -1200,7 +1202,7 @@ export function App() {
                   key={p.id}
                   href={`https://language-agent.lazying.art/${p.id}/`}
                 >
-                  {p.name}
+                  {tr(p.name,p.zhName)}
                 </a>
               ))}
             </div>
@@ -1221,13 +1223,13 @@ export function App() {
   );
 }
 
-function Waveform({ values, live }: { values: number[]; live: boolean }) {
+function Waveform({ values, live, label }: { values: number[]; live: boolean; label:string }) {
   return (
     <svg
       className={`waveform ${live ? "live" : ""}`}
       viewBox="0 0 480 68"
       role="img"
-      aria-label={live ? "Live microphone level" : "Recorded waveform"}
+      aria-label={label}
     >
       <line
         x1="0"
@@ -1268,7 +1270,7 @@ function Diagram({
         <svg
           viewBox="0 0 340 240"
           role="img"
-          aria-label="Relative tongue height and backness: schematic vowel positions"
+          aria-label={txt({en:'Vowel position guide',zh:'元音位置示意'})}
         >
           <path d="M55 35H285L270 190H120Z" className="vowel-shape" />
           <path
@@ -1276,16 +1278,16 @@ function Diagram({
             className="grid-lines"
           />
           <text x="54" y="20">
-            front
+            {txt({en:'front',zh:'前'})}
           </text>
           <text x="255" y="20">
-            back
+            {txt({en:'back',zh:'后'})}
           </text>
           <text x="7" y="43">
-            high
+            {txt({en:'high',zh:'高'})}
           </text>
           <text x="12" y="197">
-            low
+            {txt({en:'low',zh:'低'})}
           </text>
           {lesson.positions.map(([x, y], i) => (
             <g key={i} transform={`translate(${50 + x * 2.5} ${32 + y * 1.7})`}>
@@ -1305,7 +1307,7 @@ function Diagram({
         <svg
           viewBox="0 0 340 240"
           role="img"
-          aria-label="Schematic relative tone contours"
+          aria-label={txt({en:'Tone contour guide',zh:'声调走势示意'})}
         >
           <path d="M40 30V195H310M40 110H310" className="grid-lines" />
           {lesson.tones.map((points, i) => (
@@ -1347,10 +1349,10 @@ function Diagram({
       </span>
       <div className="diagram-caption">
         {lesson.diagram === "air"
-          ? "airflow & release"
+          ? txt({en:'airflow & release',zh:'气流与释放'})
           : lesson.diagram === "glyph"
-            ? "notice · recall · compare"
-            : "position · contact · voicing"}
+            ? txt({en:'notice · recall · compare',zh:'观察 · 回忆 · 比较'})
+            : txt({en:'position · contact · voicing',zh:'位置 · 接触 · 声带振动'})}
       </div>
     </div>
   );
