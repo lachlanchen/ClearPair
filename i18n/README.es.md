@@ -12,7 +12,7 @@ Ocho cursos centrados en sonidos y letras fáciles de confundir, para iOS, Andro
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-Las ocho apps independientes, incluido [japonés](../docs/JAPANESE-COURSE.md), están disponibles en [prueba interna 1.0.0 (4)](../docs/BETA-1.0.0-4.md) en TestFlight y Google Play. Los textos de TestFlight ya describen cada app por separado. Las puntuaciones siguen desactivadas mientras se validan los modelos locales. Las correcciones posteriores de selección de voz están en el código, no en la versión 4. La revisión formal sigue pendiente.
+Las ocho apps independientes, incluido [japonés](../docs/JAPANESE-COURSE.md), están disponibles en [prueba interna 1.0.0 (5)](../docs/BETA-1.0.0-5.md) en TestFlight y Google Play. Incluyen descripciones propias, selección estricta de voz y lecturas corregidas de caracteres japoneses. La PWA de los ocho cursos está verificada en línea. Las puntuaciones siguen desactivadas mientras se validan los modelos locales. La escucha de referencias y las pruebas reales del micrófono siguen incompletas; la revisión formal no se ha enviado.
 
 ## Ocho cursos especializados
 

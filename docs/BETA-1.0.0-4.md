@@ -1,5 +1,8 @@
 # ClearPair 1.0.0 (4) · Eight standalone apps
 
+Historical receipt: superseded by [build 5](BETA-1.0.0-5.md). The statements below
+describe build 4 at verification time, not the current web or beta candidate.
+
 All eight apps, including **ClearPair Japanese**, are available in internal
 TestFlight and Google Play internal testing, verified on 1 October 2026 (UTC).
 These are test builds, not public store releases or formal review approvals.
@@ -58,5 +61,5 @@ establish genuine native microphone or pronunciation-accuracy success.
 
 [Sanitized artifact hashes and provider states](../store/artifacts/internal-beta-1.0.0-4.json)
 identify the exact source and builds. Production review remains pending. The public
-website has not yet been verified on this eight-app candidate; beta availability
-does not imply web deployment.
+website was not verified on build 4 at this receipt's verification time. The later
+[build 5 receipt](BETA-1.0.0-5.md) records the successful eight-course web deployment.

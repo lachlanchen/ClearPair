@@ -12,7 +12,7 @@ Acht gezielte Kurse für leicht verwechselbare Laute und Buchstaben auf iOS, And
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-Alle acht eigenständigen Apps, einschließlich [Japanisch](../docs/JAPANESE-COURSE.md), sind als [interne Testversion 1.0.0 (4)](../docs/BETA-1.0.0-4.md) in TestFlight und Google Play verfügbar. Die TestFlight-Texte sind je App korrigiert. Aussprachebewertungen bleiben während der lokalen Modellvalidierung deaktiviert. Spätere Stimmzuordnungsfixes sind nur im Quellcode, nicht in Build 4. Die formale Prüfung steht noch aus.
+Alle acht eigenständigen Apps, einschließlich [Japanisch](../docs/JAPANESE-COURSE.md), sind als [interne Testversion 1.0.0 (5)](../docs/BETA-1.0.0-5.md) in TestFlight und Google Play verfügbar. Enthalten sind eigene Beschreibungen, eine strikte Stimmenauswahl und korrigierte japanische Zeichenlesungen. Die PWA mit acht Kursen ist nachweislich online. Aussprachebewertungen bleiben während der lokalen Modellvalidierung deaktiviert. Referenzhören und echte Mikrofontests sind unvollständig; die formale Prüfung wurde noch nicht eingereicht.
 
 ## Acht spezialisierte Kurse
 

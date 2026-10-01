@@ -12,7 +12,7 @@ Huit cours ciblant les sons et lettres faciles à confondre, pour iOS, Android e
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-Les huit applications autonomes, dont le [japonais](../docs/JAPANESE-COURSE.md), sont disponibles en [test interne 1.0.0 (4)](../docs/BETA-1.0.0-4.md) sur TestFlight et Google Play. Les textes TestFlight décrivent désormais chaque application séparément. Les notes de prononciation restent désactivées pendant la validation des modèles locaux. Les corrections ultérieures de sélection vocale sont dans le code, pas dans le build 4. L’examen officiel reste en attente.
+Les huit applications autonomes, dont le [japonais](../docs/JAPANESE-COURSE.md), sont disponibles en [test interne 1.0.0 (5)](../docs/BETA-1.0.0-5.md) sur TestFlight et Google Play. Elles incluent des descriptions propres à chaque app, une sélection vocale stricte et des lectures de caractères japonais corrigées. La PWA des huit cours est vérifiée en ligne. Les notes de prononciation restent désactivées pendant la validation locale. L’écoute des références et les tests réels du microphone restent incomplets ; l’examen officiel n’est pas soumis.
 
 ## Huit cours ciblés
 

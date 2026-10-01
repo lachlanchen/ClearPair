@@ -12,7 +12,7 @@ Tám khóa tập trung vào âm và chữ dễ nhầm, dành cho iOS, Android v�
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-Cả tám ứng dụng độc lập, gồm [tiếng Nhật](../docs/JAPANESE-COURSE.md), đã có [bản thử nội bộ 1.0.0 (4)](../docs/BETA-1.0.0-4.md) trên TestFlight và Google Play. Mô tả TestFlight đã được sửa riêng cho từng ứng dụng. Điểm phát âm vẫn tắt trong khi kiểm định mô hình cục bộ. Sửa chọn giọng nói sau đó chỉ có trong mã nguồn, không trong bản 4. Chưa nộp xét duyệt chính thức.
+Cả tám ứng dụng độc lập, gồm [tiếng Nhật](../docs/JAPANESE-COURSE.md), đã có [bản thử nội bộ 1.0.0 (5)](../docs/BETA-1.0.0-5.md) trên TestFlight và Google Play. Bao gồm mô tả riêng, chọn giọng chặt chẽ và sửa cách đọc chữ tiếng Nhật. PWA của tám khóa học đã được xác minh trực tuyến. Điểm phát âm vẫn tắt trong khi kiểm định mô hình cục bộ. Nghe kiểm tra âm mẫu và thử mic trên thiết bị thật chưa hoàn tất; chưa nộp xét duyệt chính thức.
 
 ## Tám khóa chuyên biệt
 
