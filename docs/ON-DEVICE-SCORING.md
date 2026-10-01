@@ -6,6 +6,10 @@ The user requires scoring inside the iPhone, Android and PWA applications, not o
 a backend, and accepts larger installation sizes. There is no cloud fallback,
 audio upload, paid provider or server inference in this implementation.
 
+The [2026-10-01 validation receipt](VALIDATION-2026-10-01.md) separates passing
+source/browser/native-error-path tests from the still-failing simulator capture
+and the unqualified scoring models. Existing beta5 binaries are unchanged.
+
 ## Implemented path
 
 1. Decode native PCM WAV directly; compressed browser recordings use a bounded
@@ -104,6 +108,48 @@ categories lack sufficient incorrect examples for a release claim.
 coverage without fitting or selecting thresholds. This final test is now a
 consumed evaluation set: any subsequent tuning needs fresh independent evaluation.
 No registry entry, release approval, app score, or production submission resulted.
+
+## Error-balanced development and signal fixes — 2026-10-01
+
+The follow-up fits our own small error-detection heads on the existing encoder's
+acoustic evidence. It gives equal weight to correct/incorrect classes and to
+speakers within each class, instead of rewarding an almost-always-correct answer.
+This addresses the imbalance highlighted by [Score-balanced Loss](https://arxiv.org/abs/2305.16664);
+it is not a reproduction of that paper's model or reported accuracy.
+
+`tools/expand-english-development.py` completed all **1,340 adult official-training
+clips**, preserving the original 57 training / ten development speakers. It reused
+cached inference and never reopened official-test audio. The fitting tool refuses
+an incomplete expansion. `tools/train-error-detector.py` compares balanced logistic
+regression with a 150-tree nonlinear head; neither is registered in the apps.
+
+The development split has 3,415 clearly correct and only 51 clearly incorrect
+phones. At the inspected decision statistic 0.6, the nonlinear model misses 5/51
+incorrect phones and rejects 327/3,415 correct phones (9.8% and 9.6%). Raising the
+threshold to 0.8 misses 2/51 but rejects 598/3,415 (17.5%). These are development
+trade-offs, **not a fresh test result or calibrated user score**. In particular,
+the F, H, L and R development categories contain no clearly incorrect examples;
+their acceptance-error rates are unknown, not zero. All-language and named-pair
+accuracy remain unqualified. The earlier consumed test has not been reused for
+these fits or threshold exploration.
+
+The nonlinear head exports to a 201,052-byte numeric-tree artifact rather than
+executable pickle. Its independent evaluator matched the original classifier on
+all 3,466 development rows (maximum absolute difference about 1.1e-16). That is
+head serialization parity, not proof of the complete mobile scoring pipeline.
+Model/data artifacts remain private and unbundled. Missing acoustic values fail
+closed. The exact report hash is
+`5bded83af935fda6997c18755d74626a45a47330bc53acb2df90e401b0358d6b`.
+
+The shared app signal analysis also had reproducible octave errors and treated
+constant DC input as pitched sound. `src/pitch.ts` now uses a conservative,
+independently implemented [YIN-style estimator](https://doi.org/10.1121/1.1458024):
+equal-width differences, cumulative normalization, first acceptable minimum and
+interpolation. It abstains on uncertain frames. Anti-aliased resampling replaces
+sample dropping; AC energy prevents constant input from appearing to be speech.
+Fifteen regression cases cover frequency, sample rate, DC, noise, harmonics,
+rising pitch and short frames. A pitch trace is still not a word recognizer or
+pronunciation grade. This source fix is not in the already-uploaded beta5 binaries.
 
 The separate pinned OMPAL Mandarin annotation audit found 656 detailed clip IDs
 absent from the canonical annotation mapping. They remain unresolved; no guessed

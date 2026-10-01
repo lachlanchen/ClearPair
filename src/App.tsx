@@ -48,7 +48,7 @@ import { WordText } from './WordText';
 import { ScorePanel } from './ScorePanel';
 import { assessmentPlan } from './scoring-profiles';
 import {initialLocale,localeLabels,translate,text,sourceLocale} from './i18n';
-import { needsVoiceInstallation } from './ui-errors';
+import { needsVoiceInstallation, needsMicrophoneRestart } from './ui-errors';
 import { completeGame, readGame, saveGame } from './game';
 import {
   deleteTake,
@@ -136,6 +136,8 @@ export function App() {
     const permission = action === 'recording' && /NotAllowedError|permission|microphone.*denied/i.test(detail);
     setMessage(needsVoiceInstallation(error)
       ? tr('Install a voice for the practice language in device settings, then reopen the app.', '请在设备设置中安装练习语言的语音，然后重新打开应用。') + ` (${lesson.language})`
+      : needsMicrophoneRestart(error)
+      ? tr('The microphone is not responding. Close and reopen the app; do not uninstall it.', '麦克风没有响应。请关闭并重新打开应用，不要卸载。')
       : permission
       ? tr('Allow microphone access in settings, then retry.', '请在设置中允许麦克风权限，然后重试。')
       : detail.includes('Recording is no longer available.') || detail.includes('Recording not found')

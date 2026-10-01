@@ -1,51 +1,32 @@
 import type { Analysis } from "./types";
 import { decodeRecording } from './pcm';
+import { pitchContour } from './pitch';
 export function analyze(samples: Float32Array, rate: number): Analysis {
   if (!Number.isFinite(rate) || rate <= 0)
     throw new Error("Invalid sample rate");
   let sum = 0,
+    dc = 0,
     peak = 0,
     clipped = 0,
     voiced = 0;
   for (const v of samples) {
     if (!Number.isFinite(v)) throw new Error("Invalid audio sample");
     sum += v * v;
+    dc += v;
     peak = Math.max(peak, Math.abs(v));
     if (Math.abs(v) > 0.985) clipped++;
   }
-  const rms = Math.sqrt(sum / Math.max(samples.length, 1)),
-    waveform: number[] = [],
-    pitch: (number | null)[] = [];
+  // DC is not speech. Keep original peaks for clipping, but use AC energy for
+  // signal availability so a faulty constant input cannot look like a clear take.
+  const count = Math.max(samples.length, 1);
+  const rms = Math.sqrt(Math.max(0, sum / count - (dc / count) ** 2)),
+    waveform: number[] = [];
   const window = Math.max(1, Math.round(rate * 0.04));
   for (let start = 0; start < samples.length; start += window) {
     const frame = samples.subarray(start, start + window);
-    const r = Math.sqrt(frame.reduce((s, v) => s + v * v, 0) / frame.length);
+    const mean = frame.reduce((s, v) => s + v, 0) / frame.length;
+    const r = Math.sqrt(frame.reduce((s, v) => s + (v - mean) ** 2, 0) / frame.length);
     if (r > 0.008) voiced += frame.length / rate;
-    // Autocorrelation on downsampled 8kHz frames: an aid, not a clinical pitch measurement.
-    const step = Math.max(1, Math.floor(rate / 8000)),
-      values = Array.from(frame.filter((_, i) => i % step === 0));
-    const sr = rate / step,
-      minLag = Math.max(1, Math.floor(sr / 500)),
-      maxLag = Math.min(Math.ceil(sr / 70), values.length - 2);
-    let best = 0,
-      lag = 0;
-    if (r > 0.008)
-      for (let k = minLag; k <= maxLag; k++) {
-        let c = 0,
-          a = 0,
-          b = 0;
-        for (let j = 0; j < values.length - k; j++) {
-          c += values[j] * values[j + k];
-          a += values[j] ** 2;
-          b += values[j + k] ** 2;
-        }
-        const corr = c / Math.sqrt(a * b || 1);
-        if (corr > best) {
-          best = corr;
-          lag = k;
-        }
-      }
-    pitch.push(best > 0.8 && lag ? sr / lag : null);
   }
   for (let i = 0; i < 96; i++) {
     const from = Math.floor((i * samples.length) / 96),
@@ -62,7 +43,7 @@ export function analyze(samples: Float32Array, rate: number): Analysis {
     clipped: clipping,
     voicedSeconds: voiced,
     waveform,
-    pitch,
+    pitch: pitchContour(samples, rate),
     status:
       rms < 0.002 || voiced < 0.12
         ? "silent"

@@ -11,6 +11,13 @@ final class DeviceUITests: XCTestCase {
     }
     let courses = Set(["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese", "japanese"].map { "art.lazying.clearpair.\($0)" })
     let names = ["handf":"ClearPair H & F", "landr":"ClearPair L & R", "english":"ClearPair English", "chinese":"ClearPair Mandarin", "korean":"ClearPair Korean", "arabic":"ClearPair Arabic Letters", "cantonese":"ClearPair Cantonese", "japanese":"ClearPair Japanese"]
+    @MainActor func microphoneAlert(_ name: String) -> XCUIElement {
+        // Both are observed system wording. Never approve an unrelated alert.
+        let titles = ["“\(name)” would like to access the Microphone.",
+                      "Allow “\(name)” to access your microphone?"]
+        return XCUIApplication(bundleIdentifier: "com.apple.springboard").alerts
+            .matching(NSPredicate(format: "label IN %@", titles)).firstMatch
+    }
     @MainActor func testObservedSequence() throws {
         continueAfterFailure = false
         let raw = try XCTUnwrap(ProcessInfo.processInfo.environment["CLEARPAIR_DEVICE_STEPS"])
@@ -50,9 +57,7 @@ final class DeviceUITests: XCTestCase {
                 let id = try XCTUnwrap(bundle)
                 XCTAssertTrue(courses.contains(id))
                 let name = try XCTUnwrap(names[String(id.split(separator: ".").last!)])
-                let expected = "“\(name)” would like to access the Microphone."
-                let system = XCUIApplication(bundleIdentifier: "com.apple.springboard")
-                let alert = system.alerts[expected]
+                let alert = microphoneAlert(name)
                 XCTAssertTrue(alert.waitForExistence(timeout: 10), "Only this app's observed microphone permission is in scope")
                 let allow = alert.buttons["Allow"]
                 XCTAssertTrue(allow.exists && allow.isHittable && allow.isEnabled)
@@ -78,7 +83,7 @@ final class DeviceUITests: XCTestCase {
                 recordFrame = record.frame
                 record.tap()
                 let name = try XCTUnwrap(names[String(id.split(separator: ".").last!)])
-                let alert = XCUIApplication(bundleIdentifier: "com.apple.springboard").alerts["“\(name)” would like to access the Microphone."]
+                let alert = microphoneAlert(name)
                 if alert.waitForExistence(timeout: 1) {
                     let allow = alert.buttons["Allow"]
                     XCTAssertTrue(allow.exists && allow.isHittable && allow.isEnabled)

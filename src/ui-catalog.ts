@@ -5,6 +5,17 @@ export const translatedLocales = ['ar','es','fr','ja','ko','vi','zh-Hant','de','
 type Row = readonly [string,string,string,string,string,string,string,string,string];
 export const uiCatalog: Record<string, Row> = {
  ...scoreCatalog,
+ 'The microphone is not responding. Close and reopen the app; do not uninstall it.':[
+  'الميكروفون لا يستجيب. أغلق التطبيق وافتحه من جديد؛ لا تحذفه.',
+  'El micrófono no responde. Cierra y vuelve a abrir la app; no la desinstales.',
+  'Le microphone ne répond pas. Fermez puis rouvrez l’app ; ne la désinstallez pas.',
+  'マイクが応答していません。アプリを終了して開き直してください。アンインストールはしないでください。',
+  '마이크가 응답하지 않아요. 앱을 종료한 뒤 다시 여세요. 앱을 삭제하지 마세요.',
+  'Micrô không phản hồi. Hãy đóng rồi mở lại ứng dụng; đừng gỡ cài đặt.',
+  '麥克風沒有回應。請關閉並重新開啟應用程式，不要解除安裝。',
+  'Das Mikrofon reagiert nicht. Schließe die App und öffne sie erneut; deinstalliere sie nicht.',
+  'Микрофон не отвечает. Закройте и снова откройте приложение; не удаляйте его.'
+ ],
  'Japanese':['اليابانية','Japonés','Japonais','日本語','일본어','Tiếng Nhật','日語','Japanisch','Японский'],
  'Stop strokes':['أوقف الخطوط','Detener trazos','Arrêter les traits','筆順を停止','획순 중지','Dừng nét','停止筆順動畫','Striche stoppen','Остановить черты'],
  'Mora beats':['وحدات المورا','Moras','Mores','拍','모라','Nhịp mora','拍','Moren','Моры'],

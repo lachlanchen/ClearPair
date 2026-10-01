@@ -18,35 +18,88 @@ public class ClearPairAudioPlugin: CAPPlugin, CAPBridgedPlugin, AVSpeechSynthesi
     private var recordingURL: URL?
     private var meter: Timer?
     private var generation = 0
+    // AudioQueue/HAL preparation can block indefinitely on an unavailable
+    // device. Never do that work on the WebView/UI thread or start another
+    // hardware job while the previous one is stuck.
+    private let setupQueue = DispatchQueue(label: "art.lazying.clearpair.audio-setup", qos: .userInitiated)
+    private var hardwareStarting = false
+    private var pendingStart: CAPPluginCall?
+    private var startDeadline: DispatchWorkItem?
     private let voice = AVSpeechSynthesizer()
     private var speechCall: CAPPluginCall?
     private var utterance: AVSpeechUtterance?
 
     @objc public func start(_ call: CAPPluginCall) { DispatchQueue.main.async {
-        guard self.recorder == nil else { call.reject("A recording is already active."); return }
+        guard self.recorder == nil, self.pendingStart == nil, !self.hardwareStarting else {
+            call.reject("The microphone is busy. If it does not recover, close and reopen the app."); return
+        }
         self.generation += 1
         let token = self.generation
+        self.pendingStart = call
         AVAudioSession.sharedInstance().requestRecordPermission { granted in DispatchQueue.main.async {
-            guard token == self.generation else { call.reject("Recording cancelled."); return }
-            guard granted else { call.reject("Microphone permission is required. Enable it in Settings."); return }
-            do {
-                self.stopVoice()
-                let session = AVAudioSession.sharedInstance()
-                try session.setCategory(.playAndRecord, mode: .measurement, options: [.defaultToSpeaker])
-                try session.setActive(true)
+            guard token == self.generation, self.pendingStart === call else { return }
+            guard granted else {
+                self.pendingStart = nil
+                call.reject("Microphone permission is required. Enable it in Settings."); return
+            }
+            self.stopVoice()
+            self.hardwareStarting = true
+            let deadline = DispatchWorkItem { [weak self] in
+                guard let self, self.pendingStart === call, token == self.generation else { return }
+                self.generation += 1
+                self.pendingStart = nil
+                self.startDeadline = nil
+                call.reject("The microphone did not respond. Close and reopen the app, then try again.", "MICROPHONE_START_TIMEOUT")
+            }
+            self.startDeadline = deadline
+            DispatchQueue.main.asyncAfter(deadline: .now() + 8, execute: deadline)
+            self.setupQueue.async {
                 let url = FileManager.default.temporaryDirectory.appendingPathComponent("clearpair-\(UUID().uuidString).wav")
-                self.recordingURL = url
-                let capture = try AVAudioRecorder(url: url, settings: [AVFormatIDKey: kAudioFormatLinearPCM, AVSampleRateKey: 16000, AVNumberOfChannelsKey: 1, AVLinearPCMBitDepthKey: 16, AVLinearPCMIsFloatKey: false, AVLinearPCMIsBigEndianKey: false])
-                capture.isMeteringEnabled = true
-                guard capture.prepareToRecord(), capture.record(forDuration: 13) else { throw NSError(domain:"ClearPair",code:1,userInfo:[NSLocalizedDescriptionKey:"The microphone did not start."]) }
-                self.recorder = capture
-                self.meter = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
-                    guard let self, let recorder = self.recorder else { return }
-                    recorder.updateMeters()
-                    self.notifyListeners("meter", data: ["rms": pow(10.0, Double(recorder.averagePower(forChannel: 0)) / 20.0)])
+                var capture: AVAudioRecorder?
+                var failure: Error?
+                do {
+                    let session = AVAudioSession.sharedInstance()
+                    try session.setCategory(.playAndRecord, mode: .measurement, options: [.defaultToSpeaker])
+                    try session.setActive(true)
+                    let prepared = try AVAudioRecorder(url: url, settings: [AVFormatIDKey: kAudioFormatLinearPCM, AVSampleRateKey: 16000, AVNumberOfChannelsKey: 1, AVLinearPCMBitDepthKey: 16, AVLinearPCMIsFloatKey: false, AVLinearPCMIsBigEndianKey: false])
+                    capture = prepared
+                    prepared.isMeteringEnabled = true
+                    guard prepared.prepareToRecord() else { throw NSError(domain:"ClearPair",code:1,userInfo:[NSLocalizedDescriptionKey:"The microphone did not start."]) }
+                    let current = DispatchQueue.main.sync { token == self.generation && self.pendingStart === call }
+                    guard current else { throw NSError(domain:"ClearPair",code:2,userInfo:[NSLocalizedDescriptionKey:"Recording cancelled."]) }
+                    guard prepared.record(forDuration: 13) else { throw NSError(domain:"ClearPair",code:1,userInfo:[NSLocalizedDescriptionKey:"The microphone did not start."]) }
+                } catch { failure = error }
+                let finishedCapture = capture, finishedFailure = failure
+                DispatchQueue.main.async {
+                    let current = token == self.generation && self.pendingStart === call
+                    self.startDeadline?.cancel(); self.startDeadline = nil
+                    // Keep hardwareStarting true until abandoned setup is cleaned
+                    // on its own serial queue; a retry cannot race that cleanup.
+                    if current, finishedFailure == nil, let capture = finishedCapture {
+                        self.hardwareStarting = false
+                        self.pendingStart = nil
+                        self.recordingURL = url
+                        self.recorder = capture
+                        self.meter = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
+                            guard let self, let recorder = self.recorder else { return }
+                            recorder.updateMeters()
+                            self.notifyListeners("meter", data: ["rms": pow(10.0, Double(recorder.averagePower(forChannel: 0)) / 20.0)])
+                        }
+                        call.resolve()
+                    } else {
+                        if current {
+                            self.pendingStart = nil
+                            call.reject("Unable to start the microphone: \(finishedFailure?.localizedDescription ?? "Recording cancelled.")")
+                        }
+                        self.setupQueue.async {
+                            finishedCapture?.stop()
+                            try? FileManager.default.removeItem(at: url)
+                            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+                            DispatchQueue.main.async { self.hardwareStarting = false }
+                        }
+                    }
                 }
-                call.resolve()
-            } catch { self.clearRecording(); call.reject("Unable to start the microphone: \(error.localizedDescription)") }
+            }
         }}
     }}
     @objc public func stop(_ call: CAPPluginCall) { DispatchQueue.main.async {
@@ -59,11 +112,18 @@ public class ClearPairAudioPlugin: CAPPlugin, CAPBridgedPlugin, AVSpeechSynthesi
             call.resolve(["base64":data.base64EncodedString(), "mimeType":"audio/wav"])
         } catch { call.reject("Unable to read the recording: \(error.localizedDescription)") }
     }}
-    @objc public func cancel(_ call: CAPPluginCall) { DispatchQueue.main.async { self.generation += 1; self.clearRecording(); call.resolve() }}
+    @objc public func cancel(_ call: CAPPluginCall) { DispatchQueue.main.async {
+        self.generation += 1
+        self.startDeadline?.cancel(); self.startDeadline = nil
+        self.pendingStart?.reject("Recording cancelled."); self.pendingStart = nil
+        self.clearRecording(); call.resolve()
+    }}
     private func clearRecording() {
         meter?.invalidate(); meter = nil; recorder?.stop(); recorder = nil
         if let url = recordingURL { try? FileManager.default.removeItem(at: url) }; recordingURL = nil
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        if !hardwareStarting {
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        }
     }
     @objc public func shareRecording(_ call: CAPPluginCall) {
         let filename = call.getString("filename") ?? ""
@@ -101,6 +161,7 @@ public class ClearPairAudioPlugin: CAPPlugin, CAPBridgedPlugin, AVSpeechSynthesi
         } catch { call.reject("Unable to prepare the recording for export: \(error.localizedDescription)") }
     }
     @objc public func speak(_ call: CAPPluginCall) { DispatchQueue.main.async {
+        guard !self.hardwareStarting else { call.reject("The microphone is busy. Close and reopen the app if it does not recover."); return }
         self.stopVoice()
         let language = call.getString("language") ?? "en-US"
         var candidates = AVSpeechSynthesisVoice.speechVoices().filter { Self.isPracticeVoice($0, language) }
