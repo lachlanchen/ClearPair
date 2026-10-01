@@ -1,4 +1,5 @@
 import type { Lesson, Text, Word } from './types';
+import { morae } from './japanese-mora';
 const t = (en: string, zh: string): Text => ({ en, zh });
 const w = (text: string, ipa: string, gloss: string, reading = text, sentence = reading): Word =>
   ({ text, ipa, gloss, reading, spoken: reading, sentence, sentenceReading: sentence });
@@ -104,3 +105,44 @@ export const kanaRows = [
 export const basicKana = kanaRows.flatMap(([hiragana, katakana, readings]) =>
   Array.from(hiragana).flatMap((h, index) => h === ' ' ? [] :
     [{ hiragana: h, katakana: Array.from(katakana)[index], reading: readings[index] }]));
+
+/** Pair-specific memory/production cues: changing cards must change the guide.
+ * These are modern visual aids, never historical etymology or speech grades. */
+export function japanesePairGuidance(lesson: Lesson, pair: [Word, Word]): [Text, Text] {
+  const shapes: Record<string, Text> = {
+    'ぬ': t('ぬ · nu: follow the final loop.', 'ぬ · nu：沿着收尾的小圈看。'),
+    'め': t('め · me: a crossing, without the final loop in ぬ.', 'め · me：有交叉，没有 ぬ 的收尾小圈。'),
+    'ね': t('ね · ne: compare the loop on the right.', 'ね · ne：比较右侧的小圈。'),
+    'れ': t('れ · re: the right side ends without that loop.', 'れ · re：右侧收尾没有那个小圈。'),
+    'る': t('る · ru: notice the small loop at the bottom.', 'る · ru：留意底部的小圈。'),
+    'ろ': t('ろ · ro: compare the open bottom, without that loop.', 'ろ · ro：比较底部，没有那个闭合小圈。'),
+    'シ': t('シ · shi: stacked short marks; the long stroke sweeps upward.', 'シ · shi：短笔画上下排列，长笔画向上挑。'),
+    'ツ': t('ツ · tsu: side-by-side short marks; the long stroke sweeps downward.', 'ツ · tsu：短笔画左右排列，长笔画向下写。'),
+    'ン': t('ン · n: follow the upward sweep in the stroke replay.', 'ン · n：看笔顺动画中向上挑的长笔画。'),
+    'ソ': t('ソ · so: compare the downward sweep.', 'ソ · so：比较向下写的长笔画。'),
+    'ク': t('ク · ku: two strokes in this standard stroke guide.', 'ク · ku：标准笔顺中是两笔。'),
+    'ケ': t('ケ · ke: three strokes; notice the extra horizontal stroke.', 'ケ · ke：是三笔，留意多出的横笔。'),
+  };
+  return pair.map(word => {
+    if (['ja-hira-loops', 'ja-kata-direction'].includes(lesson.id)) return shapes[word.text];
+    const reading = word.reading ?? word.spoken ?? word.text;
+    if (lesson.id === 'ja-script-bridge') return t(
+      `${word.text} · ${word.ipa}: the same sound as the other script; recall the shape.`,
+      `${word.text} · ${word.ipa}：和另一套假名读音相同，专练字形回忆。`);
+    if (lesson.id === 'ja-long-vowels' || lesson.id === 'ja-small-y') return t(
+      `${word.text} · ${word.ipa}: ${morae(reading).length} mora beats. Compare the beat grouping above.`,
+      `${word.text} · ${word.ipa}：${morae(reading).length} 拍，比较上面的拍子分组。`);
+    if (lesson.id === 'ja-small-tsu') return t(
+      `${word.text} · ${word.ipa}: ${morae(reading).length} mora beats.${reading.includes('っ') ? ' Hold the following consonant; do not say tsu.' : ' No added consonant hold.'}`,
+      `${word.text} · ${word.ipa}：${morae(reading).length} 拍。${reading.includes('っ') ? '后面的辅音多留一拍，不要读成 tsu。' : '没有额外的辅音停留。'}`);
+    if (lesson.id === 'ja-furigana') return t(
+      `${word.text} → ${reading}: use this word's reading, not a fixed reading for every kanji.`,
+      `${word.text} → ${reading}：按这个词的注音读，不把汉字读音固定成一种。`);
+    if (lesson.id === 'ja-h-b-p') {
+      if (reading === 'ふ') return t('ふ · fu: gentle friction between the lips, not English lip-to-teeth F.', 'ふ · fu：双唇间轻微摩擦，不是英语 f 的唇齿摩擦。');
+      if (reading === 'は') return t('は · ha: airflow without a full lip closure.', 'は · ha：有气流，双唇不完全闭合。');
+      return t(`${word.text} · ${word.ipa}: close and release both lips; compare b/p voicing in context.`, `${word.text} · ${word.ipa}：双唇闭合再放开，结合语境比较 b/p 的清浊。`);
+    }
+    return t(`${word.text} · ${word.ipa}: listen to the consonant, then compare the other card.`, `${word.text} · ${word.ipa}：听元音前的辅音，再比较另一张卡片。`);
+  }) as [Text, Text];
+}

@@ -14,7 +14,7 @@ fi
 xcrun simctl boot "$clearpair_sim"
 trap 'xcrun simctl shutdown "$clearpair_sim"' EXIT
 xcrun simctl bootstatus "$clearpair_sim" -b
-for clearpair_app in handf landr english chinese korean arabic cantonese; do
+for clearpair_app in handf landr english chinese korean arabic cantonese japanese; do
   xcrun simctl install "$clearpair_sim" ".runtime/ios/artifacts/$clearpair_app.app"
 done
 xcodebuild -project .runtime/ios/qa/ClearPairQA.xcodeproj -scheme ClearPairQA \

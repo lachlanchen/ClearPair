@@ -1,9 +1,9 @@
 import XCTest
 
 final class FamilyUITests: XCTestCase {
-    func testSevenNativeApps() throws {
+    func testEightNativeApps() throws {
         continueAfterFailure = false
-        for id in ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese"] {
+        for id in ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese", "japanese"] {
             let app = XCUIApplication(bundleIdentifier: "art.lazying.clearpair.\(id)")
             app.launch()
             defer { app.terminate() }

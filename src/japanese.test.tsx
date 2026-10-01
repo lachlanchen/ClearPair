@@ -1,11 +1,25 @@
 import { describe,expect,it } from 'vitest';
 import {render,screen} from '@testing-library/react';
-import {basicKana,japaneseLessons} from './japanese-curriculum';
+import {basicKana,japaneseLessons,japanesePairGuidance} from './japanese-curriculum';
 import {morae} from './japanese-mora';
 import {WordText} from './WordText';
 import {assessmentPlan} from './scoring-profiles';
 import strokes from '../assets/japanese/kanjivg.json';
 describe('Japanese confusion-first course',()=>{
+ it('keeps teaching cues tied to every actual pair, never the first pair only',()=>{
+  for(const lesson of japaneseLessons)for(const pair of lesson.pairs){
+   const cues=japanesePairGuidance(lesson,pair);
+   for(let side=0;side<2;side++){
+    expect(cues[side].en).toContain(pair[side].text);
+    expect(cues[side].zh).toContain(pair[side].text);
+   }
+  }
+  const loops=japaneseLessons[0];
+  expect(japanesePairGuidance(loops,loops.pairs[1])[0].en).toContain('ね');
+  expect(japanesePairGuidance(loops,loops.pairs[1])[0].en).not.toContain('ぬ');
+  const hb=japaneseLessons.find(l=>l.id==='ja-h-b-p')!;
+  expect(japanesePairGuidance(hb,hb.pairs[2])[0].en).toContain('not English');
+ });
  it('covers 46 basic kana in both scripts, without obsolete or guessed entries',()=>{
   expect(basicKana).toHaveLength(46);
   for(const script of ['hiragana','katakana'] as const){

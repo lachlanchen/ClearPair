@@ -37,6 +37,10 @@ reading generator for arbitrary kanji. Romaji is a reading aid, not IPA.
   readings of 日本 and 明日 rather than calling every alternative an error.
 - Kana sounds are played in Japanese even when interface language changes.
   Visual recall stars and pronunciation scores remain separate.
+- Learn cues follow the selected pair: ね/れ and る/ろ never retain the first
+  ぬ/め instructions. Loop/direction/stroke-count cues are modern memory aids,
+  not historical etymology. The ふ cue distinguishes lip-to-lip friction from
+  English F's lip-to-teeth friction.
 - Motion starts only when requested; reduced-motion settings show the full
   character and static order instead. No timed tracing or pressure to speak fast.
 

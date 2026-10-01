@@ -49,3 +49,15 @@ test('same-sound scripts are visual recall, never an audio discrimination quiz',
  await page.locator('.word-card').first().click();
  await expect(page.getByRole('button',{name:'Next contrast',exact:true})).toBeVisible();
 });
+
+test('switching the Japanese pair updates its memory cues and audible labels',async({page})=>{
+ await page.goto('/japanese/');
+ await page.getByRole('button',{name:'Practise',exact:true}).click();
+ await page.getByRole('button',{name:'Next word pair',exact:true}).click();
+ await page.getByRole('button',{name:'Learn',exact:true}).click();
+ await expect(page.locator('.guidance .cue p').first()).toContainText('ね · ne');
+ await expect(page.locator('.guidance .cue p').nth(1)).toContainText('れ · re');
+ await expect(page.locator('.guidance .cue p').first()).not.toContainText('ぬ');
+ await expect(page.getByRole('button',{name:'Hear ね',exact:true})).toContainText('ね');
+ await expect(page.getByRole('button',{name:'Hear れ',exact:true})).toContainText('れ');
+});

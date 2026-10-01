@@ -11,7 +11,8 @@ export default defineConfig({
     ...devices["Desktop Chrome"],
     headless: true,
     trace: "retain-on-failure",
-    launchOptions: { executablePath: process.env.CLEARPAIR_BROWSER },
+    // Reuse the verified workstation browser; do not require a duplicate download.
+    launchOptions: { executablePath: process.env.CLEARPAIR_BROWSER || '/usr/bin/google-chrome' },
   },
   outputDir: ".runtime/playwright",
   reporter: [

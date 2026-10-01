@@ -42,6 +42,7 @@ import { Challenge } from './Challenge';
 import { LearnMotion } from './LearnMotion';
 import { StoreRoute } from './StoreRoute';
 import { JapaneseStudy } from './JapaneseStudy';
+import { japanesePairGuidance } from './japanese-curriculum';
 import { WordText } from './WordText';
 import { ScorePanel } from './ScorePanel';
 import { assessmentPlan } from './scoring-profiles';
@@ -708,7 +709,7 @@ export function App() {
               <div className="section-label">
                 {tr("ONE CHANGE AT A TIME", "一次专注一个变化")}
               </div>
-              {lesson.sides.map((s, i) => (
+              {(lesson.language === 'ja-JP' ? japanesePairGuidance(lesson, pair) : lesson.sides).map((s, i) => (
                 <div className="cue" key={i}>
                   <button
                     onClick={() => {
@@ -718,7 +719,7 @@ export function App() {
                     aria-label={`${tr("Hear", "听")} ${pair[i].text}`}
                     className="sound-token"
                   >
-                    {lesson.sounds[i]}
+                    {lesson.language === 'ja-JP' && Array.from(pair[i].text).length <= 2 ? <WordText value={pair[i].text} reading={pair[i].reading}/> : lesson.sounds[i]}
                   </button>
                   <p lang={sourceLocale(locale,s)}>{txt(s)}</p>
                 </div>
