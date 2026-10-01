@@ -128,6 +128,51 @@ describe("calibrated contrast scorer contract", () => {
       reason: "invalid-evidence",
     });
   });
+  it("ignores zero-mass competing CTC paths without changing the score", () => {
+    const e = evidence();
+    const expected = scoreContrast("handf", e, calibration());
+    e.competitorLogLikelihoods.push(-Infinity);
+    expect(scoreContrast("handf", e, calibration())).toEqual(expected);
+    e.competitorLogLikelihoods = [-Infinity];
+    e.otherLogLikelihood = -70;
+    expect(scoreContrast("handf", e, calibration())).toMatchObject({
+      status: "scored",
+      score: 97,
+    });
+  });
+  it("allows an empty other class when a finite competitor provides the alternative", () => {
+    const e = evidence();
+    e.otherLogLikelihood = -Infinity;
+    expect(scoreContrast("handf", e, calibration())).toMatchObject({
+      status: "scored",
+      score: 97,
+    });
+  });
+  it.each([NaN, Infinity, 0.1, null, "-70"])(
+    "rejects malformed competing likelihoods: %s",
+    (value) => {
+      const e = evidence();
+      e.competitorLogLikelihoods = [value as number];
+      expect(scoreContrast("handf", e, calibration())).toMatchObject({
+        status: "unscored",
+        reason: "invalid-evidence",
+      });
+    },
+  );
+  it("does not turn a degenerate likelihood ratio into a perfect score", () => {
+    const e = evidence();
+    e.competitorLogLikelihoods = [-Infinity];
+    e.otherLogLikelihood = -Infinity;
+    expect(scoreContrast("handf", e, calibration())).toEqual({
+      status: "unscored",
+      reason: "invalid-evidence",
+    });
+    e.targetLogLikelihood = -Infinity;
+    expect(scoreContrast("handf", e, calibration())).toEqual({
+      status: "unscored",
+      reason: "invalid-evidence",
+    });
+  });
   it("rejects missing learned features instead of silently using zero", () => {
     const c = calibration();
     c.weights.f3 = 1;

@@ -23,12 +23,17 @@ export class LocalScorer {
       recorded.calibrationKey&&recorded.calibrationKey!==plan.calibrationKey))
       return {status:'unscored',reason:'unsupported-contrast'};
     if(!localModels.some(m=>validatedTask(m,plan.calibrationKey)))return {status:'unscored',reason:'unvalidated-model'};
-    const pcm=await decodeRecording(audio);
-    if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
-    const quality=analyze(pcm.samples,pcm.rate);
-    if(!['clear','quiet'].includes(quality.status))return {status:'unscored',reason:'poor-signal'};
-    const samples=resamplePCM(pcm.samples,pcm.rate);
-    return this.host.request({id:crypto.randomUUID(),app,plan,samples,quality,
-      base:new URL(import.meta.env.BASE_URL,location.href).href});
+    try{
+      const pcm=await decodeRecording(audio);
+      if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
+      const quality=analyze(pcm.samples,pcm.rate);
+      if(!['clear','quiet'].includes(quality.status))return {status:'unscored',reason:'poor-signal'};
+      const samples=resamplePCM(pcm.samples,pcm.rate);
+      const result=await this.host.request({id:crypto.randomUUID(),app,plan,samples,quality,
+        base:new URL(import.meta.env.BASE_URL,location.href).href});
+      return generation===this.generation?result:{status:'unscored',reason:'cancelled'};
+    }catch{
+      return {status:'unscored',reason:generation===this.generation?'model-unavailable':'cancelled'};
+    }
   }
 }

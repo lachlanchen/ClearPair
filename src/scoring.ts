@@ -176,11 +176,11 @@ export function scoreContrast(
       probabilityValue,
     ) ||
     !e.competitorLogLikelihoods.length ||
-    ![
-      e.targetLogLikelihood,
-      e.otherLogLikelihood,
-      ...e.competitorLogLikelihoods,
-    ].every((value) => Number.isFinite(value) && value <= 0)
+    !Number.isFinite(e.targetLogLikelihood) ||
+    e.targetLogLikelihood > 0 ||
+    ![e.otherLogLikelihood, ...e.competitorLogLikelihoods].every(
+      (value) => (Number.isFinite(value) && value <= 0) || value === -Infinity,
+    )
   )
     return no("invalid-evidence");
   if (
@@ -190,10 +190,15 @@ export function scoreContrast(
   )
     return no("unaligned");
   if (e.outOfDistribution > c.gates.maxOOD) return no("uncertain");
-  const llr =
-    (e.targetLogLikelihood -
-      logSumExp([...e.competitorLogLikelihoods, e.otherLogLikelihood])) /
-    e.alignedFrames;
+  // An impossible CTC alternative has log mass -Infinity, not corrupt evidence.
+  // It contributes zero to the union; the remaining union must still have mass
+  // so the learned head receives a finite, calibrated likelihood-ratio feature.
+  const alternative = logSumExp([
+    ...e.competitorLogLikelihoods,
+    e.otherLogLikelihood,
+  ]);
+  if (!Number.isFinite(alternative)) return no("invalid-evidence");
+  const llr = (e.targetLogLikelihood - alternative) / e.alignedFrames;
   const features = { ...e.features, llr };
   let linear = c.intercept;
   for (const [key, weight] of Object.entries(c.weights)) {

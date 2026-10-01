@@ -1,7 +1,7 @@
 # Contrast-first scoring specification
 
 Status: implementation and validation in progress, **not a claim of validated scoring**.
-All seven apps require listening/recognition practice AND spoken-production scoring.
+All eight apps require listening/recognition practice AND spoken-production scoring.
 Signal quality and quiz accuracy are useful but do not satisfy pronunciation scoring.
 
 The learning claim is **“Practise what you mix up. Learn the difference.”** A learner
@@ -80,7 +80,7 @@ can catch swapped labels and obvious pipeline failures, but are not human valida
 Target runtime: a shared compact encoder plus language/contrast heads, with identical
 feature extraction and golden fixtures on Core ML/ONNX/native Android/WebAssembly.
 Keep model inference off the UI thread. Quantization must pass regression before use.
-Do not launch one-language offline scoring and imply that all seven apps are covered.
+Do not launch one-language offline scoring and imply that all eight apps are covered.
 Cloud scoring, if later needed, requires explicit user choice and truthful privacy copy.
 
 ## Acceptance gates (targets, not achieved measurements)
@@ -146,7 +146,7 @@ penalty. `scorePlannedContrast` rejects evidence for the wrong exercise, side, l
 profile version or prompt context. The production calibration registry remains empty.
 
 **No language has passed the human-labelled scoring acceptance gates yet.** Do not
-describe the seven apps as finished or publish a store claim of accurate scoring until
+describe the eight apps as finished or publish a store claim of accurate scoring until
 the relevant gates have evidence.
 
 ## Reproducible candidate audit

@@ -158,6 +158,88 @@ three ratings per item, not the overview's stated four. Canonical aggregate labe
 are retained separately from unanimous individual ratings. This is data validation,
 not a Mandarin model accuracy result. See `tools/prepare-mandarin-benchmark.mjs`.
 
+## Compact English onset experiment — 2026-10-01
+
+`tools/onset-model/` now trains an independent 9,461-parameter convolutional
+classifier for initial **F, H, L, R and OTHER**. It borrows the compact front-end
+idea from L & N, not its L/N weights or labels. `src/onset-features.ts` and
+`src/onset-network.ts` implement the matching browser/native-WebView computation.
+There are no default weights and no production registry entry.
+
+The feature pipeline is 16 kHz PCM, a 300 ms window, 25 ms Hann frames with 10 ms
+hop, a 512-point FFT and 40 HTK mel bands. Two temporal convolutions, mean/max
+pooling and two dense layers produce five acoustic-class logits. A CTC-derived
+window is only an approximate acoustic anchor; it is not a physical onset label.
+The initial 80 ms pre-anchor lead and ±50 ms training jitter are explicit.
+
+Training uses expert-high initial phones from 441 adult official-TRAIN
+SpeechOcean762 utterances. The existing split is preserved: 57 training speakers
+and ten development speakers, with 1,267 and 369 word-onset crops respectively.
+The previously consumed official test set was not reopened. Equal-class and
+within-class equal-speaker weighting reduces utterance-count imbalance. Noise,
+gain and onset jitter are training augmentations, not new human observations.
+
+| Development measurement | Per-band centering v1 | Global centering v2 |
+| --- | --- | --- |
+| Overall class accuracy, 369 crops | 68.29% | 69.92% |
+| Mean recall across five classes | 74.11% | 68.92% |
+| Previously unseen word accuracy, 61 crops | 67.21% | 59.02% |
+| OTHER recall, 198 crops | 61.62% | 68.18% |
+| L / R recall | 84.62% / 76.47% | 66.67% / 58.82% |
+
+Global centering preserves average spectral shape, but **is not accepted as an
+improvement**: its L/R and unseen-word results regress. Both artifacts and all
+failed experiments are retained privately. Both Python-to-TypeScript artifact
+checks match all ten retained argmax results, with maximum logit discrepancy
+below 2.4e-6. Workstation CNN-only timing is not mobile or full-pipeline latency.
+
+A fixed confidence/margin grid on those same development crops
+did not find a point with at least 50% pair coverage, at most 5% accepted-label
+error and at most 5% out-of-pair acceptance. High cutoffs mainly discard useful
+attempts. Frequent hard negatives include W versus F/R, M versus L and vowels
+versus H. OTHER here is unrelated **speech**, not silence/noise/device OOD coverage.
+No class softmax is a calibrated pronunciation grade. Reusing this development
+set to select checkpoints or thresholds is not fresh held-out validation.
+
+Reproduce using the shared research Python environment with NumPy, PyTorch and
+ONNX Runtime; preserve existing output folders:
+
+```sh
+python tools/onset-model/build-dataset.py --out .runtime/onset-new
+python tools/onset-model/train.py .runtime/onset-new/dataset.npz .runtime/onset-new/cnn
+node tools/onset-model/verify-runtime.mjs .runtime/onset-new/cnn
+```
+
+The builder only uses existing cached, pinned corpus audio; it does not fetch
+audio implicitly. Model JSON contains bounded numeric weights rather than pickle.
+`tools/onset-model/audit-confidence.py` retains full development outputs and
+reports counts, coverage and uncertainty rather than hiding errors by evaluating
+only the displayed pair. All artifacts remain unapproved and unbundled.
+
+## Scoring-path corrections
+
+- An impossible CTC competitor has log probability `-Infinity`, not corrupted
+  evidence. It now contributes zero mass while the combined alternative must
+  remain finite. NaN, positive infinity and an empty alternative mass still fail.
+- Accepted pronunciation variants are deduplicated and acoustic anchors are
+  marginalised over their sequence probabilities. Their order no longer chooses
+  the measured sound region. Existing calibrations must not be reused without
+  evaluating this changed feature extractor.
+- Decode/preprocessing errors return structured unscored results. Cancelling or
+  replacing an assessment prevents its late worker reply from becoming a score.
+
+## Mandarin feasibility probe
+
+`tools/audit-mandarin-heads.py` reconstructs the inspected standard Wav2Vec2
+encoder and independent initial/final/tone CTC heads from a pinned cached research
+checkpoint. It does not execute remote model code, download weights, or merge
+independent head token lists into invented syllables. Blank, unknown and ZERO
+initial remain distinct. All seven short synthetic probes completed, but outputs
+included questionable finals/tones and a z/j mismatch. These unauditioned TTS
+probes establish inference feasibility only, not model errors against verified
+human ground truth or Mandarin learner accuracy. The large checkpoint is not
+approved for commercial bundling or enabled in any app.
+
 ## What each small part needs
 
 The exact exercise-to-head mapping is in `src/scoring-profiles.ts`; every exercise

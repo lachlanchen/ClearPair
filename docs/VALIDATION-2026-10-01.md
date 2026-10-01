@@ -5,6 +5,10 @@ existing iOS/Android internal-test builds remain 1.0.0 (5). The source changes
 described here are not in those binaries or the deployed PWA. Numeric grades
 remain disabled: there is no qualified, bundled production model.
 
+**Later same-day update:** the bounded physical Android capture/export checks
+below now pass for H & F beta5 on MIX 2S and Mi10 Pro. This does not supersede the
+failed Mac simulator capture or qualify a pronunciation scorer.
+
 ## Changes verified
 
 - Replaced the display-only pitch estimator after reproducing octave errors on
@@ -82,3 +86,61 @@ and offline inference on target devices; measure memory/latency; then produce
 new uniquely numbered release binaries and complete the existing store checks.
 Do not bypass these requirements with a constant score, synthetic-only accuracy
 claim, or an approval flag unsupported by evidence.
+
+## Later physical Android and source checks
+
+H & F 1.0.0 (5) was not initially installed on either test phone. A universal QA
+APK was generated from the retained beta5 AAB and installed without uninstalling
+or resetting any app. This was **not a Google Play-delivered installation** and
+does not claim the current source changes are present in beta5.
+
+On both the MIX 2S and Mi10 Pro:
+
+- Native microphone permission was approved for ClearPair; two ambient start/stop
+  captures completed. The recording display changed, and takes remained in
+  History after force-stop/relaunch.
+- History playback entered the playing state with native audio playback events.
+  Independent audible confirmation was not obtained; UI/native events alone
+  are not evidence that a listener heard the reference correctly.
+- An explicitly shared take was exported to a tiny local QA receiver with **zero
+  Android permissions and no Internet access**, then read from its own external
+  files directory. No broad file-manager access, private app-storage bypass or
+  cloud/social destination was used. The helper is not part of the app release.
+- Exported fixture-attempt files are valid mono PCM16 WAV at 16 kHz: MIX 2S has
+  59,840 frames (3.740 s), Mi10 Pro 55,040 frames (3.440 s). Samples are nonzero and
+  vary over time. The microphone-to-export path is real, not an injected fixture.
+
+A short CC-BY-4.0 SpeechOcean762 phrase was played through each host's existing
+speaker route at a bounded per-stream volume while recording. Resulting levels
+were quiet (approximately -43 and -46 dBFS), and comparisons did **not establish
+that the known phrase was captured**. Ambient noise is not a successful speech
+assessment. Neither phone has a verified correct/confused-utterance scoring pass.
+The H & F screen prompt also differed from that functional capture phrase; no
+pronunciation-grade interpretation is valid.
+
+After evidence capture, the project-owned app/helper processes, device lease and
+temporary ADB tunnel were closed. Installed apps, takes, exported files and the
+pre-existing shared phone mirrors were preserved. No global speaker volume,
+mute, default routing or unrelated app permission was changed.
+
+New scoring-path regressions cover accepted pronunciation variants, zero-mass CTC
+alternatives, decoding failures and stale/cancelled assessment replies. The full
+source suite has 343 passing tests, including enabled Python/TypeScript parity
+checks. All 44 Python tooling tests, eight web builds and 39 browser tests passed.
+Those browser capture fixtures remain synthetic and do not substitute for the
+physical checks above. Eleven-language README structural validation also passes.
+
+The independent compact model and Mandarin feasibility results are recorded in
+[on-device scoring](ON-DEVICE-SCORING.md). Neither compact English variant qualifies
+for use: confidence cutoffs trade away useful coverage without solving unrelated
+speech acceptance. No weights, calibration approval, model-registry entry, new
+native binary, PWA deployment or formal submission was made in this follow-up.
+
+## Mac permission follow-up
+
+A live macOS-level `SimulatorTrampoline.xpc` microphone prompt was subsequently
+found and approved once. This was separate from the simulator app's permission.
+The prompt disappeared, and the desktop lane was returned to the coordinating
+project. No post-consent capture was run before that handoff, so causation and
+capture success remain unverified. A bounded lane-return request is recorded
+privately; another project's active desktop is not taken over for a retest.
