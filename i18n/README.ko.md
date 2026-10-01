@@ -12,7 +12,7 @@
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-[일본어](../docs/JAPANESE-COURSE.md)를 포함한 독립 앱 8개가 TestFlight와 Google Play에서 [내부 테스트 1.0.0 (5)](../docs/BETA-1.0.0-5.md)로 제공돼요. 앱별 설명, 엄격한 음성 선택, 일본어 글자 읽기 수정이 포함돼요. 8개 코스의 PWA 공개도 확인했어요. 로컬 모델 검증 중이라 발음 점수는 아직 비활성화돼요. 참고 음성 청취와 실제 기기 마이크 검증은 미완료이며 정식 심사는 아직 제출하지 않았어요.
+[일본어](../docs/JAPANESE-COURSE.md)를 포함한 독립 앱 8개를 TestFlight와 Google Play의 [내부 테스트 1.0.0 (6) 및 테스트 링크](../docs/BETA-1.0.0-6.md)로 이용할 수 있어요. 실험적인 기기 내 연습 일치도 점수가 추가됐지만 보정된 발음 정답률은 아니에요. [서명된 패키지와 스토어 상태를 확인했어요](../store/artifacts/internal-beta-1.0.0-6.json). 소유자의 휴대폰 테스트용이며 정식 출시 심사 제출은 아니에요. 공개 PWA는 변경하지 않았어요.
 
 ## 여덟 가지 전문 코스
 

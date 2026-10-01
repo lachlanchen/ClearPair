@@ -1,8 +1,34 @@
 # 1.0.0 (6): local practice-match beta
 
-Candidate for all eight native apps. Upload/provider availability will be recorded
-separately after signing and readback; this design note is not an upload receipt.
-The owner requested a designed beta first and will test it on their phone.
+All eight apps are available as **1.0.0 (6)** in internal TestFlight and Google Play
+internal testing. Exact signed hashes, source identity and verified provider states
+are in the [release receipt](../store/artifacts/internal-beta-1.0.0-6.json).
+These are test builds, not formal production review submissions. The owner
+requested a designed beta first and will test it on their phone.
+
+## Get the test build
+
+On iPhone/iPad, open [TestFlight](https://apps.apple.com/app/testflight/id899247664)
+using your invited account and update each app to **1.0.0 (6)**. Each course is a
+separate app; Japanese is not part of H & F. Update without uninstalling to retain
+recordings. Internal testing does not have an unrestricted public TestFlight link.
+
+On Android, use the invited tester account and the corresponding link:
+
+| App | Google Play internal test |
+| --- | --- |
+| H & F | [Join/update](https://play.google.com/apps/internaltest/4700504989515969850) |
+| L & R | [Join/update](https://play.google.com/apps/internaltest/4699964129264422650) |
+| English | [Join/update](https://play.google.com/apps/internaltest/4701515041942561039) |
+| Mandarin | [Join/update](https://play.google.com/apps/internaltest/4701508145131584373) |
+| Korean | [Join/update](https://play.google.com/apps/internaltest/4701552197367057378) |
+| Arabic Letters | [Join/update](https://play.google.com/apps/internaltest/4701081904617178358) |
+| Cantonese | [Join/update](https://play.google.com/apps/internaltest/4700996599031534890) |
+| Japanese | [Join/update](https://play.google.com/apps/internaltest/4701602453248600334) |
+
+Updates can take time to appear on a phone. Android scoring requires an installed
+offline voice for the selected practice language. The interface language does
+not change that language requirement.
 
 ## What changes
 
@@ -35,6 +61,10 @@ removed after completion/cancellation. Assessment is cancellable and time bounde
 
 ## Test evidence before packaging
 
+- 366 unit tests passed, with three existing skips; all eight web builds and 39
+  browser regressions passed. All eight packages on each native platform passed
+  signing/identity checks. Browser/mock audio tests are not physical-microphone
+  or human-pronunciation-accuracy measurements.
 - Unit fixtures reject silence, DC, noise and malformed samples; compare opposite
   targets; retain vowel differences; tolerate amplitude and moderate pace changes.
 - Runtime/UI tests cover reference caching, language and voice identity, late

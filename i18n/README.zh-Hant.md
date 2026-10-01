@@ -12,7 +12,7 @@
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-包含獨立[日語應用](../docs/JAPANESE-COURSE.md)的八款應用，均已提供 TestFlight 和 Google Play [內部測試版 1.0.0 (5)](../docs/BETA-1.0.0-5.md)。包含各應用專屬說明、更嚴格的參考語音選擇及日語字母讀音修復。八門課程的 PWA 已驗證上線。本地模型仍在驗證，發音分數尚未啟用；參考音試聽和真機麥克風驗證尚未完成。正式審核尚未提交。
+包含獨立[日語應用](../docs/JAPANESE-COURSE.md)的八款應用，均已提供 TestFlight 和 Google Play [內部測試版 1.0.0 (6)及測試連結](../docs/BETA-1.0.0-6.md)。新增實驗性的裝置端練習匹配分，不是經過校準的發音正確率。[簽名構建和商店狀態均已驗證](../store/artifacts/internal-beta-1.0.0-6.json)。這次用於使用者手機測試，並非正式生產審核提交；已上線的PWA保持不變。
 
 ## 八門專項課程
 

@@ -4,8 +4,8 @@ Each app focuses on easily confused sounds or letters, not generic vocabulary
 practice. The approved V4 identity and eleven interface languages are retained.
 Old icon originals and earlier release receipts must not be deleted.
 
-All eight **1.0.0 (5)** builds were verified in internal testing on both platforms,
-not formal review. [The verified beta receipt](artifacts/internal-beta-1.0.0-5.json)
+All eight **1.0.0 (6)** builds were verified in internal testing on both platforms,
+not formal review. [The verified beta receipt](artifacts/internal-beta-1.0.0-6.json)
 is distinct from a production submission. Later voice fixes and model work require
 a new tested build; do not label the older binary as containing those changes.
 Reuse no upload attempt with uncertain provider status. Each platform can proceed
@@ -16,7 +16,8 @@ Build 6 adds a separately labelled, experimental local reference-match index;
 see [its design and checks](../docs/BETA-1.0.0-6.md). This does not approve the
 calibrated phonetic models or waive formal-production accuracy claims. Prepare
 and distribute all eight internal-test builds without changing prices, countries,
-production tracks or other app review states.
+production tracks or other app review states. Distribution is complete; the next
+step is the owner's phone feedback, not an assertion of calibrated accuracy.
 
 ## Truthful product boundaries
 
