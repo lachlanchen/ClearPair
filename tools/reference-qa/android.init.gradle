@@ -1,0 +1,7 @@
+gradle.beforeProject { app ->
+ if (app.name == 'app') app.afterEvaluate {
+  app.android.defaultConfig.applicationId = 'art.lazying.clearpair.qa.reference'
+  app.android.sourceSets.main.assets.setSrcDirs([new File(gradle.rootProject.projectDir, '../../../../.runtime/reference-qa/assets')])
+  app.android.sourceSets.debug.res.srcDir(new File(gradle.rootProject.projectDir, '../../../../.runtime/reference-qa/res'))
+ }
+}

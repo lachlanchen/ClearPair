@@ -4,6 +4,10 @@ import {
   type PluginListenerHandle,
 } from "@capacitor/core";
 interface NativeAudio {
+  reference(options: { id: string; text: string; language: string }): Promise<{
+    base64: string; mimeType: string; voice: string;
+  }>;
+  cancelReference(): Promise<void>;
   speak(options: {
     text: string;
     language: string;

@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "build": 5,
-  "distribution": "development-voice-fixes-test-candidate-not-formal",
+  "build": 6,
+  "distribution": "experimental-local-reference-match-internal-test-not-formal",
   "apps": ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese", "japanese"]
 }

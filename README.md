@@ -33,7 +33,7 @@ Listening quizzes, pair playback/looping, learning guides, spaced review, wavefo
 
 V4 icons now guide the in-app palette: light backgrounds, flowing color, tidy cards and steady recording/playback controls. Earlier icon versions are retained. Optional animations and five-question games award local stars for listening/recall, never unvalidated pronunciation scores. See the [localization scope](docs/LOCALIZATION.md) and [Cantonese notes](docs/CANTONESE.md). The [seven-app 0.2.0 (2) beta](docs/BETA-0.2.0.md) includes V4, all 11 UI languages and Cantonese.
 
-**Pronunciation grades remain disabled pending validated local model artifacts.** The recording screen now has an assessment flow and explains missing/uncertain models without inventing a grade. It has no backend fallback. Signal quality is not pronunciation accuracy. Capacitor combines a React interface with native Swift/Java recording and speech playback; these are not separate SwiftUI/Compose interfaces.
+**Build 6 adds an experimental native practice-match score.** It compares the recording with both device-voice references locally using spectral features, bounded time alignment and relative pitch. It is a reference-similarity index, not a pronunciation accuracy percentage. An offline practice-language voice is required; calibrated phoneme grades and PWA scoring remain disabled. The [beta design and test record](docs/BETA-1.0.0-6.md) distinguishes functional checks from human accuracy. Capacitor combines a React interface with native Swift/Java recording and speech playback; these are not separate SwiftUI/Compose interfaces.
 
 ## Build and test
 

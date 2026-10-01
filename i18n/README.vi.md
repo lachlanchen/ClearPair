@@ -33,7 +33,7 @@ Cả tám ứng dụng độc lập, gồm [tiếng Nhật](../docs/JAPANESE-COU
 
 Biểu tượng V4 dẫn dắt bảng màu: nền sáng, màu mềm, thẻ gọn và nút ghi/phát giữ vị trí ổn định. Biểu tượng cũ được giữ lại. Hoạt ảnh tùy chọn và trò chơi năm câu trao sao cục bộ cho nghe/nhớ, không phải điểm phát âm chưa được kiểm chứng. Xem [phạm vi ngôn ngữ](../docs/LOCALIZATION.md) và [ghi chú Quảng Đông](../docs/CANTONESE.md). [Bản beta 0.2.0 (2) của bảy ứng dụng](../docs/BETA-0.2.0.md) có V4, 11 ngôn ngữ giao diện và ứng dụng Quảng Đông.
 
-**Điểm phát âm đang tắt cho đến khi tích hợp mô hình và kiểm chứng với người thật.** Chất lượng tín hiệu không phải độ chính xác phát âm. Capacitor kết hợp React với ghi âm và giọng nói gốc Swift/Java, không phải giao diện SwiftUI/Compose riêng.
+**Bản dựng 6 thêm điểm khớp luyện tập thử nghiệm cho ứng dụng gốc.** Bản ghi được so sánh cục bộ với hai giọng mẫu bằng phổ âm, căn chỉnh thời gian có giới hạn và cao độ tương đối. Đây là chỉ số giống nhau, không phải tỷ lệ phát âm đúng. Cần cài giọng ngoại tuyến cho ngôn ngữ luyện tập; điểm âm vị đã hiệu chỉnh và điểm PWA vẫn tắt. [Báo cáo thử nghiệm](../docs/BETA-1.0.0-6.md) phân biệt kiểm tra chức năng và độ chính xác với người thật. Capacitor kết hợp React với ghi âm và giọng nói gốc Swift/Java, không phải giao diện SwiftUI/Compose riêng.
 
 ## Biên dịch và kiểm thử
 

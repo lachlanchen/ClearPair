@@ -39,10 +39,12 @@ public class ClearPairAudioPlugin extends Plugin {
     private boolean ttsReady=false;
     private PluginCall speechCall;
     private String speechId;
+    private LocalReferenceVoice referenceVoice;
     private final AtomicInteger captureGeneration=new AtomicInteger();
     private final ConcurrentHashMap<String,Integer> permissionRequests=new ConcurrentHashMap<>();
 
     @PluginMethod public void start(PluginCall call) {
+        getActivity().runOnUiThread(()->{if(referenceVoice!=null)referenceVoice.cancel();});
         if (recorder!=null) { call.reject("A recording is already active.");return; }
         int token=captureGeneration.incrementAndGet();
         if(getPermissionState("microphone")!=PermissionState.GRANTED){
@@ -125,6 +127,7 @@ public class ClearPairAudioPlugin extends Plugin {
         }catch(Exception error){call.reject("Unable to prepare the recording for export.",error);}
     }
     @PluginMethod public void speak(PluginCall call){getActivity().runOnUiThread(()->{
+        if(referenceVoice!=null)referenceVoice.cancel();
         stopVoice();speechCall=call;
         if(tts==null){tts=new TextToSpeech(getContext(),status->{ttsReady=status==TextToSpeech.SUCCESS;if(!ttsReady){failSpeech("Android text-to-speech is unavailable.");return;}installSpeechListener();startVoice();});}
         else if(ttsReady)startVoice();
@@ -159,5 +162,14 @@ public class ClearPairAudioPlugin extends Plugin {
     private void failSpeech(String message){if(speechCall!=null){speechCall.reject(message);speechCall=null;}speechId=null;}
     private void stopVoice(){speechId=null;if(tts!=null)tts.stop();if(speechCall!=null){speechCall.resolve();speechCall=null;}}
     @PluginMethod public void stopSpeech(PluginCall call){getActivity().runOnUiThread(()->{stopVoice();call.resolve();});}
-    @Override protected void handleOnDestroy(){captureGeneration.incrementAndGet();permissionRequests.clear();endCapture();stopVoice();if(tts!=null){tts.shutdown();tts=null;}super.handleOnDestroy();}
+    @PluginMethod public void reference(PluginCall call){getActivity().runOnUiThread(()->{
+        if(recording||recorder!=null){call.reject("Stop recording before local assessment.");return;}
+        if(referenceVoice==null)referenceVoice=new LocalReferenceVoice(getContext());
+        referenceVoice.render(call);
+    });}
+    @PluginMethod public void cancelReference(PluginCall call){getActivity().runOnUiThread(()->{
+        if(referenceVoice!=null)referenceVoice.cancel();call.resolve();
+    });}
+    @Override protected void handleOnStop(){if(referenceVoice!=null)referenceVoice.cancel();super.handleOnStop();}
+    @Override protected void handleOnDestroy(){if(referenceVoice!=null)referenceVoice.close();captureGeneration.incrementAndGet();permissionRequests.clear();endCapture();stopVoice();if(tts!=null){tts.shutdown();tts=null;}super.handleOnDestroy();}
 }

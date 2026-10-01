@@ -1,7 +1,9 @@
 # On-device contrast scoring
 
-Status: inference/scoring integration under test. **No production model has
-passed human accuracy and physical-device gates. Numeric grades are not enabled.**
+Status: **build 6 adds a separately labelled experimental native reference-match
+index**, described in [the beta design](BETA-1.0.0-6.md). It does not claim calibrated
+pronunciation accuracy. No production phonetic model has passed the human
+accuracy gates; that calibrated grading path remains disabled.
 The user requires scoring inside the iPhone, Android and PWA applications, not on
 a backend, and accepts larger installation sizes. There is no cloud fallback,
 audio upload, paid provider or server inference in this implementation.

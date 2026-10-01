@@ -12,6 +12,8 @@ public class ClearPairAudioPlugin: CAPPlugin, CAPBridgedPlugin, AVSpeechSynthesi
         CAPPluginMethod(name: "cancel", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "shareRecording", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "speak", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "reference", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "cancelReference", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "stopSpeech", returnType: CAPPluginReturnPromise)
     ]
     private var recorder: AVAudioRecorder?
@@ -28,8 +30,93 @@ public class ClearPairAudioPlugin: CAPPlugin, CAPBridgedPlugin, AVSpeechSynthesi
     private let voice = AVSpeechSynthesizer()
     private var speechCall: CAPPluginCall?
     private var utterance: AVSpeechUtterance?
+    private var referenceSynth = AVSpeechSynthesizer()
+    private var referenceCall: CAPPluginCall?
+    private var referenceToken = UUID()
+    private var referencePCM = Data()
+    private var referenceRate = 0
+    private var referenceDeadline: DispatchWorkItem?
+
+    @objc public func reference(_ call: CAPPluginCall) { DispatchQueue.main.async {
+        self.stopReference()
+        let text = call.getString("text") ?? ""
+        let language = call.getString("language") ?? ""
+        guard !text.isEmpty, text.count <= 500,
+              ["en-US","zh-CN","zh-HK","ja-JP","ko-KR","ar-SA"].contains(language),
+              self.recorder == nil, !self.hardwareStarting else { call.reject("Reference is unavailable while recording."); return }
+        var voices = AVSpeechSynthesisVoice.speechVoices().filter { Self.isPracticeVoice($0, language) }
+        if let direct = AVSpeechSynthesisVoice(language: language), Self.isPracticeVoice(direct, language),
+           !voices.contains(where: { $0.identifier == direct.identifier }) { voices.append(direct) }
+        voices.sort { a, b in
+            let ae = a.language.lowercased() == language.lowercased(), be = b.language.lowercased() == language.lowercased()
+            if ae != be { return ae }
+            if a.quality != b.quality { return a.quality.rawValue > b.quality.rawValue }
+            let am = a.identifier.hasPrefix("com.apple.voice."), bm = b.identifier.hasPrefix("com.apple.voice.")
+            if am != bm { return am }
+            return a.identifier < b.identifier
+        }
+        guard let voice = voices.first else { call.reject("Install an offline voice for the practice language in Settings."); return }
+        self.referenceCall = call
+        let token = self.referenceToken
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.voice = voice; utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+        let deadline = DispatchWorkItem { [weak self] in self?.stopReference() }
+        self.referenceDeadline = deadline
+        DispatchQueue.main.asyncAfter(deadline: .now() + 20, execute: deadline)
+        // write() renders to buffers, not speakers. References stay on the device
+        // and are never redistributed as bundled voice assets.
+        self.referenceSynth.write(utterance) { [weak self] buffer in
+            guard let pcm = buffer as? AVAudioPCMBuffer else { return }
+            let count = Int(pcm.frameLength), rate = Int(pcm.format.sampleRate)
+            var data = Data()
+            if count > 0, let channels = pcm.floatChannelData {
+                let channelCount = Int(pcm.format.channelCount)
+                for i in 0..<count {
+                    var value: Float = 0
+                    for channel in 0..<channelCount { value += channels[channel][i] }
+                    value /= Float(channelCount)
+                    var sample = Int16(max(-32767, min(32767, value.isFinite ? value * 32767 : 0))).littleEndian
+                    withUnsafeBytes(of: &sample) { data.append(contentsOf: $0) }
+                }
+            }
+            let chunk = data
+            DispatchQueue.main.async {
+                guard let self, self.referenceToken == token, self.referenceCall === call else { return }
+                if count == 0 {
+                    guard self.referencePCM.count >= 320, self.referenceRate >= 8000 else { self.stopReference(); return }
+                    let audio = Self.referenceWav(self.referencePCM, self.referenceRate)
+                    self.referenceDeadline?.cancel(); self.referenceDeadline = nil
+                    self.referenceCall = nil; self.referencePCM = Data(); self.referenceRate = 0
+                    call.resolve(["base64":audio.base64EncodedString(),"mimeType":"audio/wav","voice":voice.identifier])
+                } else {
+                    guard chunk.count == count * 2, rate >= 8000, rate <= 96000,
+                          (self.referenceRate == 0 || self.referenceRate == rate),
+                          self.referencePCM.count + chunk.count <= rate * 27 else { self.stopReference(); return }
+                    self.referenceRate = rate; self.referencePCM.append(chunk)
+                }
+            }
+        }
+    }}
+    private static func referenceWav(_ pcm: Data, _ rate: Int) -> Data {
+        var result = Data()
+        func text(_ value: String) { result.append(contentsOf: value.utf8) }
+        func u32(_ value: Int) { var n = UInt32(value).littleEndian; withUnsafeBytes(of: &n) { result.append(contentsOf: $0) } }
+        func u16(_ value: Int) { var n = UInt16(value).littleEndian; withUnsafeBytes(of: &n) { result.append(contentsOf: $0) } }
+        text("RIFF"); u32(36 + pcm.count); text("WAVEfmt "); u32(16); u16(1); u16(1)
+        u32(rate); u32(rate * 2); u16(2); u16(16); text("data"); u32(pcm.count); result.append(pcm)
+        return result
+    }
+    private func stopReference() {
+        referenceToken = UUID(); referenceDeadline?.cancel(); referenceDeadline = nil
+        referenceCall?.reject("Local reference cancelled or unavailable. Check the installed language voice."); referenceCall = nil
+        referencePCM = Data(); referenceRate = 0
+        referenceSynth.stopSpeaking(at: .immediate)
+        referenceSynth = AVSpeechSynthesizer()
+    }
+    @objc public func cancelReference(_ call: CAPPluginCall) { DispatchQueue.main.async { self.stopReference(); call.resolve() }}
 
     @objc public func start(_ call: CAPPluginCall) { DispatchQueue.main.async {
+        self.stopReference()
         guard self.recorder == nil, self.pendingStart == nil, !self.hardwareStarting else {
             call.reject("The microphone is busy. If it does not recover, close and reopen the app."); return
         }
@@ -161,6 +248,7 @@ public class ClearPairAudioPlugin: CAPPlugin, CAPBridgedPlugin, AVSpeechSynthesi
         } catch { call.reject("Unable to prepare the recording for export: \(error.localizedDescription)") }
     }
     @objc public func speak(_ call: CAPPluginCall) { DispatchQueue.main.async {
+        self.stopReference()
         guard !self.hardwareStarting else { call.reject("The microphone is busy. Close and reopen the app if it does not recover."); return }
         self.stopVoice()
         let language = call.getString("language") ?? "en-US"
@@ -175,6 +263,8 @@ public class ClearPairAudioPlugin: CAPPlugin, CAPBridgedPlugin, AVSpeechSynthesi
             let rightExact = right.language.lowercased().replacingOccurrences(of: "_", with: "-") == requested
             if leftExact != rightExact { return leftExact }
             if left.quality.rawValue != right.quality.rawValue { return left.quality.rawValue > right.quality.rawValue }
+            let leftModern = left.identifier.hasPrefix("com.apple.voice."), rightModern = right.identifier.hasPrefix("com.apple.voice.")
+            if leftModern != rightModern { return leftModern }
             return left.identifier < right.identifier
         }
         guard let selected = candidates.first else { call.reject("Install a voice for \(language) in Settings. Mandarin and Cantonese voices are not interchangeable."); return }

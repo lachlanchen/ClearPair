@@ -1104,7 +1104,7 @@ export function App() {
                       ? tr(" · temporary", " · 临时")
                       : ""}
                   </small>
-                  {t.score?.status==='scored'&&<small>{tr('Pronunciation assessment','发音评分')}: {t.score.score} / 100</small>}
+                  {(t.score?.status==='scored'||t.score?.status==='matched')&&<small>{t.score.status==='matched'?tr('Beta practice match','测试版练习匹配分'):tr('Pronunciation assessment','发音评分')}: {t.score.score} / 100</small>}
                 </div>
                 <button
                   className="icon-button"

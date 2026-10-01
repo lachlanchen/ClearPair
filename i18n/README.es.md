@@ -33,7 +33,7 @@ Están implementados los cuestionarios auditivos, reproducción y bucle de pares
 
 Los iconos V4 guían la paleta: fondos claros, color fluido, tarjetas ordenadas y controles estables de grabación/reproducción. Se conservan los iconos anteriores. Animaciones opcionales y juegos de cinco preguntas otorgan estrellas locales por escuchar/recordar, nunca notas de pronunciación no validadas. Consulta el [alcance de idiomas](../docs/LOCALIZATION.md) y las [notas cantonesas](../docs/CANTONESE.md). La [beta 0.2.0 (2) de siete apps](../docs/BETA-0.2.0.md) incluye V4, los 11 idiomas de interfaz y cantonés.
 
-**Las notas de pronunciación están desactivadas hasta integrar y validar los modelos con personas.** La calidad de señal no mide pronunciación. Capacitor combina React con grabación y voz nativas Swift/Java; no son interfaces SwiftUI/Compose independientes.
+**La compilación 6 añade una puntuación nativa experimental de similitud.** Compara localmente la grabación con ambas referencias de voz mediante el espectro, la alineación temporal limitada y el tono relativo. Es similitud, no un porcentaje de pronunciación correcta. Requiere una voz sin conexión instalada; las notas fonéticas calibradas y la puntuación PWA siguen desactivadas. El [registro de pruebas](../docs/BETA-1.0.0-6.md) distingue funcionamiento y precisión con personas. Capacitor combina React con grabación y voz nativas Swift/Java; no son interfaces SwiftUI/Compose independientes.
 
 ## Compilar y probar
 

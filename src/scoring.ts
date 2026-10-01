@@ -10,7 +10,8 @@ export type ScoreReason =
   | "invalid-evidence"
   | "ungraded-exercise"
   | "cancelled"
-  | "model-unavailable";
+  | "model-unavailable"
+  | "reference-unavailable";
 export interface ScoreEvidence {
   model: string;
   profile: string;
@@ -56,6 +57,18 @@ export interface Calibration {
 }
 export type ScoreResult =
   | { status: "unscored"; reason: ScoreReason }
+  | {
+      status: "matched";
+      score: number;
+      contrast: string;
+      model: "local-reference-dtw:v1";
+      unit: ScoreEvidence["unit"];
+      // A reference similarity index, NOT a probability of correct pronunciation.
+      targetDistance: number;
+      competitorDistance: number;
+      referenceVoice: string;
+      scope: "word" | "sentence";
+    }
   | {
       status: "scored";
       score: number;

@@ -33,7 +33,7 @@ Hörquiz, Paarwiedergabe/Schleifen, Lernguides, zeitversetzte Wiederholung, Well
 
 V4-Icons prägen die Palette: helle Hintergründe, fließende Farben, aufgeräumte Karten und stabile Aufnahme-/Wiedergabesteuerung. Frühere Icons bleiben erhalten. Optionale Animationen und Fünf-Fragen-Spiele vergeben lokale Sterne fürs Hören/Erinnern, nie unvalidierte Aussprachenoten. Siehe [Sprachumfang](../docs/LOCALIZATION.md) und [kantonesische Hinweise](../docs/CANTONESE.md). Die [Sieben-App-Beta 0.2.0 (2)](../docs/BETA-0.2.0.md) enthält V4, alle 11 UI-Sprachen und Kantonesisch.
 
-**Aussprachebewertungen bleiben bis zur Modellintegration und menschlichen Validierung deaktiviert.** Signalqualität ist keine Aussprachegenauigkeit. Capacitor verbindet React mit nativer Swift/Java-Aufnahme und Sprachausgabe; es sind keine getrennten SwiftUI/Compose-Oberflächen.
+**Build 6 ergänzt einen experimentellen nativen Übungswert.** Die Aufnahme wird lokal anhand von Spektrum, begrenzter Zeitausrichtung und relativer Tonhöhe mit beiden Gerätestimmen-Referenzen verglichen. Der Wert beschreibt Ähnlichkeit, keinen Prozentsatz korrekter Aussprache. Eine installierte Offline-Stimme ist erforderlich; kalibrierte Phonemnoten und PWA-Bewertung bleiben deaktiviert. Der [Testbericht](../docs/BETA-1.0.0-6.md) trennt Funktionstests von menschlicher Genauigkeit. Capacitor verbindet React mit nativer Swift/Java-Aufnahme und Sprachausgabe; es sind keine getrennten SwiftUI/Compose-Oberflächen.
 
 ## Bauen und testen
 

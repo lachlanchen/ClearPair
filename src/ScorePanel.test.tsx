@@ -15,6 +15,14 @@ const grade:ScoreResult={status:'scored',score:83,probability:.83,model:'test-on
 beforeEach(()=>{vi.clearAllMocks();mocks.save.mockResolvedValue('device');});
 afterEach(cleanup);
 describe('local scoring take lifecycle',()=>{
+ it('labels experimental reference matches and preserves their provenance in history',async()=>{
+  const match:ScoreResult={status:'matched',score:76,model:'local-reference-dtw:v1',contrast:'handf/hf-en/0/0/word/en-h-f:v1',unit:'phone',targetDistance:.2,competitorDistance:.3,referenceVoice:'fixture',scope:'word'};
+  mocks.assess.mockResolvedValue(match);
+  render(<ScorePanel take={take()} busy={false} tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);
+  await act(async()=>fireEvent.click(screen.getByRole('button',{name:'Assess my pronunciation'})));
+  expect(screen.getByText(/not a pronunciation accuracy percentage/)).toBeDefined();
+  expect(mocks.save).toHaveBeenCalledWith(expect.objectContaining({score:match}));
+ });
  it('disables assessment without a frozen target, including old history entries',()=>{
   const old=take();delete old.assessment;
   render(<ScorePanel take={old} busy={false} tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);

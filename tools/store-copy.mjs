@@ -6,6 +6,7 @@ export function betaDescription(app){
 }
 export function betaNotes(app,build=4){
  const row=listings[app];if(!row)throw Error('Unknown course');
+ if(build>=6)return `${row.name}\n\n${row.focus}\n\nNew experimental on-device practice score: record, finish, then tap Assess my pronunciation. The 0–100 beta match compares your sound with both reference words using spectrum, timing and relative pitch. It is reference similarity, not a pronunciation accuracy percentage or a calibrated grade. No microphone uploads. An installed offline practice-language voice is required.\n\nPlease try a correct word, its opposite, silence, a short word and the sentence option. Repeat several times, cancel an assessment, change cards, and check History/replay. Tell us the selected word, your spoken word and the score. Listening stars stay separate. Update in place; do not uninstall. Internal test only; formal speech accuracy scoring remains under validation.`;
  const changes=build>=5
   ?`Reference playback hardening: correct practice-language voices, no iOS novelty/personal voices, and installed Android voices only.${app==='japanese'?' Isolated kana use explicit Japanese sound readings; displayed kana and contextual furigana stay unchanged.':''}`
   :app==='japanese'

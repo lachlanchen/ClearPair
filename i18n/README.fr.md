@@ -33,7 +33,7 @@ Quiz d’écoute, lecture/boucle de paires, guides, révision espacée, formes d
 
 Les icônes V4 inspirent la palette : fonds clairs, couleurs fluides, cartes ordonnées et commandes stables d’enregistrement/lecture. Les anciennes icônes sont conservées. Animations facultatives et jeux de cinq questions attribuent des étoiles locales pour l’écoute/le rappel, jamais pour une prononciation non validée. Voir la [portée linguistique](../docs/LOCALIZATION.md) et les [notes cantonaises](../docs/CANTONESE.md). La [bêta 0.2.0 (2) des sept apps](../docs/BETA-0.2.0.md) inclut V4, les 11 langues d’interface et le cantonais.
 
-**Les notes de prononciation sont désactivées en attendant l'intégration des modèles et leur validation humaine.** La qualité du signal ne mesure pas la prononciation. Capacitor associe React à l'enregistrement et à la parole natifs Swift/Java ; il ne s'agit pas d'interfaces SwiftUI/Compose séparées.
+**Le build 6 ajoute un score natif expérimental de correspondance.** L’enregistrement est comparé localement aux deux références vocales par le spectre, un alignement temporel borné et la hauteur relative. C’est un indice de similarité, pas un pourcentage de prononciation correcte. Une voix hors ligne installée est nécessaire ; les notes phonétiques calibrées et la notation PWA restent désactivées. Le [rapport de tests](../docs/BETA-1.0.0-6.md) distingue fonctionnement et précision humaine. Capacitor associe React à l’enregistrement et à la parole natifs Swift/Java ; il ne s’agit pas d’interfaces SwiftUI/Compose séparées.
 
 ## Compiler et tester
 
