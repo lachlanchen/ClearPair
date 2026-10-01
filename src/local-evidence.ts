@@ -4,6 +4,7 @@ import { contrastLatticeEvidence, type ContrastLattice } from './contrast-lattic
 import { logSumExp, type ScoreEvidence } from './scoring';
 import type { Analysis } from './types';
 import type { LearnedGate, LocalModel, LocalTask } from './local-models';
+import { phoneEditFeatures } from './phone-edit-evidence';
 function learnedProbability(gate:LearnedGate,features:Record<string,number>):number {
   let linear=gate.intercept;
   for(const [key,weight] of Object.entries(gate.weights)){
@@ -60,7 +61,14 @@ export function localEvidence(model:LocalModel,task:LocalTask,raw:readonly (read
     if(values.length!==frames.length||values.some(v=>!Number.isFinite(v)))throw Error('Invalid aligned acoustic head');
     measurements[key]=values.reduce((sum,value,t)=>sum+value*anchor.occupancy[t],0);
   }
-  const features={...measurements,
+  let phoneFeatures:Record<string,number>={};
+  if(task.phoneEditHead!==undefined){
+    if(task.phoneEditHead!=='ctc-context-phone:v1'||spec.target.length!==1||spec.target[0].length!==1)
+      throw Error('Phone edit head requires one unambiguous single-phone target');
+    phoneFeatures=phoneEditFeatures(frames,[...spec.prefix,...spec.target[0],...spec.suffix],
+      spec.prefix.length,spec.inventory,spec.blank);
+  }
+  const features={...measurements,...phoneFeatures,
     listedPerFrame:lattice.listedLogLikelihood/frames.length,
     targetLogRatio:lattice.targetLogRatio,
     unlistedPerFrame:lattice.unlistedLogLikelihood/frames.length,

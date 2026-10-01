@@ -47,3 +47,20 @@ A synthetic fixture can qualify capture, waveform, storage and repeatability; it
 cannot qualify learner pronunciation accuracy or a physical iPhone/iPad release.
 Stop the exact owned simulator and test jobs after evidence capture. Keep the
 single active host/device lane and any cleanup caveats in the private handoff.
+
+## Packaged model-only simulator check
+
+`prepare-model-project.py PRIVATE_ASSETS PRIVATE_FRESH_OUTPUT` creates a distinct
+simulator-only Capacitor project and app identity under `.runtime/ios-model-qa`.
+It reuses the existing Xcode project, SDK and Swift package cache without editing
+release sources. The private asset reference must retain the literal `public`
+bundle-folder name; a successful compilation alone does not prove it loads.
+
+`run-model-probe.py --app PRIVATE_APP --simulator OWNED_UUID --output FRESH_OUTPUT`
+checks the QA bundle identity and packaged model hash, requires an idle owned
+ClearPair simulator, ad-hoc signs the QA app only, then installs and reads actual
+Capacitor console results. It does not inject a callback, use a microphone, change
+the desktop/audio defaults or replace any store app. It captures a screenshot,
+terminates that QA app and shuts down that simulator in cleanup. No signing
+keychain unlock is needed. Runtime success is not physical-device speed or human
+pronunciation accuracy. Raw console/screenshots remain private.

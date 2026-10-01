@@ -7,12 +7,30 @@ or real-speaker pronunciation accuracy.
 
 ## Current status
 
-The checked KVM Mac reports no audio devices; no third-party loopback driver was
-found in `/Library/Audio/Plug-Ins/HAL`. Its `simctl io` help offers display operations, not file-to-microphone
-injection. No virtual microphone has been installed or verified for ClearPair.
-TestFlight distribution for owner testing proceeds independently of this work.
+The original KVM Mac had no input devices. Testing has since moved to the owner's
+Mac mini, using a signature/hash-verified BlackHole 2ch host-only driver and one
+dedicated iOS simulator. The driver is not bundled with the application.
 
-## Proposed isolated test
+On 2026-10-01, after allowing the separate **macOS SimulatorTrampoline microphone
+permission**, two native capture/save cycles passed. A known CC-BY-4.0 adult
+SpeechOcean762 training clip was played into the explicit BlackHole output;
+host default output and other applications were untouched. Actual app-written
+PCM16/16-kHz recordings lasted 10.478 and 10.376 seconds. Normalized waveform
+correlation with the injected 2.31-second phrase was **0.99844 and 0.99683**.
+These are real saved recordings, not injected database entries or fake callbacks.
+
+History replay completed for both takes after app termination/relaunch. The
+record/finish/record button's vertical position stayed within two points. This
+establishes simulator capture, persistence and playback-state recovery; it is
+not independent audible speaker confirmation or physical microphone testing.
+The simulator was shut down afterward; both host audio devices were idle.
+
+Earlier failed AudioQueue/HAL attempts and an obsolete-navigation test are
+retained. The post-consent success does not prove that every earlier failure had
+one cause. `tools/ios-qa/inspect-recording-db.py` reads a copied QA database only
+and compares extracted WAV bytes with the fixture. It never edits live app data.
+
+## Repeatable isolated test
 
 1. Coordinate a maintenance window for the shared Mac before installing an audio
    driver or restarting audio services. Preserve its current device/defaults.

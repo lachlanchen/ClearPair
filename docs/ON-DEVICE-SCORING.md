@@ -7,8 +7,8 @@ a backend, and accepts larger installation sizes. There is no cloud fallback,
 audio upload, paid provider or server inference in this implementation.
 
 The [2026-10-01 validation receipt](VALIDATION-2026-10-01.md) separates passing
-source/browser/native-error-path tests from the still-failing simulator capture
-and the unqualified scoring models. Existing beta5 binaries are unchanged.
+source/browser/native-error-path tests, verified virtual microphone capture,
+and the still-unqualified scoring models. Existing beta5 binaries are unchanged.
 
 ## Implemented path
 
@@ -108,6 +108,68 @@ categories lack sufficient incorrect examples for a release claim.
 coverage without fitting or selecting thresholds. This final test is now a
 consumed evaluation set: any subsequent tuning needs fresh independent evaluation.
 No registry entry, release approval, app score, or production submission resulted.
+
+## Smaller context model and actual Android inference
+
+The newer [mHuBERT English candidate](https://huggingface.co/istomin9192/mHuBERT-147-ipa-ctc-ft)
+is reconstructed from pinned weights without executing repository-supplied Python.
+Its vocabulary preserves AO/AA and ZH/SH; its merged AH class is explicitly excluded
+from phoneme grading. `tools/english_context_model.py` defines that adapter.
+`src/phone-edit-evidence.ts` compares every inventory-phone substitution and omission
+in identical surrounding context, adding a separately decoded phone-sequence check.
+These features are optional and do not activate a model or manufacture a grade.
+
+The **132,895,651-byte weight-only int8 candidate** passed two offline desktop WASM
+numerical probes. Its exact artifact, not just the float model, was then evaluated
+on all 1,340 adult official-training recordings with the existing 57/10 speaker
+fit/development separation. The development split contains 3,486 clearly correct
+and 54 clearly incorrect phones. At an inspected linear-head threshold of 0.5,
+2/54 errors were accepted and 214/3,486 correct phones rejected. The corresponding
+0.6 counts are 2/54 and 280/3,486. These are **development trade-offs**, not an
+independent accuracy result, calibrated 0–100 score or release qualification.
+F/H/L/R still have no clearly incorrect development examples. No consumed test
+audio was reopened. Synthetic quantization differences also remain a warning;
+speech-probe agreement must not be extrapolated to silence/noise/OOD behavior.
+
+A distinct, permission-free QA helper ran that exact model on a physical MIX 2S:
+
+| Runtime | Analysis of the same 2.6-second human training clip | Numerical check |
+| --- | --- | --- |
+| Packaged single-thread WASM worker | 6.23 seconds; verify/load 2.42/2.68 seconds | All frame-wise top labels agree; max log-probability difference 0.000175 |
+| Native ONNX Runtime 1.30, four CPU threads | Three runs: 1.004, 0.847, 0.890 seconds; verify/load 0.122/0.596 seconds | All top labels agree; max difference 0.000182 |
+| XNNPACK four threads, CPU fallback one thread | Three runs: 2.878, 2.931, 2.956 seconds | All top labels agree; max difference 0.000311 |
+
+The native CPU experiment sampled about 504 MiB host PSS; this is not a continuous
+peak or a whole-app memory guarantee. The initial WASM memory parser did not
+recognize Android 10's output; that run's memory is **unknown, not zero**. The helper
+now measures host plus explicitly attributed WebView renderers separately. Native
+session/tensor/result resources are closed. Model bytes are mapped directly from
+the verified APK asset without making an additional model file on the device.
+No microphone, network or storage permission is requested by this helper.
+
+`tools/android-model-qa/` preserves the reproducible diagnostic. These measurements
+justify investigating a native runtime integration; **the shipping app still uses
+its existing worker and has no enabled score**. XNNPACK is not automatically faster:
+the [runtime documentation](https://onnxruntime.ai/docs/execution-providers/Xnnpack-ExecutionProvider.html)
+notes that unsupported expensive operations fall back to CPU and require measurement.
+The QA app, temporary forwards and device lease were closed after each run. Existing
+ClearPair apps, recordings and peer-owned mirrors were preserved.
+
+The shared WASM inference function now explicitly disposes every input/output
+tensor after each take, including malformed outputs and runtime failures. Aliased
+outputs are released only once; one failed release cannot skip the others. Nine
+focused tests cover this lifecycle. Ten consecutive real-model desktop runs with
+one warm session produced identical outputs, no external requests and the same
+CPU/WASM numerical agreement. This is repeated-inference correctness, not a
+measured mobile memory plateau or pronunciation accuracy result.
+
+The same updated worker then passed **three warm-session runs on physical MIX
+2S** (6.282/6.212/6.028 seconds) and **three in an iOS simulator's actual Capacitor
+WKWebView** (0.916/0.848/1.205 seconds on the Mac host). Both preserve the identical
+frame outputs and numerical agreement, and the QA apps were stopped afterward.
+Simulator timing is not physical iPhone/iPad latency. No microphone or default
+audio route was used by these inference-only checks. The Android native CPU path
+remains the promising performance option, but is not integrated into release apps.
 
 ## Error-balanced development and signal fixes — 2026-10-01
 
@@ -239,6 +301,28 @@ included questionable finals/tones and a z/j mismatch. These unauditioned TTS
 probes establish inference feasibility only, not model errors against verified
 human ground truth or Mandarin learner accuracy. The large checkpoint is not
 approved for commercial bundling or enabled in any app.
+
+### Human context-head development
+
+The follow-up uses 1,008 canonical/detail-matched OMPAL training recordings from
+29 fit and 12 separate development speakers. Thirty-seven exceed the declared
+12-second window; ambiguous/incomplete syllable annotations remain quarantined.
+Fifty explicitly reviewed phrase readings avoid guessed homographs. Initial and
+final components have separate full-context CTC evidence and require unanimous
+human labels; tones are not assessed by this experiment.
+
+At the inspected decision threshold 0.5, the original nonlinear head misses 5/15
+incorrect initials and 5/9 incorrect finals. A strongly regularized, acoustic-only
+linear head reduces these to 2/15 and 1/9, but rejects 172/2,776 correct initials
+and 488/2,816 correct finals (versus 47 and 40 previously). Adding phone identity
+does not uniformly improve the result. This is a development trade-off, **not
+release qualification or a calibrated learner percentage**. Sparse incorrect
+examples and excessive false rejection remain unresolved.
+
+`tools/compare-mandarin-heads.py` reproduces that comparison without opening test
+data or rerunning the encoder. It validates clip/speaker/target/rating identities,
+refuses incomplete or leaking splits, and exports numeric coefficients with the
+explicit `statisticIsUserProbability: false` marker. Previous reports are retained.
 
 ## What each small part needs
 

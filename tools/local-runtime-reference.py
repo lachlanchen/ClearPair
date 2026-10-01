@@ -8,12 +8,12 @@ import sys
 import numpy as np
 import onnxruntime as ort
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--variant', choices=['original', 'range7', 'u8', 'weight-only', 'fp32'], default='original')
+parser.add_argument('--variant', choices=['original', 'range7', 'u8', 'weight-only', 'fp32','context-weight-only'], default='original')
 parser.add_argument('--clip')
 args = parser.parse_args()
 directories = {'original':'local-export-english-v1', 'fp32':'local-export-english-v1',
     'range7':'local-export-english-v2-range7', 'u8':'local-export-english-v3-u8',
-    'weight-only':'local-export-english-v4-weight-only'}
+    'weight-only':'local-export-english-v4-weight-only','context-weight-only':'local-export-english-context-v1'}
 directory = Path(__file__).resolve().parents[1] / '.runtime/model-audit' / directories[args.variant]
 clip = args.clip
 if clip:

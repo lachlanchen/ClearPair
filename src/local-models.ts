@@ -6,6 +6,8 @@ export interface LocalTask {
   calibrationKey:string;
   /** Versioned phonetic lexicon: context identical between contrast hypotheses. */
   lattice:ContrastLattice;
+  /** Optional exact single-phone features; requires its own matching calibration. */
+  phoneEditHead?:'ctc-context-phone:v1';
   /** Learned from human-labelled content/noise controls, not a pair-only softmax. */
   gates:{coverage:LearnedGate;contentConfidence:LearnedGate;outOfDistribution:LearnedGate};
   calibration:Calibration;
@@ -36,6 +38,7 @@ export const localModels:readonly LocalModel[]=[];
 export function validatedTask(model:LocalModel,key:string):LocalTask|undefined {
   const t=model.tasks.find(t=>t.calibrationKey===key),c=t?.calibration;
   if(!t||!c||model.id!==c.model||model.language!==c.language||
+    (t.phoneEditHead!==undefined&&t.phoneEditHead!=='ctc-context-phone:v1')||
     !c.contrasts.includes(key)||!key.startsWith(`${c.app}/`)||
     !model.rights.redistributionApproved||!/^https:\/\//.test(model.rights.termsUrl)||
     !/^models\/[a-zA-Z0-9_-]+\.onnx$/.test(model.asset)||!/^[a-f0-9]{64}$/.test(model.sha256)||

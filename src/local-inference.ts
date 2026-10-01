@@ -30,7 +30,12 @@ export async function inferLocal(session:ort.InferenceSession,model:LocalModel,s
   const mean=samples.reduce((s,v)=>s+v,0)/samples.length;
   const variance=samples.reduce((s,v)=>s+(v-mean)**2,0)/samples.length;
   const values=Float32Array.from(samples,v=>(v-mean)/Math.sqrt(variance+1e-7));
-  const outputs=await session.run({[model.input]:new ort.Tensor('float32',values,[1,values.length])});
+  const input=new ort.Tensor('float32',values,[1,values.length]);
+  // A warm session can score many takes. Release each take's tensors even when
+  // run/shape validation fails; only detached JS numbers leave this function.
+  let outputs:Record<string,ort.Tensor>={};
+  try{
+  outputs=await session.run({[model.input]:input});
   const logits=outputs[model.logitsOutput];
   if(!logits||logits.type!=='float32'||logits.dims.length!==3||logits.dims[0]!==1||
     logits.dims[1]<1||logits.dims[1]>1000||logits.dims[2]!==model.vocabulary)throw Error('Invalid phonetic encoder output');
@@ -53,4 +58,13 @@ export async function inferLocal(session:ort.InferenceSession,model:LocalModel,s
     });
   }
   return {frames,features};
+  }finally{
+    // Some graphs alias outputs. Dispose each resource once and attempt every
+    // release even if one fails; the worker retires a failed inference session.
+    let releaseError:unknown;
+    for(const tensor of new Set([input,...Object.values(outputs)])){
+      try{tensor.dispose();}catch(error){releaseError??=error;}
+    }
+    if(releaseError)throw releaseError;
+  }
 }

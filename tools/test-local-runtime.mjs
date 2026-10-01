@@ -8,8 +8,11 @@ import {readFile,stat,writeFile} from 'node:fs/promises';
 import {resolve,extname,sep} from 'node:path';
 import {spawnSync} from 'node:child_process';
 const variant=process.argv.find(a=>a.startsWith('--variant='))?.slice(10)||'original';
-if(!['original','range7','u8','weight-only','fp32'].includes(variant))throw Error('Unknown bounded quantization variant');
-const roots={original:'local-export-english-v1',fp32:'local-export-english-v1',range7:'local-export-english-v2-range7',u8:'local-export-english-v3-u8','weight-only':'local-export-english-v4-weight-only'};
+const repetitions=Number(process.argv.find(a=>a.startsWith('--repeat='))?.slice(9)||1);
+const receipt=process.argv.find(a=>a.startsWith('--receipt='))?.slice(10);
+if(!Number.isSafeInteger(repetitions)||repetitions<1||repetitions>10||receipt&&!/^[a-z0-9-]{1,64}$/.test(receipt))throw Error('Invalid repeat/receipt');
+if(!['original','range7','u8','weight-only','fp32','context-weight-only'].includes(variant))throw Error('Unknown bounded quantization variant');
+const roots={original:'local-export-english-v1',fp32:'local-export-english-v1',range7:'local-export-english-v2-range7',u8:'local-export-english-v3-u8','weight-only':'local-export-english-v4-weight-only','context-weight-only':'local-export-english-context-v1'};
 const root=resolve('.runtime/model-audit/'+roots[variant]),dist=resolve('.runtime/local-runtime-probe');
 const report=JSON.parse(await readFile(`${root}/regression.json`,'utf8'));
 if(report.approved!==false||report.released!==false)throw Error('Probe must not imply approval');
@@ -51,7 +54,7 @@ try{
  });
  const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  await page.goto(base);await page.waitForFunction(()=>typeof window.localProbe==='function');
- const actual=await page.evaluate(({model,samples})=>window.localProbe(model,samples),{model,samples});
+ const actual=await page.evaluate(({model,samples,repetitions})=>window.localProbe(model,samples,repetitions),{model,samples,repetitions});
  if(actual.frames.length!==expected.length||actual.frames.some(row=>row.length!==model.vocabulary))throw Error('WASM output shape mismatch');
  let maxDifference=0,absolute=0,agreements=0,count=0,maxProbabilityDifference=0,totalVariation=0;
  const argmax=row=>row.indexOf(Math.max(...row));
@@ -65,18 +68,20 @@ try{
    maxProbabilityDifference=Math.max(maxProbabilityDifference,pd);totalVariation+=pd/2;
   }
  }
- const compatible=maxDifference<=.03&&agreements/expected.length>=.98&&!external.length&&!errors.length;
+ const compatible=maxDifference<=.03&&agreements/expected.length>=.98&&!external.length&&!errors.length&&
+  actual.repetitions===repetitions&&actual.maximumRepeatDifference<=1e-6;
  const evidence={at:new Date().toISOString(),variant,purpose:`Real ${variant==='fp32'?'full-precision':'quantized'} encoder in packaged single-threaded browser WASM worker; ${clip?'adult training-split numerical probe':'synthetic input'}, NOT held-out human accuracy`,
   clip:clip??null,heldOut:false,
   approved:false,released:false,artifact,frames:expected.length,vocabulary:model.vocabulary,
   maxAbsoluteLogProbabilityDifference:maxDifference,meanAbsoluteLogProbabilityDifference:absolute/count,
   frameArgmaxAgreement:agreements/expected.length,verifiedMs:actual.verifiedMs,loadMs:actual.loadMs,inferMs:actual.inferMs,
+  repetitions:actual.repetitions,inferenceTrialsMs:actual.inferenceTrialsMs,maximumRepeatDifference:actual.maximumRepeatDifference,
   maxProbabilityDifference,meanTotalVariation:totalVariation/expected.length,
   externalRequests:external,pageErrors:errors,compatible,
   caveat:'This strict numerical gate does not establish human accuracy. Failure is retained, never treated as approval.'};
  const suffix=variant==='fp32'?'-fp32':'';
- await writeFile(`${root}/${clip?`browser-wasm-development-${clip}`:'browser-wasm'}${suffix}.json`,JSON.stringify(evidence,null,2)+'\n');
- await writeFile(`${root}/${clip?`browser-frames-development-${clip}`:'browser-frames-synthetic'}${suffix}.json`,JSON.stringify(actual.frames)+'\n');
+ await writeFile(`${root}/${receipt||((clip?`browser-wasm-development-${clip}`:'browser-wasm')+suffix)}.json`,JSON.stringify(evidence,null,2)+'\n',receipt?{flag:'wx'}:undefined);
+ if(!receipt)await writeFile(`${root}/${clip?`browser-frames-development-${clip}`:'browser-frames-synthetic'}${suffix}.json`,JSON.stringify(actual.frames)+'\n');
  console.log(JSON.stringify(evidence,null,2));
  if(!compatible)throw Error('WASM numerical regression failed; see preserved private evidence');
 }finally{await browser?.close();await new Promise(r=>server.close(r));}

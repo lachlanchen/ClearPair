@@ -20,6 +20,19 @@ function fixture(target:number[][],prefix:number[]=[],suffix:number[]=[]){
 }
 const logs=(rows:number[][])=>rows.map(row=>row.map(Math.log));
 describe('accepted-pronunciation acoustic alignment',()=>{
+  it('runs the optional context phone head but still refuses an unvalidated grade',()=>{
+    const {model,task}=fixture([[1]],[],[2]);
+    task.phoneEditHead='ctc-context-phone:v1';
+    const evidence=localEvidence(model,task,logs([[.1,.7,.05,.05,.1],[.1,.1,.6,.1,.1]]),quality);
+    expect(evidence.features.targetGivenEdits).toBeGreaterThan(0);
+    expect(evidence.features.greedyMatch).toBe(1);
+    expect(scoreContrast('handf',evidence,task.calibration)).toEqual({status:'unscored',reason:'unvalidated-model'});
+  });
+  it('does not silently use a single-phone head for accepted multiple variants',()=>{
+    const {model,task}=fixture([[1],[1,2]]);
+    task.phoneEditHead='ctc-context-phone:v1';
+    expect(()=>localEvidence(model,task,logs([[.1,.7,.05,.05,.1],[.1,.1,.6,.1,.1]]),quality)).toThrow('one unambiguous');
+  });
   it('uses an alignable accepted variant when the first variant is impossible',()=>{
     const {model,task}=fixture([[1,1],[1]]);
     const evidence=localEvidence(model,task,logs([[.1,.8,0,0,.1]]),quality,{probe:[23]});

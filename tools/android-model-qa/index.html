@@ -1,0 +1,37 @@
+<!doctype html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ClearPair Offline QA</title>
+<style>body{font:16px system-ui;padding:24px;background:#eff6ff}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>
+<h1>Offline model check</h1>
+<p>Private functional test. Not a pronunciation grade.</p>
+<pre id="result">Loading packaged model…</pre>
+<script type="module" src="/probe.js"></script>
+<script type="module">
+const label=document.querySelector('#result');
+try {
+ const [{samples,frames:expected},model]=await Promise.all([
+  fetch('/reference.json').then(r=>r.json()),fetch('/model.json').then(r=>r.json())]);
+ const actual=await window.localProbe(model,samples,3);
+ if(actual.frames.length!==expected.length)throw Error('Frame count mismatch');
+ let maximum=0,agree=0;
+ for(let t=0;t<expected.length;t++){
+  if(actual.frames[t].length!==model.vocabulary)throw Error('Vocabulary mismatch');
+  const a=actual.frames[t],e=expected[t];
+  agree+=Number(a.indexOf(Math.max(...a))===e.indexOf(Math.max(...e)));
+  for(let v=0;v<model.vocabulary;v++){
+   const d=Math.abs(a[v]-e[v]);if(!Number.isFinite(d))throw Error('Invalid posterior');maximum=Math.max(maximum,d);
+  }
+ }
+ window.qaResult={completed:true,compatible:maximum<=.03&&agree/expected.length>=.98&&actual.repetitions===3&&actual.maximumRepeatDifference<=1e-6,
+  frames:expected.length,maximumLogProbabilityDifference:maximum,argmaxAgreement:agree/expected.length,
+  verifiedMs:actual.verifiedMs,loadMs:actual.loadMs,inferMs:actual.inferMs,
+  repetitions:actual.repetitions,inferenceTrialsMs:actual.inferenceTrialsMs,maximumRepeatDifference:actual.maximumRepeatDifference,
+  userAgent:navigator.userAgent,approved:false};
+ label.textContent=JSON.stringify(window.qaResult,null,2);
+ console.log('CLEARPAIR_MODEL_QA_RESULT '+JSON.stringify(window.qaResult));
+}catch(error){
+ window.qaResult={completed:false,error:String(error),approved:false};
+ label.textContent=JSON.stringify(window.qaResult);
+ console.log('CLEARPAIR_MODEL_QA_ERROR '+label.textContent);
+}
+</script>
