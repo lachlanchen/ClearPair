@@ -1,0 +1,95 @@
+{
+  "version": "0.2.0",
+  "build": "2",
+  "applicationSourceCommit": "f42e9ab0faab61719a6c3503e99f0e5e28cdb9a7",
+  "verifiedDateUtc": "2026-10-01",
+  "distribution": [
+    "internal-testflight",
+    "google-play-internal-testing"
+  ],
+  "productionSubmitted": false,
+  "design": {
+    "iconVersion": "V4",
+    "uiLanguages": 11,
+    "previousIconsPreserved": true
+  },
+  "qa": {
+    "unitTestsPassed": 171,
+    "browserTestsPassed": 26,
+    "pwaBuildsPassed": 7,
+    "pronunciationGradesEnabled": false,
+    "nativeIosAudio": "unverified; owner-requested real-device self-testing; earlier automation timed out after microphone permission"
+  },
+  "apps": [
+    {
+      "app": "handf",
+      "bundleId": "art.lazying.clearpair.handf",
+      "ipaSha256": "5c6365f211a53693723e5096788ac724f09c3e552b7abfbcd7dd36c00889afdc",
+      "aabSha256": "1f49b569084f144071fb5c2200ce4a193e805a0f3776d6e5890490962519c60e",
+      "appleProcessingState": "VALID",
+      "internalBuildState": "IN_BETA_TESTING",
+      "androidState": "available-to-internal-testers",
+      "androidJoinUrl": "https://play.google.com/apps/internaltest/4700504989515969850"
+    },
+    {
+      "app": "landr",
+      "bundleId": "art.lazying.clearpair.landr",
+      "ipaSha256": "3b6718871b491bce01de90445c6a3e4c618585191fd5d9cd1cd23ab6163d374d",
+      "aabSha256": "250d502ea14ebd6e108f05091212d15efe47ce15997dc41495e00c5fa67e3d8a",
+      "appleProcessingState": "VALID",
+      "internalBuildState": "IN_BETA_TESTING",
+      "androidState": "available-to-internal-testers",
+      "androidJoinUrl": "https://play.google.com/apps/internaltest/4699964129264422650"
+    },
+    {
+      "app": "english",
+      "bundleId": "art.lazying.clearpair.english",
+      "ipaSha256": "f94a3ad581c2b8e21c8ca9c55f46cc800508b8c4ad04f55b2d73e6dd65c83955",
+      "aabSha256": "f4026a74af08041a146475d00af384306fbf8fe30ec3e06d2dde946abeea744b",
+      "appleProcessingState": "VALID",
+      "internalBuildState": "IN_BETA_TESTING",
+      "androidState": "available-to-internal-testers",
+      "androidJoinUrl": "https://play.google.com/apps/internaltest/4701515041942561039"
+    },
+    {
+      "app": "chinese",
+      "bundleId": "art.lazying.clearpair.chinese",
+      "ipaSha256": "cf54ddd6b652d1d03b0789e90ade630ff192497e5a67b604a723eea4cc2aa84e",
+      "aabSha256": "a6a336db017a0227af0d39fcad2095a35ce59bc2620598b9caf4922ceb2eebea",
+      "appleProcessingState": "VALID",
+      "internalBuildState": "IN_BETA_TESTING",
+      "androidState": "available-to-internal-testers",
+      "androidJoinUrl": "https://play.google.com/apps/internaltest/4701508145131584373"
+    },
+    {
+      "app": "korean",
+      "bundleId": "art.lazying.clearpair.korean",
+      "ipaSha256": "b2474c85169e084d6d04d54e3a3a63636ec23d9e6387d911a13813570eed1f8a",
+      "aabSha256": "b5edb446a500521322d0c776b3febfe346bdd56c8b1713337aa59e70c6854e04",
+      "appleProcessingState": "VALID",
+      "internalBuildState": "IN_BETA_TESTING",
+      "androidState": "available-to-internal-testers",
+      "androidJoinUrl": "https://play.google.com/apps/internaltest/4701552197367057378"
+    },
+    {
+      "app": "arabic",
+      "bundleId": "art.lazying.clearpair.arabic",
+      "ipaSha256": "eec466670237c46d465c857e6bf2885e9c808d4ba314a5de29d3a387430ddbf1",
+      "aabSha256": "d19d6c560c88f2bd1918a167e649f1b57d86a43754485d6a6f6c99ccf9ac35e6",
+      "appleProcessingState": "VALID",
+      "internalBuildState": "IN_BETA_TESTING",
+      "androidState": "available-to-internal-testers",
+      "androidJoinUrl": "https://play.google.com/apps/internaltest/4701081904617178358"
+    },
+    {
+      "app": "cantonese",
+      "bundleId": "art.lazying.clearpair.cantonese",
+      "ipaSha256": "c534116f4954fce306f5bce4132e4b4ffa1c8111a7566f241e2c553e9ca86494",
+      "aabSha256": "1fe734df4a596dd2048a864f5b158b65de3afff9399db328e314b7bd856d77b3",
+      "appleProcessingState": "VALID",
+      "internalBuildState": "IN_BETA_TESTING",
+      "androidState": "available-to-internal-testers",
+      "androidJoinUrl": "https://play.google.com/apps/internaltest/4700996599031534890"
+    }
+  ]
+}

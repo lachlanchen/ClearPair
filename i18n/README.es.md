@@ -28,7 +28,7 @@ Siete aplicaciones centradas en sonidos y letras fáciles de confundir, para iOS
 
 Están implementados los cuestionarios auditivos, reproducción y bucle de pares, guías, repaso espaciado, ondas, historial y exportación. El código admite los 11 idiomas de interfaz del perfil, independientes del idioma practicado. Las notas fonéticas especializadas siguen en inglés/chino; las no traducidas se identifican como inglesas.
 
-Los iconos V4 guían la paleta: fondos claros, color fluido, tarjetas ordenadas y controles estables de grabación/reproducción. Se conservan los iconos anteriores. Animaciones opcionales y juegos de cinco preguntas otorgan estrellas locales por escuchar/recordar, nunca notas de pronunciación no validadas. Consulta el [alcance de idiomas](../docs/LOCALIZATION.md) y las [notas cantonesas](../docs/CANTONESE.md). La [beta actual de seis apps](../docs/BETA-0.1.0.md) aún no incluye esta renovación ni la séptima app.
+Los iconos V4 guían la paleta: fondos claros, color fluido, tarjetas ordenadas y controles estables de grabación/reproducción. Se conservan los iconos anteriores. Animaciones opcionales y juegos de cinco preguntas otorgan estrellas locales por escuchar/recordar, nunca notas de pronunciación no validadas. Consulta el [alcance de idiomas](../docs/LOCALIZATION.md) y las [notas cantonesas](../docs/CANTONESE.md). La [beta 0.2.0 (2) de siete apps](../docs/BETA-0.2.0.md) incluye V4, los 11 idiomas de interfaz y cantonés.
 
 **Las notas de pronunciación están desactivadas hasta integrar y validar los modelos con personas.** La calidad de señal no mide pronunciación. Capacitor combina React con grabación y voz nativas Swift/Java; no son interfaces SwiftUI/Compose independientes.
 
@@ -59,7 +59,7 @@ Los clips sintéticos temporales de investigación no se incluyen: faltan permis
 
 Consulta el [plan](../docs/BUILD-PLAN.md), el [diseño de evaluación](../docs/SCORING-DESIGN.md) y las [fuentes](../docs/CURRICULUM-SOURCES.md). Cada contraste requiere evidencia calibrada; el silencio, contenido desconocido y fusiones dialectales no deben recibir notas inventadas.
 
-La web prevista es [language-agent.lazying.art](https://language-agent.lazying.art/); su despliegue aún no está verificado. Es una herramienta educativa, no terapia ni diagnóstico. No se ha establecido autorización de marca ni licencia de código abierto.
+La versión preliminar PWA está disponible en [language-agent.lazying.art](https://language-agent.lazying.art/). Es una herramienta educativa, no terapia ni diagnóstico. No se ha establecido autorización de marca ni licencia de código abierto.
 
 ## Apoyo
 

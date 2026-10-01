@@ -28,7 +28,7 @@ Seven focused apps for easily confused sounds and letters, on iOS, Android and P
 
 Listening quizzes, pair playback/looping, learning guides, spaced review, waveforms, recording history and export are implemented. The source supports all 11 profile UI languages, independent of practice language. Specialist phonetic notes remain English/Chinese; untranslated notes are explicitly labeled English.
 
-V4 icons now guide the in-app palette: light backgrounds, flowing color, tidy cards and steady recording/playback controls. Earlier icon versions are retained. Optional animations and five-question games award local stars for listening/recall, never unvalidated pronunciation scores. See the [localization scope](docs/LOCALIZATION.md) and [Cantonese notes](docs/CANTONESE.md). The [existing six-app beta](docs/BETA-0.1.0.md) does not yet include this redesign or the seventh app.
+V4 icons now guide the in-app palette: light backgrounds, flowing color, tidy cards and steady recording/playback controls. Earlier icon versions are retained. Optional animations and five-question games award local stars for listening/recall, never unvalidated pronunciation scores. See the [localization scope](docs/LOCALIZATION.md) and [Cantonese notes](docs/CANTONESE.md). The [seven-app 0.2.0 (2) beta](docs/BETA-0.2.0.md) includes V4, all 11 UI languages and Cantonese.
 
 **Pronunciation grades are disabled pending model integration and human validation.** Signal quality is not pronunciation accuracy. Capacitor combines a React interface with native Swift/Java recording and speech playback; these are not separate SwiftUI/Compose interfaces.
 
@@ -59,7 +59,7 @@ Temporary synthetic research clips are not bundled: redistribution permission an
 
 See the [build plan](docs/BUILD-PLAN.md), [scoring design](docs/SCORING-DESIGN.md) and [curriculum sources](docs/CURRICULUM-SOURCES.md). Each contrast needs calibrated evidence; silence, unknown content and accent mergers must not receive invented scores.
 
-The planned home is [language-agent.lazying.art](https://language-agent.lazying.art/), not yet a verified deployment. This preview is educational, not therapy or diagnosis. Trademark clearance and an open-source licence have not been established.
+The PWA preview is live at [language-agent.lazying.art](https://language-agent.lazying.art/). This preview is educational, not therapy or diagnosis. Trademark clearance and an open-source licence have not been established.
 
 ## Support
 

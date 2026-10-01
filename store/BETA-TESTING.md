@@ -1,6 +1,6 @@
 # ClearPair beta qualification
 
-Scope: six independent apps, iOS TestFlight and Google Play internal testing only.
+Scope: seven independent apps, iOS TestFlight and Google Play internal testing only.
 No production rollout is implied by a successful build or upload. Existing L & N,
 Bunko and other app releases are outside this project's scope.
 
@@ -12,6 +12,9 @@ Bunko and other app releases are outside this project's scope.
 | ClearPair Mandarin | art.lazying.clearpair.chinese |
 | ClearPair Korean | art.lazying.clearpair.korean |
 | ClearPair Arabic Letters | art.lazying.clearpair.arabic |
+| ClearPair Cantonese | art.lazying.clearpair.cantonese |
+
+Current release guide: [0.2.0 (2)](../docs/BETA-0.2.0.md).
 
 ## What to test
 

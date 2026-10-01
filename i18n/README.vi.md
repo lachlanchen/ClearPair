@@ -28,7 +28,7 @@ Bảy ứng dụng tập trung vào âm và chữ dễ nhầm, dành cho iOS, An
 
 Đã có câu đố nghe, phát/lặp cặp từ, hướng dẫn, ôn giãn cách, dạng sóng, lịch sử và xuất bản ghi. Mã nguồn hỗ trợ 11 ngôn ngữ giao diện của hồ sơ, độc lập với ngôn ngữ luyện. Ghi chú ngữ âm chuyên sâu vẫn dùng Anh/Trung; phần chưa dịch được ghi rõ là tiếng Anh.
 
-Biểu tượng V4 dẫn dắt bảng màu: nền sáng, màu mềm, thẻ gọn và nút ghi/phát giữ vị trí ổn định. Biểu tượng cũ được giữ lại. Hoạt ảnh tùy chọn và trò chơi năm câu trao sao cục bộ cho nghe/nhớ, không phải điểm phát âm chưa được kiểm chứng. Xem [phạm vi ngôn ngữ](../docs/LOCALIZATION.md) và [ghi chú Quảng Đông](../docs/CANTONESE.md). [Bản beta sáu ứng dụng hiện tại](../docs/BETA-0.1.0.md) chưa có thiết kế mới hoặc ứng dụng thứ bảy.
+Biểu tượng V4 dẫn dắt bảng màu: nền sáng, màu mềm, thẻ gọn và nút ghi/phát giữ vị trí ổn định. Biểu tượng cũ được giữ lại. Hoạt ảnh tùy chọn và trò chơi năm câu trao sao cục bộ cho nghe/nhớ, không phải điểm phát âm chưa được kiểm chứng. Xem [phạm vi ngôn ngữ](../docs/LOCALIZATION.md) và [ghi chú Quảng Đông](../docs/CANTONESE.md). [Bản beta 0.2.0 (2) của bảy ứng dụng](../docs/BETA-0.2.0.md) có V4, 11 ngôn ngữ giao diện và ứng dụng Quảng Đông.
 
 **Điểm phát âm đang tắt cho đến khi tích hợp mô hình và kiểm chứng với người thật.** Chất lượng tín hiệu không phải độ chính xác phát âm. Capacitor kết hợp React với ghi âm và giọng nói gốc Swift/Java, không phải giao diện SwiftUI/Compose riêng.
 
@@ -59,7 +59,7 @@ Không đóng gói các đoạn giọng tổng hợp dùng tạm cho nghiên c�
 
 Xem [kế hoạch](../docs/BUILD-PLAN.md), [thiết kế chấm điểm](../docs/SCORING-DESIGN.md) và [nguồn giáo trình](../docs/CURRICULUM-SOURCES.md). Mỗi tương phản cần bằng chứng được hiệu chỉnh; không bịa điểm cho im lặng, nội dung không rõ hoặc âm nhập làm một trong một số giọng địa phương.
 
-Trang dự kiến là [language-agent.lazying.art](https://language-agent.lazying.art/), chưa xác minh triển khai. Đây là công cụ giáo dục, không phải trị liệu hay chẩn đoán. Chưa xác lập quyền nhãn hiệu hoặc giấy phép nguồn mở.
+Bản PWA xem trước đã có tại [language-agent.lazying.art](https://language-agent.lazying.art/). Đây là công cụ giáo dục, không phải trị liệu hay chẩn đoán. Chưa xác lập quyền nhãn hiệu hoặc giấy phép nguồn mở.
 
 ## Ủng hộ
 

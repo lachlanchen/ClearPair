@@ -28,7 +28,7 @@ Sept applications ciblant les sons et lettres faciles à confondre, pour iOS, An
 
 Quiz d’écoute, lecture/boucle de paires, guides, révision espacée, formes d’onde, historique et export sont disponibles. Le code prend en charge les 11 langues du profil, indépendamment de la langue étudiée. Les notes phonétiques spécialisées restent en anglais/chinois ; les notes non traduites sont explicitement signalées en anglais.
 
-Les icônes V4 inspirent la palette : fonds clairs, couleurs fluides, cartes ordonnées et commandes stables d’enregistrement/lecture. Les anciennes icônes sont conservées. Animations facultatives et jeux de cinq questions attribuent des étoiles locales pour l’écoute/le rappel, jamais pour une prononciation non validée. Voir la [portée linguistique](../docs/LOCALIZATION.md) et les [notes cantonaises](../docs/CANTONESE.md). La [bêta actuelle de six apps](../docs/BETA-0.1.0.md) ne contient pas encore cette refonte ni la septième app.
+Les icônes V4 inspirent la palette : fonds clairs, couleurs fluides, cartes ordonnées et commandes stables d’enregistrement/lecture. Les anciennes icônes sont conservées. Animations facultatives et jeux de cinq questions attribuent des étoiles locales pour l’écoute/le rappel, jamais pour une prononciation non validée. Voir la [portée linguistique](../docs/LOCALIZATION.md) et les [notes cantonaises](../docs/CANTONESE.md). La [bêta 0.2.0 (2) des sept apps](../docs/BETA-0.2.0.md) inclut V4, les 11 langues d’interface et le cantonais.
 
 **Les notes de prononciation sont désactivées en attendant l'intégration des modèles et leur validation humaine.** La qualité du signal ne mesure pas la prononciation. Capacitor associe React à l'enregistrement et à la parole natifs Swift/Java ; il ne s'agit pas d'interfaces SwiftUI/Compose séparées.
 
@@ -59,7 +59,7 @@ Les extraits synthétiques de recherche ne sont pas inclus : droits de redistrib
 
 Voir le [plan](../docs/BUILD-PLAN.md), la [conception du score](../docs/SCORING-DESIGN.md) et les [sources](../docs/CURRICULUM-SOURCES.md). Chaque contraste nécessite des preuves calibrées ; silence, contenu inconnu et fusions dialectales ne doivent pas recevoir de notes inventées.
 
-Le site prévu est [language-agent.lazying.art](https://language-agent.lazying.art/), sans déploiement encore vérifié. Outil éducatif, ni thérapie ni diagnostic. La disponibilité juridique du nom et une licence libre n'ont pas été établies.
+La préversion PWA est disponible sur [language-agent.lazying.art](https://language-agent.lazying.art/). Outil éducatif, ni thérapie ni diagnostic. La disponibilité juridique du nom et une licence libre n’ont pas été établies.
 
 ## Soutien
 

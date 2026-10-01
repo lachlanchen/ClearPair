@@ -28,7 +28,7 @@ Sieben gezielte Apps für leicht verwechselbare Laute und Buchstaben auf iOS, An
 
 Hörquiz, Paarwiedergabe/Schleifen, Lernguides, zeitversetzte Wiederholung, Wellenformen, Aufnahmeverlauf und Export sind implementiert. Der Quellcode unterstützt alle 11 Profilsprachen unabhängig von der Übungssprache. Fachliche Phonetikhinweise bleiben Englisch/Chinesisch; unübersetzte Hinweise sind ausdrücklich als Englisch gekennzeichnet.
 
-V4-Icons prägen die Palette: helle Hintergründe, fließende Farben, aufgeräumte Karten und stabile Aufnahme-/Wiedergabesteuerung. Frühere Icons bleiben erhalten. Optionale Animationen und Fünf-Fragen-Spiele vergeben lokale Sterne fürs Hören/Erinnern, nie unvalidierte Aussprachenoten. Siehe [Sprachumfang](../docs/LOCALIZATION.md) und [kantonesische Hinweise](../docs/CANTONESE.md). Die [bestehende Sechs-App-Beta](../docs/BETA-0.1.0.md) enthält diese Überarbeitung und die siebte App noch nicht.
+V4-Icons prägen die Palette: helle Hintergründe, fließende Farben, aufgeräumte Karten und stabile Aufnahme-/Wiedergabesteuerung. Frühere Icons bleiben erhalten. Optionale Animationen und Fünf-Fragen-Spiele vergeben lokale Sterne fürs Hören/Erinnern, nie unvalidierte Aussprachenoten. Siehe [Sprachumfang](../docs/LOCALIZATION.md) und [kantonesische Hinweise](../docs/CANTONESE.md). Die [Sieben-App-Beta 0.2.0 (2)](../docs/BETA-0.2.0.md) enthält V4, alle 11 UI-Sprachen und Kantonesisch.
 
 **Aussprachebewertungen bleiben bis zur Modellintegration und menschlichen Validierung deaktiviert.** Signalqualität ist keine Aussprachegenauigkeit. Capacitor verbindet React mit nativer Swift/Java-Aufnahme und Sprachausgabe; es sind keine getrennten SwiftUI/Compose-Oberflächen.
 
@@ -59,7 +59,7 @@ Vorläufige synthetische Forschungsclips werden nicht mitgeliefert: Weitergabere
 
 Siehe [Bauplan](../docs/BUILD-PLAN.md), [Bewertungsdesign](../docs/SCORING-DESIGN.md) und [Lehrplanquellen](../docs/CURRICULUM-SOURCES.md). Jeder Kontrast braucht kalibrierte Belege; Stille, unbekannter Inhalt und dialektale Zusammenfälle dürfen keine erfundenen Noten erhalten.
 
-Geplant ist [language-agent.lazying.art](https://language-agent.lazying.art/), noch ohne verifizierte Bereitstellung. Dies ist ein Lernwerkzeug, keine Therapie oder Diagnose. Markenfreigabe und Open-Source-Lizenz stehen noch nicht fest.
+Die PWA-Vorschau ist unter [language-agent.lazying.art](https://language-agent.lazying.art/) verfügbar. Dies ist ein Lernwerkzeug, keine Therapie oder Diagnose. Markenfreigabe und Open-Source-Lizenz stehen noch nicht fest.
 
 ## Unterstützung
 
