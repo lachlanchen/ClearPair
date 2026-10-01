@@ -1,6 +1,7 @@
 import { lessonById, productById, products } from "./curriculum";
 import type { AppId, Language, Text, Word } from "./types";
 import type { ScoreEvidence } from "./scoring";
+import { pronunciationText } from "./pronunciation-text";
 
 /** Versioned requirements, not hand-tuned scoring weights. An on-device encoder must
  * supply these measurements and pass separate calibration for each routed task. */
@@ -449,9 +450,7 @@ export function assessmentPlan(
     profile: selected,
     target: pair[side],
     competitor: pair[1 - side],
-    spokenPrompt: sentence
-      ? pair[side].sentence
-      : pair[side].spoken || pair[side].text,
+    spokenPrompt: pronunciationText(pair[side], lesson.language, sentence),
     targetScope: "aligned-target-only",
     requiresHumanValidatedCalibration: true,
   };

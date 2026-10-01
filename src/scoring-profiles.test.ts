@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { lessonById, products } from "./curriculum";
 import { assessmentPlan } from "./scoring-profiles";
+import { pronunciationText } from "./pronunciation-text";
 
-describe("seven app-specific assessment plans", () => {
+describe("eight app-specific assessment plans", () => {
   for (const product of products)
     it(`${product.id}: every exercise has an explicit plan`, () => {
       for (const id of product.lessons)
@@ -23,6 +24,9 @@ describe("seven app-specific assessment plans", () => {
                 expect(plan.requiresHumanValidatedCalibration).toBe(true);
                 expect(plan.targetScope).toBe("aligned-target-only");
                 expect(plan.spokenPrompt).toBeTruthy();
+                expect(plan.spokenPrompt).toBe(
+                  pronunciationText(plan.target, lessonById(id).language, sentence),
+                );
               }
             }
         }
@@ -35,6 +39,13 @@ describe("seven app-specific assessment plans", () => {
     expect(en.profile.id).not.toBe(zh.profile.id);
     expect(en.profile.alternatives).toContain("h");
     expect(zh.profile.alternatives).toContain("x");
+  });
+  it("keeps Japanese reference readings and frozen scoring targets consistent", () => {
+    const plan = assessmentPlan("japanese", "ja-h-b-p", 0, 0);
+    if (plan.mode !== "contrast") throw new Error("missing plan");
+    expect(plan.target.text).toBe("は");
+    expect(plan.spokenPrompt).toBe("ハ");
+    expect(plan.requiresHumanValidatedCalibration).toBe(true);
   });
   it("retains the third Korean category in a two-card exercise", () => {
     for (const id of [
