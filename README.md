@@ -12,7 +12,7 @@ Eight focused courses for easily confused sounds and letters, targeting iOS, And
 
 ![ClearPair](docs/assets/eight-icons-v4.png)
 
-All eight standalone apps, including [Japanese](docs/JAPANESE-COURSE.md), have [1.0.0 (6) internal-test builds and test links](docs/BETA-1.0.0-6.md) on TestFlight and Google Play. They add experimental on-device practice-match scores, not calibrated pronunciation accuracy percentages. [Signed artifacts and provider states are verified](store/artifacts/internal-beta-1.0.0-6.json). This release is for owner phone testing, not formal production review; the live PWA is unchanged.
+All eight standalone apps, including [Japanese](docs/JAPANESE-COURSE.md), have [1.0.0 (8) internal-test builds and test links](docs/BETA-1.0.0-8.md) on TestFlight and Google Play. All eight iOS versions are Waiting for Review, with automatic release preserved; Google production submission is not yet complete. [Signed artifacts and provider states are verified](store/artifacts/internal-beta-1.0.0-8.json). Review submission is not approval or public availability. The live PWA is unchanged.
 
 ## Eight focused courses
 
@@ -33,7 +33,7 @@ Listening quizzes, pair playback/looping, learning guides, spaced review, wavefo
 
 V4 icons now guide the in-app palette: light backgrounds, flowing color, tidy cards and steady recording/playback controls. Earlier icon versions are retained. Optional animations and five-question games award local stars for listening/recall, never unvalidated pronunciation scores. See the [localization scope](docs/LOCALIZATION.md) and [Cantonese notes](docs/CANTONESE.md). The [seven-app 0.2.0 (2) beta](docs/BETA-0.2.0.md) includes V4, all 11 UI languages and Cantonese.
 
-**Build 6 adds an experimental native practice-match score.** It compares the recording with both device-voice references locally using spectral features, bounded time alignment and relative pitch. It is a reference-similarity index, not a pronunciation accuracy percentage. An offline practice-language voice is required; calibrated phoneme grades and PWA scoring remain disabled. The [beta design and test record](docs/BETA-1.0.0-6.md) distinguishes functional checks from human accuracy. Capacitor combines a React interface with native Swift/Java recording and speech playback; these are not separate SwiftUI/Compose interfaces.
+**Build 8 provides automatic native practice-match scoring.** Tap Record, speak, then pause or tap Stop and score. H & F separates consonant evidence from shared vowel similarity; technical copy stays below the steady recording controls. Scores are local reference-similarity indices, not calibrated pronunciation accuracy percentages. An offline practice-language voice is required; calibrated phoneme grades and PWA scoring remain disabled. The [next scoring update](docs/SCORING-UPDATE-20261002.md) improves quiet short takes, pair-focused evidence and visible score details, but is not in build 8. Capacitor combines a React interface with native Swift/Java recording and speech playback; these are not separate SwiftUI/Compose interfaces.
 
 ## Build and test
 

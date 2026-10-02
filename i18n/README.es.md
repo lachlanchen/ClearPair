@@ -12,7 +12,7 @@ Ocho cursos centrados en sonidos y letras fáciles de confundir, para iOS, Andro
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-Las ocho apps independientes, incluido [japonés](../docs/JAPANESE-COURSE.md), tienen [pruebas internas 1.0.0 (6) y enlaces de acceso](../docs/BETA-1.0.0-6.md) en TestFlight y Google Play. Añaden un índice experimental de similitud local, no un porcentaje calibrado de pronunciación correcta. Se verificaron [los paquetes firmados y los estados de las tiendas](../store/artifacts/internal-beta-1.0.0-6.json). Esta versión es para probarla en el teléfono del propietario, no para revisión formal de producción; la PWA pública no cambia.
+Las ocho apps independientes, incluido [japonés](../docs/JAPANESE-COURSE.md), tienen [pruebas internas 1.0.0 (8) y enlaces de acceso](../docs/BETA-1.0.0-8.md) en TestFlight y Google Play. Las ocho versiones de iOS esperan revisión, manteniendo la publicación automática tras la aprobación; el envío de producción a Google aún no está completo. Se verificaron [los paquetes firmados y los estados de las tiendas](../store/artifacts/internal-beta-1.0.0-8.json). Enviar a revisión no significa aprobación ni disponibilidad pública. La PWA pública no cambia.
 
 ## Ocho cursos especializados
 
@@ -33,7 +33,7 @@ Están implementados los cuestionarios auditivos, reproducción y bucle de pares
 
 Los iconos V4 guían la paleta: fondos claros, color fluido, tarjetas ordenadas y controles estables de grabación/reproducción. Se conservan los iconos anteriores. Animaciones opcionales y juegos de cinco preguntas otorgan estrellas locales por escuchar/recordar, nunca notas de pronunciación no validadas. Consulta el [alcance de idiomas](../docs/LOCALIZATION.md) y las [notas cantonesas](../docs/CANTONESE.md). La [beta 0.2.0 (2) de siete apps](../docs/BETA-0.2.0.md) incluye V4, los 11 idiomas de interfaz y cantonés.
 
-**La compilación 6 añade una puntuación nativa experimental de similitud.** Compara localmente la grabación con ambas referencias de voz mediante el espectro, la alineación temporal limitada y el tono relativo. Es similitud, no un porcentaje de pronunciación correcta. Requiere una voz sin conexión instalada; las notas fonéticas calibradas y la puntuación PWA siguen desactivadas. El [registro de pruebas](../docs/BETA-1.0.0-6.md) distingue funcionamiento y precisión con personas. Capacitor combina React con grabación y voz nativas Swift/Java; no son interfaces SwiftUI/Compose independientes.
+**La compilación 8 ofrece puntuación nativa automática de similitud.** Toca Grabar, habla y haz una pausa, o toca Detener y puntuar. H & F separa la evidencia consonántica de la similitud de la vocal compartida; los detalles técnicos quedan debajo de los controles de grabación estables. Son índices locales de similitud, no porcentajes calibrados de pronunciación correcta. Requiere una voz sin conexión instalada; las notas fonéticas calibradas y la puntuación PWA siguen desactivadas. La [siguiente mejora del algoritmo](../docs/SCORING-UPDATE-20261002.md) mejora las tomas cortas y suaves, la evidencia del contraste y los detalles visibles, pero no está en la compilación 8. Capacitor combina React con grabación y voz nativas Swift/Java; no son interfaces SwiftUI/Compose independientes.
 
 ## Compilar y probar
 

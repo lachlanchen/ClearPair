@@ -12,7 +12,7 @@ Huit cours ciblant les sons et lettres faciles à confondre, pour iOS, Android e
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-Les huit applications autonomes, dont le [japonais](../docs/JAPANESE-COURSE.md), ont des [versions de test interne 1.0.0 (6) et des liens d’accès](../docs/BETA-1.0.0-6.md) sur TestFlight et Google Play. Elles ajoutent un indice expérimental de similarité locale, pas un pourcentage calibré de prononciation correcte. Les [paquets signés et les états des boutiques sont vérifiés](../store/artifacts/internal-beta-1.0.0-6.json). Cette version sert au test sur le téléphone du propriétaire, pas à une soumission officielle en production ; la PWA publique ne change pas.
+Les huit applications autonomes, dont le [japonais](../docs/JAPANESE-COURSE.md), ont des [versions de test interne 1.0.0 (8) et des liens d’accès](../docs/BETA-1.0.0-8.md) sur TestFlight et Google Play. Les huit versions iOS attendent leur examen, avec publication automatique après approbation conservée ; la soumission de production Google n’est pas encore terminée. Les [paquets signés et les états des boutiques sont vérifiés](../store/artifacts/internal-beta-1.0.0-8.json). Une soumission n’est ni une approbation ni une disponibilité publique. La PWA publique ne change pas.
 
 ## Huit cours ciblés
 
@@ -33,7 +33,7 @@ Quiz d’écoute, lecture/boucle de paires, guides, révision espacée, formes d
 
 Les icônes V4 inspirent la palette : fonds clairs, couleurs fluides, cartes ordonnées et commandes stables d’enregistrement/lecture. Les anciennes icônes sont conservées. Animations facultatives et jeux de cinq questions attribuent des étoiles locales pour l’écoute/le rappel, jamais pour une prononciation non validée. Voir la [portée linguistique](../docs/LOCALIZATION.md) et les [notes cantonaises](../docs/CANTONESE.md). La [bêta 0.2.0 (2) des sept apps](../docs/BETA-0.2.0.md) inclut V4, les 11 langues d’interface et le cantonais.
 
-**Le build 6 ajoute un score natif expérimental de correspondance.** L’enregistrement est comparé localement aux deux références vocales par le spectre, un alignement temporel borné et la hauteur relative. C’est un indice de similarité, pas un pourcentage de prononciation correcte. Une voix hors ligne installée est nécessaire ; les notes phonétiques calibrées et la notation PWA restent désactivées. Le [rapport de tests](../docs/BETA-1.0.0-6.md) distingue fonctionnement et précision humaine. Capacitor associe React à l’enregistrement et à la parole natifs Swift/Java ; il ne s’agit pas d’interfaces SwiftUI/Compose séparées.
+**Le build 8 propose un score natif automatique de correspondance.** Touchez Enregistrer, parlez, puis faites une pause ou touchez Arrêter et évaluer. H & F distingue les indices consonantiques de la similarité de la voyelle commune ; les informations techniques restent sous les commandes d’enregistrement fixes. Ce sont des indices locaux de similarité, pas des pourcentages calibrés de prononciation correcte. Une voix hors ligne installée est nécessaire ; les notes phonétiques calibrées et la notation PWA restent désactivées. La [prochaine amélioration du score](../docs/SCORING-UPDATE-20261002.md) améliore les prises courtes et faibles, les indices du contraste et les détails visibles, mais n’est pas dans le build 8. Capacitor associe React à l’enregistrement et à la parole natifs Swift/Java ; il ne s’agit pas d’interfaces SwiftUI/Compose séparées.
 
 ## Compiler et tester
 

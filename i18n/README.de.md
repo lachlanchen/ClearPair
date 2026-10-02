@@ -12,7 +12,7 @@ Acht gezielte Kurse für leicht verwechselbare Laute und Buchstaben auf iOS, And
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-Alle acht eigenständigen Apps, einschließlich [Japanisch](../docs/JAPANESE-COURSE.md), sind als [interne Testversion 1.0.0 (6) mit Testlinks](../docs/BETA-1.0.0-6.md) in TestFlight und Google Play verfügbar. Neu ist ein experimenteller lokaler Ähnlichkeitswert, kein kalibrierter Prozentsatz korrekter Aussprache. [Signierte Pakete und Anbieterstatus sind geprüft](../store/artifacts/internal-beta-1.0.0-6.json). Diese Version dient dem Telefontest des Eigentümers, nicht einer formalen Produktionsprüfung; die öffentliche PWA bleibt unverändert.
+Alle acht eigenständigen Apps, einschließlich [Japanisch](../docs/JAPANESE-COURSE.md), sind als [interne Testversion 1.0.0 (8) mit Testlinks](../docs/BETA-1.0.0-8.md) in TestFlight und Google Play verfügbar. Alle acht iOS-Versionen warten auf Prüfung; die automatische Veröffentlichung nach Freigabe bleibt erhalten. Die Google-Produktionseinreichung ist noch nicht abgeschlossen. [Signierte Pakete und Anbieterstatus sind geprüft](../store/artifacts/internal-beta-1.0.0-8.json). Eine Einreichung bedeutet weder Freigabe noch öffentliche Verfügbarkeit. Die öffentliche PWA bleibt unverändert.
 
 ## Acht spezialisierte Kurse
 
@@ -33,7 +33,7 @@ Hörquiz, Paarwiedergabe/Schleifen, Lernguides, zeitversetzte Wiederholung, Well
 
 V4-Icons prägen die Palette: helle Hintergründe, fließende Farben, aufgeräumte Karten und stabile Aufnahme-/Wiedergabesteuerung. Frühere Icons bleiben erhalten. Optionale Animationen und Fünf-Fragen-Spiele vergeben lokale Sterne fürs Hören/Erinnern, nie unvalidierte Aussprachenoten. Siehe [Sprachumfang](../docs/LOCALIZATION.md) und [kantonesische Hinweise](../docs/CANTONESE.md). Die [Sieben-App-Beta 0.2.0 (2)](../docs/BETA-0.2.0.md) enthält V4, alle 11 UI-Sprachen und Kantonesisch.
 
-**Build 6 ergänzt einen experimentellen nativen Übungswert.** Die Aufnahme wird lokal anhand von Spektrum, begrenzter Zeitausrichtung und relativer Tonhöhe mit beiden Gerätestimmen-Referenzen verglichen. Der Wert beschreibt Ähnlichkeit, keinen Prozentsatz korrekter Aussprache. Eine installierte Offline-Stimme ist erforderlich; kalibrierte Phonemnoten und PWA-Bewertung bleiben deaktiviert. Der [Testbericht](../docs/BETA-1.0.0-6.md) trennt Funktionstests von menschlicher Genauigkeit. Capacitor verbindet React mit nativer Swift/Java-Aufnahme und Sprachausgabe; es sind keine getrennten SwiftUI/Compose-Oberflächen.
+**Build 8 bietet automatische native Übungsbewertung.** Aufnahme antippen, sprechen, dann pausieren oder Stoppen und bewerten antippen. H & F trennt Konsonantenmerkmale von der Ähnlichkeit des gemeinsamen Vokals; technische Hinweise bleiben unter den ortsfesten Aufnahmebedienelementen. Die Werte sind lokale Referenzähnlichkeit, keine kalibrierten Prozentsätze korrekter Aussprache. Eine installierte Offline-Stimme ist erforderlich; kalibrierte Phonemnoten und PWA-Bewertung bleiben deaktiviert. Das [nächste Bewertungsupdate](../docs/SCORING-UPDATE-20261002.md) verbessert leise kurze Aufnahmen, kontrastspezifische Evidenz und sichtbare Bewertungsdetails, ist aber nicht in Build 8 enthalten. Capacitor verbindet React mit nativer Swift/Java-Aufnahme und Sprachausgabe; es sind keine getrennten SwiftUI/Compose-Oberflächen.
 
 ## Bauen und testen
 

@@ -12,7 +12,7 @@ Tám khóa tập trung vào âm và chữ dễ nhầm, dành cho iOS, Android v�
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-Cả tám ứng dụng độc lập, gồm [tiếng Nhật](../docs/JAPANESE-COURSE.md), đã có [bản thử nội bộ 1.0.0 (6) và liên kết thử nghiệm](../docs/BETA-1.0.0-6.md) trên TestFlight và Google Play. Bản này thêm chỉ số khớp luyện tập cục bộ thử nghiệm, không phải tỷ lệ phát âm đúng đã hiệu chỉnh. [Gói đã ký và trạng thái cửa hàng được xác minh](../store/artifacts/internal-beta-1.0.0-6.json). Đây là bản để chủ sở hữu thử trên điện thoại, chưa gửi xét duyệt phát hành chính thức; PWA công khai không thay đổi.
+Cả tám ứng dụng độc lập, gồm [tiếng Nhật](../docs/JAPANESE-COURSE.md), đã có [bản thử nội bộ 1.0.0 (8) và liên kết thử nghiệm](../docs/BETA-1.0.0-8.md) trên TestFlight và Google Play. Tám phiên bản iOS đang chờ xét duyệt, vẫn giữ tự động phát hành sau khi được duyệt; việc gửi bản chính thức lên Google chưa hoàn tất. [Gói đã ký và trạng thái cửa hàng được xác minh](../store/artifacts/internal-beta-1.0.0-8.json). Gửi xét duyệt không có nghĩa là đã được duyệt hay công khai. PWA công khai không thay đổi.
 
 ## Tám khóa chuyên biệt
 
@@ -33,7 +33,7 @@ Cả tám ứng dụng độc lập, gồm [tiếng Nhật](../docs/JAPANESE-COU
 
 Biểu tượng V4 dẫn dắt bảng màu: nền sáng, màu mềm, thẻ gọn và nút ghi/phát giữ vị trí ổn định. Biểu tượng cũ được giữ lại. Hoạt ảnh tùy chọn và trò chơi năm câu trao sao cục bộ cho nghe/nhớ, không phải điểm phát âm chưa được kiểm chứng. Xem [phạm vi ngôn ngữ](../docs/LOCALIZATION.md) và [ghi chú Quảng Đông](../docs/CANTONESE.md). [Bản beta 0.2.0 (2) của bảy ứng dụng](../docs/BETA-0.2.0.md) có V4, 11 ngôn ngữ giao diện và ứng dụng Quảng Đông.
 
-**Bản dựng 6 thêm điểm khớp luyện tập thử nghiệm cho ứng dụng gốc.** Bản ghi được so sánh cục bộ với hai giọng mẫu bằng phổ âm, căn chỉnh thời gian có giới hạn và cao độ tương đối. Đây là chỉ số giống nhau, không phải tỷ lệ phát âm đúng. Cần cài giọng ngoại tuyến cho ngôn ngữ luyện tập; điểm âm vị đã hiệu chỉnh và điểm PWA vẫn tắt. [Báo cáo thử nghiệm](../docs/BETA-1.0.0-6.md) phân biệt kiểm tra chức năng và độ chính xác với người thật. Capacitor kết hợp React với ghi âm và giọng nói gốc Swift/Java, không phải giao diện SwiftUI/Compose riêng.
+**Bản dựng 8 có điểm khớp luyện tập tự động trong ứng dụng gốc.** Chạm Ghi âm, nói rồi dừng một chút, hoặc chạm Dừng và chấm điểm. H & F tách bằng chứng phụ âm khỏi độ giống nguyên âm chung; phần kỹ thuật nằm dưới các nút ghi âm cố định. Điểm là chỉ số tương đồng cục bộ với giọng mẫu, không phải tỷ lệ phát âm đúng đã hiệu chỉnh. Cần cài giọng ngoại tuyến cho ngôn ngữ luyện tập; điểm âm vị đã hiệu chỉnh và điểm PWA vẫn tắt. [Lần cải tiến điểm tiếp theo](../docs/SCORING-UPDATE-20261002.md) cải thiện bản ghi ngắn, nhỏ tiếng, bằng chứng ở phần khác nhau của cặp và chi tiết điểm hiển thị, nhưng không nằm trong bản dựng 8. Capacitor kết hợp React với ghi âm và giọng nói gốc Swift/Java, không phải giao diện SwiftUI/Compose riêng.
 
 ## Biên dịch và kiểm thử
 
