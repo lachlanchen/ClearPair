@@ -91,8 +91,8 @@ export const lessons: Lesson[] = [
     ),
     [
       pair(
-        e("hat", "hæt", "The hat is on the chair."),
-        e("fat", "fæt", "The cat is not fat."),
+        e("hat", "hæt", "I said hat again."),
+        e("fat", "fæt", "I said fat again."),
       ),
       pair(e("hill", "hɪl"), e("fill", "fɪl")),
       pair(e("heat", "hit"), e("feet", "fit")),

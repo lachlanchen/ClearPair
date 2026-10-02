@@ -1,0 +1,68 @@
+# H & F: one recording, automatic feedback
+
+The candidate 1.0.0 (7) focuses on H & F. The other seven apps retain their
+existing tester builds while this flow is tried on the owner's phone.
+
+Tap **Record your voice**, say the displayed word, then pause. After sustained
+speech and 750 ms of quiet, recording stops and local scoring starts. **Stop and
+score** does the same immediately. Sentence practice allows a longer 1.2 s pause.
+There is no required Assess step. The record control and waveform stay above the
+results, so the next take uses the same button position. Recordings remain in History.
+
+## Consonant-focused analysis
+
+The existing L & N end-of-word flow provided the interaction pattern. Its nasal
+classifier is not reused for unrelated fricatives. H & F has a dedicated analyser:
+
+1. Decode the actual microphone recording and resample to 16 kHz.
+2. Compute 25 ms windowed FFTs at 10 ms intervals, 32 mel-band spectra, cepstra,
+   AC energy and periodicity evidence.
+3. Find the consonant and vowel transition, retaining weak initial H. Combine a
+   sustained energy rise with nearby pitch evidence; intermittent pitch must not
+   shift a Mandarin onset into its nasal ending.
+4. Compare consonant spectra and consonant-to-vowel spectral differences against
+   both displayed words. Relative spectra reduce gain and microphone-colour
+   differences. English H/F and Mandarin H/F use their own language references.
+   Final F/V additionally considers partial voicing and the ending transition.
+5. Show target-sound separation, shared word/vowel match and relative sound timing.
+   The overall index weights sound separation 80% and word match 20%, so a shared
+   vowel cannot dominate the score for a confused consonant.
+6. In sentence mode, symmetrically search for either displayed word before
+   extracting the consonant; the chosen card does not determine its location.
+
+The result preserves the reference voice, distances, segment duration, target,
+detected side and analyser version in local history. Silence, noise, missing
+segments and uncertain comparisons produce retry guidance. Device synthesis is
+silent during analysis and microphone recordings are never uploaded.
+
+These are designed comparison indices. Constants are not trained calibration,
+and human pronunciation accuracy is still being evaluated. Numerical timing is
+relative to the reference, not a requirement to imitate its speaking speed exactly.
+
+## Phonetic basis
+
+Fricative evidence depends on context and speakers; one frequency cutoff is not
+a dependable classifier. English research discusses vowel-like H and the limited
+perceptual information in isolated F friction ([English F/S/H study](https://pmc.ncbi.nlm.nih.gov/articles/PMC4917926/)).
+Mandarin recordings show different spectral distributions for F and velar H
+([Yang et al., 2018](https://people.ohio.edu/xul/yang2018jasa.pdf)). These findings
+motivate the feature choices; their reported results do not validate this app.
+
+## Phone test
+
+Engineering checks for this candidate passed all 16 word pairs on the isolated
+iOS simulator and the physical MIX2S using actual native silent voice rendering.
+Correct-reference and opposite-reference cases were tested on both sides. Three
+iOS sentence routes also passed native reference generation, target search and
+the actual scoring worker. Browser tests passed repeated automatic stopping,
+manual stopping, fixed control positions, recording storage and replay. These
+tests establish the software path; they do not establish accuracy on human speech.
+
+Update H & F without uninstalling. Try hat/fat, hit/fit and heat/feet, then each
+Mandarin pair and leaf/leave. Say the selected word and its opposite deliberately.
+Start speaking immediately after tapping Record, pause briefly within a sentence,
+record again while an older result is processing, and replay both takes in History.
+Report the selected word, what you said and the three result values.
+
+The release receipt records actual availability after upload; this document alone
+does not claim the candidate is in TestFlight or Google Play.

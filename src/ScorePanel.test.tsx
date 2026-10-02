@@ -15,6 +15,23 @@ const grade:ScoreResult={status:'scored',score:83,probability:.83,model:'test-on
 beforeEach(()=>{vi.clearAllMocks();mocks.save.mockResolvedValue('device');});
 afterEach(cleanup);
 describe('local scoring take lifecycle',()=>{
+ it('automatically assesses a finished H & F take once, without an Assess button',async()=>{
+  const entry={...take(),app:'handf' as const,lesson:'hf-en',word:'hat',prompt:'hat'},saved=vi.fn();
+  mocks.assess.mockResolvedValue(grade);
+  const view=render(<ScorePanel take={entry} busy automatic tr={tr} onSaved={saved} onStorageWarning={vi.fn()}/>);
+  expect(mocks.assess).not.toHaveBeenCalled();
+  await act(async()=>view.rerender(<ScorePanel take={entry} busy={false} automatic tr={tr} onSaved={saved} onStorageWarning={vi.fn()}/>));
+  expect(mocks.assess).toHaveBeenCalledTimes(1);expect(screen.queryByRole('button',{name:'Assess my pronunciation'})).toBeNull();
+  await act(async()=>view.rerender(<ScorePanel take={{...entry,score:grade}} busy={false} automatic tr={tr} onSaved={saved} onStorageWarning={vi.fn()}/>));
+  expect(mocks.assess).toHaveBeenCalledTimes(1);
+ });
+ it('cancels automatic scoring when the next recording begins',async()=>{
+  const pending=deferred(),saved=vi.fn();mocks.assess.mockReturnValue(pending.promise);
+  const props={take:{...take(),app:'handf' as const},busy:false,automatic:true,tr,onSaved:saved,onStorageWarning:vi.fn()};
+  const view=render(<ScorePanel {...props}/>);expect(mocks.assess).toHaveBeenCalledTimes(1);
+  view.rerender(<ScorePanel {...props} busy/>);
+  await act(async()=>pending.resolve(grade));expect(saved).not.toHaveBeenCalled();expect(mocks.save).not.toHaveBeenCalled();
+ });
  it('labels experimental reference matches and preserves their provenance in history',async()=>{
   const match:ScoreResult={status:'matched',score:76,model:'local-reference-dtw:v1',contrast:'handf/hf-en/0/0/word/en-h-f:v1',unit:'phone',targetDistance:.2,competitorDistance:.3,referenceVoice:'fixture',scope:'word'};
   mocks.assess.mockResolvedValue(match);

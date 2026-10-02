@@ -1,0 +1,36 @@
+/** Adapted from L & N's live end-of-word detector. A take ends only after
+ * sustained speech followed by quiet; permission time is outside this clock. */
+export class EndOfWordDetector {
+  private started: number | null = null;
+  private floor: number[] = [];
+  private speechSince: number | null = null;
+  private heard = false;
+  private quietSince: number | null = null;
+  private ended = false;
+  constructor(private sentence = false) {}
+  feed(rms: number, now: number): boolean {
+    if (this.ended || !Number.isFinite(rms) || !Number.isFinite(now)) return false;
+    this.started ??= now;
+    const elapsed = now - this.started, level = Math.max(0, rms);
+    // Use the quietest early blocks, rather than the median: speaking as soon
+    // as Record lights up must not be mistaken for background noise.
+    if (!this.heard && elapsed <= 250) this.floor.push(level);
+    const sorted = [...this.floor].sort((a, b) => a - b);
+    const noise = sorted[Math.floor(sorted.length * .15)] ?? 0;
+    const threshold = Math.max(.006, Math.min(.018, noise * 3.5));
+    if (level >= threshold) {
+      this.quietSince = null;
+      this.speechSince ??= now;
+      if (now - this.speechSince >= 100) this.heard = true;
+      return false;
+    }
+    this.speechSince = null;
+    if (!this.heard) return false;
+    this.quietSince ??= now;
+    if (elapsed >= 900 && now - this.quietSince >= (this.sentence ? 1200 : 750)) {
+      this.ended = true;
+      return true;
+    }
+    return false;
+  }
+}

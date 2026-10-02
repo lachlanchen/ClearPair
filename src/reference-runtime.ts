@@ -37,6 +37,11 @@ export class ReferenceRuntime {
    const b=await reference(pronunciationText(plan.competitor,plan.profile.language,sentence));
    if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
    if(a.voice!==b.voice){this.cache.clear();return {status:'unscored',reason:'model-unavailable'};}
+   const focused=plan.calibrationKey.startsWith('handf/')&&sentence;
+   const wa=focused?await reference(pronunciationText(plan.target,plan.profile.language)):a;
+   const wb=focused?await reference(pronunciationText(plan.competitor,plan.profile.language)):b;
+   if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
+   if([wa.voice,wb.voice].some(v=>v!==a.voice)){this.cache.clear();return {status:'unscored',reason:'model-unavailable'};}
    return await new Promise<ScoreResult>(resolve=>{
     const worker=this.create();this.worker=worker;
     const finish=(result:ScoreResult)=>{worker.terminate();if(this.worker===worker)this.worker=undefined;resolve(result);};
@@ -52,7 +57,8 @@ export class ReferenceRuntime {
      else finish({status:'unscored',reason:'invalid-evidence'});
     };
     // Clone reference buffers so cancellation cannot detach cached audio.
-    worker.postMessage({id,plan,samples,target:a.samples,competitor:b.samples,voice:a.voice},[samples.buffer]);
+    worker.postMessage({id,plan,samples,target:a.samples,competitor:b.samples,voice:a.voice,
+     ...(focused?{wordTarget:wa.samples,wordCompetitor:wb.samples}:{})},[samples.buffer]);
    });
   };
   try{return await Promise.race([work(),new Promise<ScoreResult>(resolve=>{

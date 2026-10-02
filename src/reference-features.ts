@@ -10,6 +10,10 @@ export interface AcousticReference {
   pitch:(number|null)[];
   seconds:number;
   periodic:number;
+  /** Per-frame, gain-normalized log-mel shape and AC energy for consonant
+   * segmentation. These are measured from the same FFT, not a second model. */
+  spectra:number[][];
+  energy:number[];
 }
 const N=512,HOP=160,WIN=400,BANDS=32;
 const mel=(hz:number)=>2595*Math.log10(1+hz/700);
@@ -52,12 +56,16 @@ export function acousticReference(input:Float32Array):AcousticReference|null{
  if(first<0||last-first<9)return null;
  first=Math.max(0,first-3);last=Math.min(energy.length-1,last+3);
  const audio=input.subarray(first*HOP,Math.min(input.length,(last+1)*HOP));
- const re=new Float64Array(N),im=new Float64Array(N),frames:number[][]=[],pitches:(number|null)[]=[];
+ const re=new Float64Array(N),im=new Float64Array(N),frames:number[][]=[],pitches:(number|null)[]=[],spectra:number[][]=[],levels:number[]=[];
  for(let at=0;at+WIN<=audio.length;at+=HOP){
   re.fill(0);im.fill(0);
   for(let i=0;i<WIN;i++)re[i]=(audio[at+i]-.97*(audio[at+i-1]??0))*(.54-.46*Math.cos(2*Math.PI*i/(WIN-1)));
   fft(re,im);
   const logs=bank.map(weights=>Math.log(1e-10+weights.reduce((s,w,i)=>s+w*(re[i]**2+im[i]**2),0)));
+  const logMean=logs.reduce((s,v)=>s+v,0)/BANDS;
+  spectra.push(logs.map(v=>v-logMean));
+  let mean=0,sum=0;for(let i=0;i<WIN;i++)mean+=audio[at+i];mean/=WIN;
+  for(let i=0;i<WIN;i++)sum+=(audio[at+i]-mean)**2;levels.push(Math.sqrt(sum/WIN));
   const coeffs=Array.from({length:12},(_,c)=>logs.reduce((s,v,b)=>s+v*Math.cos(Math.PI*(c+1)*(b+.5)/BANDS),0)/BANDS);
   frames.push(coeffs);
   // 40 ms gives the pitch estimator enough periods at low speaking pitches.
@@ -68,12 +76,42 @@ export function acousticReference(input:Float32Array):AcousticReference|null{
  const voiced=pitches.filter((p):p is number=>p!==null),median=[...voiced].sort((a,b)=>a-b)[Math.floor(voiced.length/2)];
  return {frames:frames.map(f=>f.map((v,c)=>v-.25*mean[c])),
   pitch:pitches.map(p=>p&&median?12*Math.log2(p/median):null),seconds:audio.length/16000,
-  periodic:voiced.length/pitches.length};
+  periodic:voiced.length/pitches.length,spectra,energy:levels};
 }
-function frameCost(a:number[],b:number[]){
+export function frameCost(a:number[],b:number[]){
  // Lower cepstra retain vowel/spectral envelope; higher coefficients retain
  // frication differences without letting a single noisy high band dominate.
  return Math.sqrt(a.reduce((s,v,i)=>s+Math.min(16,(v-b[i])**2)*(i<6?1:.6),0)/9.6);
+}
+
+export function referenceSlice(a:AcousticReference,from:number,to:number):AcousticReference {
+ const frames=a.frames.slice(from,to),pitch=a.pitch.slice(from,to);
+ return {frames,pitch,spectra:a.spectra.slice(from,to),energy:a.energy.slice(from,to),
+  seconds:frames.length*.01,periodic:pitch.filter(p=>p!==null).length/Math.max(1,frames.length)};
+}
+/** Locate either displayed word within a carrier sentence. The search is
+ * symmetric: its location is chosen by acoustic fit, never by the selected side.
+ * The span bounds prevent a long unrelated phrase from warping into one word. */
+export function locateReference(take:AcousticReference,word:AcousticReference):{from:number;to:number;distance:number}|null {
+ const n=take.frames.length,m=word.frames.length;
+ if(n<m*.45||!m)return null;
+ let previous=new Float64Array(m+1).fill(Infinity),starts=new Int32Array(m+1);
+ previous[0]=0;
+ let best:{from:number;to:number;distance:number}|null=null;
+ for(let i=1;i<=n;i++){
+  const current=new Float64Array(m+1).fill(Infinity),nextStarts=new Int32Array(m+1);
+  current[0]=0;nextStarts[0]=i;
+  for(let j=1;j<=m;j++){
+   const choices=[previous[j-1],previous[j]+.12,current[j-1]+.12],k=choices.indexOf(Math.min(...choices));
+   const from=k===0?(j===1?i-1:starts[j-1]):k===1?starts[j]:nextStarts[j-1];
+   if(i-from>m*2.2)continue;
+   current[j]=choices[k]+frameCost(take.frames[i-1],word.frames[j-1]);nextStarts[j]=from;
+  }
+  const from=nextStarts[m],span=i-from,distance=current[m]/Math.max(m,span);
+  if(span>=m*.45&&span<=m*2.2&&Number.isFinite(distance)&&(!best||distance<best.distance))best={from,to:i,distance};
+  previous=current;starts=nextStarts;
+ }
+ return best;
 }
 export function referenceDistance(a:AcousticReference,b:AcousticReference,tone=false,timing=false):number{
  const n=a.frames.length,m=b.frames.length;

@@ -37,6 +37,7 @@ import type {
 import { Player, type Clip } from "./player";
 import { pronunciationText } from './pronunciation-text';
 import { Recorder } from "./recorder";
+import { EndOfWordDetector } from './end-of-word';
 import { inspectRecording, unavailableAnalysis } from "./analysis";
 import { shareNativeRecording } from "./export";
 import { Challenge } from './Challenge';
@@ -108,6 +109,7 @@ export function App() {
     recorder = useRef(new Recorder()),
     timer = useRef<ReturnType<typeof setInterval> | undefined>(undefined),
     limit = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const endOfWord = useRef<EndOfWordDetector | undefined>(undefined);
   const hold = useRef<ReturnType<typeof setTimeout> | undefined>(undefined),
     longPress = useRef(false),
     clips = useRef<Record<string, string>>({});
@@ -309,12 +311,16 @@ export function App() {
     recordingState.current = "starting";
     setRecording("starting");
     try {
-      await recorder.current.start((rms) =>
-        setMeter((v) => [...v.slice(1), Math.min(1, rms * 5)]),
-      );
+      await recorder.current.start((rms) => {
+        if(run!==generation.current)return;
+        setMeter((v) => [...v.slice(1), Math.min(1, rms * 5)]);
+        if(recordingState.current==='recording'&&endOfWord.current?.feed(rms,performance.now()))
+          void finishRef.current();
+      });
       if (run !== generation.current) return;
       recordingState.current = "recording";
       setRecording("recording");
+      endOfWord.current=product.id==='handf'?new EndOfWordDetector(context):undefined;
       const start = Date.now();
       timer.current = setInterval(
         () => setSeconds((Date.now() - start) / 1000),
@@ -336,11 +342,13 @@ export function App() {
     setRecording("idle");
     clearInterval(timer.current);
     clearTimeout(limit.current);
+    endOfWord.current=undefined;
   }
   async function finish() {
     if (recordingState.current !== "recording") return;
     recordingState.current = "saving";
     setRecording("saving");
+    endOfWord.current=undefined;
     clearInterval(timer.current);
     clearTimeout(limit.current);
     try {
@@ -948,7 +956,7 @@ export function App() {
                     )}
                     <span>
                       {recording === "recording"
-                        ? tr("Finish recording", "结束录音")
+                        ? product.id==='handf'?tr('Stop and score','停止并评分'):tr("Finish recording", "结束录音")
                         : recording === "saving"
                           ? tr("Saving…", "保存中…")
                           : recording === "starting"
@@ -961,7 +969,8 @@ export function App() {
                 <div className="result-area" aria-live="polite">
                   <p>{status}</p>
                   <p className="muted">
-                    {tr(
+                    {product.id==='handf'?tr('Say the word. A short silence scores it automatically.','说出词语，短暂停顿后自动评分。'):
+                    tr(
                       "Signal quality only—not a pronunciation score.",
                       "这里只评估信号质量，不是发音分数。",
                     )}
@@ -996,7 +1005,7 @@ export function App() {
                     </span>
                   </div>
                 </div>
-                <ScorePanel take={take} busy={busy} tr={tr} onSaved={setTake}
+                <ScorePanel take={take} busy={busy} automatic={product.id==='handf'} tr={tr} onSaved={setTake}
                   onStorageWarning={()=>setStorageWarning(true)}/>
               </>
             ) : (

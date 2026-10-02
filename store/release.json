@@ -1,6 +1,7 @@
 {
   "version": "1.0.0",
-  "build": 6,
-  "distribution": "experimental-local-reference-match-internal-test-not-formal",
+  "build": 7,
+  "distribution": "handf-automatic-segment-scoring-internal-test",
+  "testApps": ["handf"],
   "apps": ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese", "japanese"]
 }

@@ -68,6 +68,7 @@ export type ScoreResult =
       competitorDistance: number;
       referenceVoice: string;
       scope: "word" | "sentence";
+      hf?: import('./hf-score').HFDetails;
     }
   | {
       status: "scored";

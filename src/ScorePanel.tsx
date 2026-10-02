@@ -17,11 +17,16 @@ export function scoreMessage(reason:ScoreReason,tr:(en:string,zh:string)=>string
     default:return tr('Local assessment is unavailable for this take. You can still replay it.','这段录音暂时无法在设备端评分，仍可回放。');
   }
 }
-export function ScorePanel({take,busy,tr,onSaved,onStorageWarning}:{take?:Take;busy:boolean;
+export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarning}:{take?:Take;busy:boolean;automatic?:boolean;
   tr:(en:string,zh:string)=>string;onSaved:(take:Take)=>void;onStorageWarning:()=>void}){
-  const engine=useRef(new LocalScorer()),token=useRef(0);
+  const engine=useRef(new LocalScorer()),token=useRef(0),autoStarted=useRef<string|undefined>(undefined);
   const [running,setRunning]=useState(false),[result,setResult]=useState<ScoreResult>();
   useEffect(()=>{token.current++;engine.current.cancel();setRunning(false);setResult(take?.score);},[take?.id,busy]);
+  useEffect(()=>{
+    if(automatic&&!busy&&take?.assessment&&!take.score&&autoStarted.current!==take.id&&!document.hidden){
+      autoStarted.current=take.id;void assess();
+    }
+  },[take?.id,busy,automatic]);
   useEffect(()=>{
     const hidden=()=>{if(document.hidden){token.current++;engine.current.dispose();setRunning(false);}};
     document.addEventListener('visibilitychange',hidden);
@@ -48,16 +53,38 @@ export function ScorePanel({take,busy,tr,onSaved,onStorageWarning}:{take?:Take;b
     }
   }
   return <section className="local-score-panel" aria-label={tr('Pronunciation assessment','发音评分')}>
-    <div className="local-score-actions"><button className="secondary-button" disabled={busy||!take?.assessment}
+    <div className="local-score-actions">{(!automatic||running||result?.status==='unscored')&&<button className="secondary-button" disabled={busy||!take?.assessment}
       onClick={()=>running?cancel():void assess()}>{running?<Square size={16}/>:<Sparkles size={16}/>}
-      {tr(running?'Stop':'Assess my pronunciation',running?'停止':'评估我的发音')}</button>
+      {running?tr('Stop','停止'):automatic?tr('Retry scoring','重新评分'):tr('Assess my pronunciation','评估我的发音')}</button>}
       <small>{tr('On this device. No audio uploads.','在此设备运行，不上传录音。')}</small></div>
     <div className="local-score-result" aria-live="polite" aria-busy={running}>
       {take&&<small className="score-target">{tr('Recorded word','录制的词')}: <WordText value={take.word} reading={take.reading}/></small>}
       {running?<p>{tr('Analysing the target sound…','正在分析目标音…')}</p>:result?.status==='scored'||result?.status==='matched'?<div className="local-grade">
         <strong>{result.score}<small>/ 100</small></strong>
-        <p>{result.status==='matched'?tr('Beta practice match. Similarity to the device voice, not a pronunciation accuracy percentage.','测试版练习匹配分：与设备示范声音的相似度，不是发音正确率。'):tr('Estimated target-contrast score, not a diagnosis.','目标音对比的估计分数，不是诊断。')}<small>{result.model}</small></p>
-      </div>:<p>{result?.status==='unscored'?scoreMessage(result.reason,tr):tr('Record first, then assess the confusing sound.','先录音，再评估容易混淆的音。')}</p>}
+        <p>{result.status==='matched'&&result.hf?tr('F / H practice score','F / H 练习分数'):result.status==='matched'?tr('Beta practice match. Similarity to the device voice, not a pronunciation accuracy percentage.','测试版练习匹配分：与设备示范声音的相似度，不是发音正确率。'):tr('Estimated target-contrast score, not a diagnosis.','目标音对比的估计分数，不是诊断。')}
+          {result.status==='matched'&&result.hf&&<small>{tr('Heard','听到的音')}: {result.hf.heard==='uncertain'?tr('Uncertain','不确定'):`/${result.hf.heard}/`}</small>}
+        </p>
+      </div>:<p>{result?.status==='unscored'?scoreMessage(result.reason,tr):automatic?tr('Record, speak, then pause for your score.','点录音，说出词语，停顿后查看评分。'):tr('Record first, then assess the confusing sound.','先录音，再评估容易混淆的音。')}</p>}
+      {!running&&result?.status==='matched'&&result.hf&&<>
+        <dl className="hf-score-items">
+          <div><dt>{tr('Target sound','目标音')}</dt><dd>{result.hf.sound}<small>/100</small></dd></div>
+          <div><dt>{tr('Vowel and word','元音与词语')}</dt><dd>{result.hf.word}<small>/100</small></dd></div>
+          <div><dt>{tr('Sound timing','发音时长')}</dt><dd>{result.hf.timing}<small>/100</small></dd></div>
+        </dl>
+        <p className="hf-coaching">{hfCue(result.hf.cue,tr)}</p>
+        <small>{tr('Experimental reference comparison.','测试版示范声音对比。')}</small>
+      </>}
     </div>
   </section>;
+}
+function hfCue(cue:import('./hf-score').HFDetails['cue'],tr:(en:string,zh:string)=>string){
+  switch(cue){
+    case 'good':return tr('The target sound is clearer. Keep the airflow smooth.','目标音较清晰，继续保持平稳气流。');
+    case 'lip-friction':return tr('For F, let your upper teeth lightly touch your lower lip and keep air flowing.','发 F 时，上齿轻触下唇，保持气流。');
+    case 'gentle-breath':return tr('For English H, release your lip and breathe into the vowel.','发英语 H 时，松开嘴唇，轻轻呼气接上元音。');
+    case 'back-friction':return tr('For Mandarin H, make gentle friction at the back of your mouth.','发普通话 H 时，在口腔后部产生轻柔摩擦。');
+    case 'keep-ending':return tr('Keep the final F flowing without adding a vowel.','词尾 F 保持气流，不要添加元音。');
+    case 'add-voice':return tr('For V, keep lip contact and add gentle voicing.','发 V 时保持唇齿接触，加上轻柔声带振动。');
+    default:return tr('The consonant is unclear. Listen to the pair and try once more.','辅音区别不够清晰，请听词对后再试。');
+  }
 }

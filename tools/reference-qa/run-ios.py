@@ -28,7 +28,7 @@ try:
                 try: row,_=json.JSONDecoder().raw_decode(line.split('CLEARPAIR_REFERENCE_ROW ',1)[1].lstrip())
                 except json.JSONDecodeError: continue
                 rows.append(row)
-            if len(rows)==8:
+            if len(rows)==int(os.environ.get('CLEARPAIR_QA_ROWS','8')):
                 result={'scope':'Native synthesis and algorithm plumbing, not human pronunciation accuracy','results':rows}
                 (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
                 print(json.dumps(result),flush=True);break

@@ -11,6 +11,8 @@ const env = { ...process.env, CLEARPAIR_KEYSTORE: config.storeFile,
   CLEARPAIR_STOREPASS: config.storePassword, CLEARPAIR_KEYPASS: config.keyPassword,
   CLEARPAIR_KEYALIAS: config.keyAlias };
 const apps = ['handf', 'landr', 'english', 'chinese', 'korean', 'arabic', 'cantonese', 'japanese'];
+const selected=process.argv.slice(2);
+if(selected.some(app=>!apps.includes(app))||new Set(selected).size!==selected.length)throw Error('Unknown or duplicate app selector');
 const init = resolve('tools/android-release.init.gradle');
 const {version,build}=JSON.parse(await readFile('store/release.json','utf8'));
 if(version!==JSON.parse(await readFile('package.json','utf8')).version) throw new Error('Version mismatch');
@@ -21,7 +23,7 @@ function run(command, args, cwd) {
   const r = spawnSync(command, args, { cwd, env, stdio: 'inherit' });
   if (r.status !== 0) throw new Error(`${command} failed (${r.status}).`);
 }
-for (const app of apps) {
+for (const app of apps.filter(app=>!selected.length||selected.includes(app))) {
   run(process.execPath, ['tools/native.mjs', app, 'android']);
   const project = `native/apps/${app}/android`;
   run('./gradlew', ['--no-daemon', '--max-workers=2', '-Dorg.gradle.jvmargs=-Xmx2048m',

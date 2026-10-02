@@ -1,10 +1,12 @@
 import {acousticReference,referenceDistance} from './reference-features';
 import type {AssessmentPlan} from './scoring-profiles';
 import type {ScoreResult} from './scoring';
+import {hfDetails} from './hf-score';
 
 export interface ReferenceRequest {
  id:string;plan:Extract<AssessmentPlan,{mode:'contrast'}>;samples:Float32Array;
  target:Float32Array;competitor:Float32Array;voice:string;
+ wordTarget?:Float32Array;wordCompetitor?:Float32Array;
 }
 export function referenceScore(request:ReferenceRequest):ScoreResult {
  const {plan}=request;
@@ -28,7 +30,20 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
  // from its confusable partner. Constants are not claimed to be learned or
  // calibrated. Keep the raw distances and voice in history for beta diagnosis.
  const score=Math.round(100*Math.max(0,Math.min(1,fit*.45+contrast*.55)));
- return {status:'matched',score,contrast:plan.calibrationKey,model:'local-reference-dtw:v1',
+ const hfTask=plan.calibrationKey.startsWith('handf/');
+ let hf:ReturnType<typeof hfDetails>=null;
+ if(hfTask){
+  const parts=plan.calibrationKey.split('/'),lesson=parts[1],side=parts[3]==='1'?1:0;
+  const wt=request.wordTarget?acousticReference(request.wordTarget):target;
+  const wc=request.wordCompetitor?acousticReference(request.wordCompetitor):competitor;
+  if(!wt||!wc)return {status:'unscored',reason:'reference-unavailable'};
+  hf=hfDetails(take,wt,wc,lesson,side,plan.calibrationKey.includes('/sentence/'));
+  // Do not award a vowel-only take a high F/H score.
+  if(!hf)return {status:'unscored',reason:'unaligned'};
+  if(hf.heard==='uncertain')return {status:'unscored',reason:'uncertain'};
+ }
+ return {status:'matched',score:hf?Math.round(hf.sound*.8+hf.word*.2):score,contrast:plan.calibrationKey,model:'local-reference-dtw:v1',
   unit:plan.profile.unit,targetDistance,competitorDistance,referenceVoice:request.voice,
+  ...(hf?{hf}:{}),
   scope:plan.calibrationKey.includes('/sentence/')?'sentence':'word'};
 }

@@ -29,7 +29,7 @@ describe('beta local acoustic practice index',()=>{
   expect(referenceDistance(a,slow)).toBeLessThan(referenceDistance(a,wrong));
  });
  it('does not return the same score for opposite targets',()=>{
-  const p=assessmentPlan('handf','hf-en',0,0);if(p.mode!=='contrast')throw Error('plan');
+  const p=assessmentPlan('english','v-i',0,0);if(p.mode!=='contrast')throw Error('plan');
   const a=vowel(140,600),b=vowel(140,1200);
   const good=referenceScore({id:'a',plan:p,samples:a,target:a,competitor:b,voice:'fixture'});
   const wrong=referenceScore({id:'b',plan:p,samples:b,target:a,competitor:b,voice:'fixture'});
@@ -40,7 +40,7 @@ describe('beta local acoustic practice index',()=>{
   }
  });
  it('does not score a noise burst or identical reference pronunciations',()=>{
-  const p=assessmentPlan('handf','hf-en',0,0);if(p.mode!=='contrast')throw Error('plan');
+  const p=assessmentPlan('english','v-i',0,0);if(p.mode!=='contrast')throw Error('plan');
   const a=vowel(),b=vowel(140,1200);let seed=12345;
   const noise=Float32Array.from({length:12000},()=>{seed=(seed*1664525+1013904223)>>>0;return (seed/2**32-.5)*.2;});
   expect(referenceScore({id:'n',plan:p,samples:noise,target:a,competitor:b,voice:'fixture'}).status).toBe('unscored');
