@@ -69,9 +69,8 @@ for (const id of ids) {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto(`/${id}/`);
-    await expect(page.getByRole("heading", { level: 1 })).toContainText(
-      "Small difference",
-    );
+    await expect(page.locator('.intro')).toHaveCount(0);
+    await expect(page.locator('.course-row')).toBeVisible();
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth),
     ).toBeLessThanOrEqual(390);
@@ -87,17 +86,13 @@ for (const id of ids) {
     await page
       .getByRole("button", { name: "Hear the pair", exact: true })
       .click();
-    await expect(
-      page.getByText("Ready when you are", { exact: true }),
-    ).toBeVisible();
+    await expect(page.locator('.playback-dock')).not.toBeVisible();
     await page.getByRole("button", { name: "Loop pair", exact: true }).click();
     await expect(
       page.getByText("Repeating until you stop", { exact: true }),
     ).toBeVisible();
     await page.getByRole("button", { name: "Stop", exact: true }).click();
-    await expect(
-      page.getByText("Ready when you are", { exact: true }),
-    ).toBeVisible();
+    await expect(page.locator('.playback-dock')).not.toBeVisible();
     await page.getByTestId('ui-language').selectOption('zh-Hans');
     await expect(
       page.getByRole("button", { name: "录下你的声音", exact: true }),
@@ -129,9 +124,7 @@ test("listening state remains stable after repeated pair switches", async ({
     await page
       .getByRole("button", { name: "Hear the pair", exact: true })
       .click();
-    await expect(
-      page.getByText("Ready when you are", { exact: true }),
-    ).toBeVisible();
+    await expect(page.locator('.playback-dock')).not.toBeVisible();
     await page
       .getByRole("button", {
         name: i % 2 ? "Previous word pair" : "Next word pair",

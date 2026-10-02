@@ -89,3 +89,18 @@ body{background:#f8f9fc}
 [dir=rtl] .word-card{direction:ltr}[dir=rtl] .word-card .card-foot{direction:rtl}
 @media(max-width:700px){.app{padding:0 18px}.topbar{min-height:72px}.brand{font-size:19px}.brand small{max-width:130px}.language{max-width:138px}.intro{gap:12px;padding:22px 0}.intro h1{font-size:29px;letter-spacing:-1px;overflow-wrap:normal}.identity{width:76px;height:76px}.eyebrow{font-size:9px}.tabs button{flex-direction:column;gap:5px;font-size:11px;padding:9px 3px;min-height:59px}.tabs button svg{height:17px;width:17px}.game-invite{padding:19px}.record{min-width:0;max-width:none}.record-controls{gap:9px}.course-row{gap:8px}.course-select{padding:12px}.review-next{padding:12px 9px}.history-item{gap:3px}.history-item .icon-button{min-width:34px}.quiz-result{align-items:flex-start;gap:12px}.small-controls{flex-wrap:wrap}.small-controls button{font-size:11px;flex:1 1 auto;white-space:normal}.play-indicator{min-width:0;gap:6px}.play-indicator span{font-size:11px;line-height:1.4}.playback-dock>button{flex-shrink:0}}
 @media(max-width:360px){.app{padding:0 12px}.topbar{gap:7px}.brand{gap:7px}.brand-icon{width:35px;height:35px}.brand small{max-width:110px;font-size:10px}.language{max-width:122px;padding:5px 6px}.language select{font-size:10px}.intro h1{font-size:25px}.identity{width:64px;height:64px}.course-select strong{font-size:12px}.review-next{font-size:10px;gap:4px}.word{font-size:29px}.record{font-size:12px;padding:10px}.work-panel{padding:18px 13px}.tabs button{font-size:10px}}
+
+/* Practice is the product: target → waveform → record → score, without an
+   overlaid player, idle countdown, duplicate prompt or export toolbar between. */
+.course-row{margin-top:14px}.game-invite{margin-top:18px}
+.work-panel .word-card{min-height:138px}.work-panel .pair-navigation{margin:12px 0}
+.work-panel .waveform{height:42px;margin:8px 0}.record-controls{min-height:58px}
+.timer{width:38px;min-width:38px;font-size:10px;text-align:end}
+.local-score-panel{margin-top:10px;padding-top:10px}.local-score-result{min-height:56px;padding:6px 0}
+.local-score-actions:empty{display:none}.score-target{display:block;font-size:10px;margin-bottom:5px}
+.result-area{min-height:72px;margin-top:8px;padding-top:4px}.record-signal-status{font-size:10px;color:#687987;line-height:1.5;margin:5px 0}
+.take-actions{margin:0}.take-actions>span{width:auto;flex:1;text-align:end;font-size:10px}
+.score-details{font-size:10px;margin-top:8px;color:#687987}.score-details summary{min-height:30px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.score-details p{margin:8px 0;line-height:1.6}.closest-word{font-size:12px;margin-top:4px;color:var(--shade)}
+.hf-score-items{margin:10px 0}.hf-coaching{min-height:0;font-size:12px;margin:8px 0}
+.playback-dock.dormant{display:none}

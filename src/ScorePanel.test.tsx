@@ -15,6 +15,15 @@ const grade:ScoreResult={status:'scored',score:83,probability:.83,model:'test-on
 beforeEach(()=>{vi.clearAllMocks();mocks.save.mockResolvedValue('device');});
 afterEach(cleanup);
 describe('local scoring take lifecycle',()=>{
+ it('shows opposite-word feedback without claiming a detected phoneme and keeps details collapsed',async()=>{
+  const match:ScoreResult={status:'matched',score:28,model:'local-reference-dtw:v1',contrast:'handf/hf-en/0/0/word/en-h-f:v1',unit:'phone',targetDistance:.9,competitorDistance:.2,referenceVoice:'fixture',scope:'word',closestWord:'fat',evidence:'word'};
+  mocks.assess.mockResolvedValue(match);
+  render(<ScorePanel take={take()} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);
+  await act(async()=>{});
+  expect(screen.getByText(/Closer to/).textContent).toContain('fat');
+  expect(document.querySelector('details')?.open).toBe(false);
+  expect(screen.queryByText(/Heard/)).toBeNull();
+ });
  it('automatically assesses a finished H & F take once, without an Assess button',async()=>{
   const entry={...take(),app:'handf' as const,lesson:'hf-en',word:'hat',prompt:'hat'},saved=vi.fn();
   mocks.assess.mockResolvedValue(grade);

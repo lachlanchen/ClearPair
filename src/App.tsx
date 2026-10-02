@@ -321,7 +321,9 @@ export function App() {
       if (run !== generation.current) return;
       recordingState.current = "recording";
       setRecording("recording");
-      endOfWord.current=automaticScoring?new EndOfWordDetector(context):undefined;
+      // Capture ends after a natural pause for every spoken exercise, even
+      // where this lesson has no numeric contrast assessment.
+      endOfWord.current=new EndOfWordDetector(context);
       const start = Date.now();
       timer.current = setInterval(
         () => setSeconds((Date.now() - start) / 1000),
@@ -531,6 +533,12 @@ export function App() {
     </button>
   );
 
+  const playbackOptions = <div className="small-controls">
+    <button aria-pressed={slow} disabled={busy} onClick={()=>setSlow(!slow)}>{tr('Slower audio','慢速播放')}</button>
+    <button disabled={busy} onClick={()=>playWords(pair,true)}><Repeat2 size={15}/>{tr('Loop pair','循环词对')}</button>
+    {tab==='practice'&&<button disabled={busy} aria-pressed={context} onClick={()=>setContext(!context)}>{tr('Use a sentence','使用短句')}</button>}
+  </div>;
+
   return (
     <div
       className={`app ${tab === "learn" ? "" : "focused"}`}
@@ -562,25 +570,6 @@ export function App() {
       </header>
       <StoreRoute app={product.id} busy={busy||active!==null} tr={tr}/>
       <main>
-        <section className="intro">
-          <div>
-            <p className="eyebrow">
-              {tr(product.name,product.zhName)} <span> / {tr("FIND YOUR SOUND", "找到你的声音")}</span>
-            </p>
-            <h1>
-              {tr("Small difference.", "小小区别，")}
-              <br />
-              <em>{tr("Different meaning.", "不同意义。")}</em>
-            </h1>
-            <p>
-              {tr(
-                "Practise what you mix up. Learn the difference.",
-                "专练易混的部分，真正分清区别。",
-              )}
-            </p>
-          </div>
-          <img className="identity" src={`${import.meta.env.BASE_URL}icons/icon-192.png`} alt="" width="130" height="130"/>
-        </section>
         <div className="course-row">
           <button
             className="course-select"
@@ -687,16 +676,6 @@ export function App() {
             setGameProgress(next);
             if (!saveGame(gameKey, next)) setStorageWarning(true);
           }} />}
-
-        {tab === 'learn' && <section className="game-invite" aria-label={tr('Quick challenge', '小挑战')}>
-          <div className="game-emblem"><Sparkles size={25}/></div>
-          <div><h2>{tr('A little play. A clearer ear.', '玩一小会，听得更清。')}</h2>
-            <p>{tr('5 questions. No timer. Just the tricky bits.', '五道题，不限时，专练易混点。')}</p>
-            <span className="game-stars"><Star size={14}/>{gameProgress.stars} {tr('stars collected', '颗练习星星')}</span></div>
-          <button className="primary" onClick={lesson.quizMode === 'none' ? () => selectTab('listen') : startChallenge}>
-            {lesson.quizMode === 'none' ? tr('Explore pair', '探索词对') : tr('Play a round', '玩一轮')}<ArrowRight size={18}/>
-          </button>
-        </section>}
 
         {tab === "learn" && (
           <section className="learn-grid">
@@ -899,38 +878,17 @@ export function App() {
                 <ArrowRight size={19} />
               </button>
             </div>
-            <div className="small-controls">
-              <button
-                aria-pressed={slow}
-                disabled={busy}
-                onClick={() => setSlow(!slow)}
-              >
-                {tr("Slower audio", "慢速播放")}
-              </button>
-              <button disabled={busy} onClick={() => playWords(pair, true)}>
-                <Repeat2 size={15} />
-                {tr("Loop pair", "循环词对")}
-              </button>
-              {tab === "practice" && (
-                <button
-                  disabled={busy}
-                  aria-pressed={context}
-                  onClick={() => setContext(!context)}
-                >
-                  {tr("Use a sentence", "使用短句")}
-                </button>
-              )}
-            </div>
+            {tab==='listen'&&playbackOptions}
             {tab === "practice" ? (
               <>
-                <div
+                {context && <div
                   className="record-prompt"
                   lang={lesson.language}
                   dir={lesson.language === "ar-SA" ? "rtl" : "auto"}
                 >
                   <WordText value={context ? word.sentence : word.text}
                     reading={lesson.language==='ja-JP' ? context ? word.sentenceReading : word.reading : undefined}/>
-                </div>
+                </div>}
                 <Waveform
                   label={tr(recording==='recording'?'Live microphone level':'Recorded waveform',recording==='recording'?'实时麦克风音量':'录音波形')}
                   values={
@@ -965,17 +923,11 @@ export function App() {
                             : tr("Record your voice", "录下你的声音")}
                     </span>
                   </button>
-                  <span className="timer">{seconds.toFixed(1)} / 12s</span>
+                  <span className="timer" aria-hidden={recording!=='recording'}>{recording==='recording'?`${seconds.toFixed(1)}s`:''}</span>
                 </div>
+                <ScorePanel take={take} busy={busy} automatic={automaticScoring} tr={tr} onSaved={setTake}
+                  onStorageWarning={()=>setStorageWarning(true)}/>
                 <div className="result-area" aria-live="polite">
-                  <p>{status}</p>
-                  <p className="muted">
-                    {automaticScoring?tr('Say the word. A short silence scores it automatically.','说出词语，短暂停顿后自动评分。'):
-                    tr(
-                      "Signal quality only—not a pronunciation score.",
-                      "这里只评估信号质量，不是发音分数。",
-                    )}
-                  </p>
                   <div className="take-actions">
                     <button
                       disabled={!take || busy}
@@ -1005,9 +957,9 @@ export function App() {
                           : ""}
                     </span>
                   </div>
+                  <p className="record-signal-status">{status}</p>
                 </div>
-                <ScorePanel take={take} busy={busy} automatic={automaticScoring} tr={tr} onSaved={setTake}
-                  onStorageWarning={()=>setStorageWarning(true)}/>
+                {playbackOptions}
               </>
             ) : (
               <div className="quiz-result" aria-live="polite">
@@ -1055,6 +1007,16 @@ export function App() {
             </div>
           </section>
         )}
+
+        {tab === 'learn' && <section className="game-invite" aria-label={tr('Quick challenge', '小挑战')}>
+          <div className="game-emblem"><Sparkles size={25}/></div>
+          <div><h2>{tr('A little play. A clearer ear.', '玩一小会，听得更清。')}</h2>
+            <p>{tr('5 questions. No timer. Just the tricky bits.', '五道题，不限时，专练易混点。')}</p>
+            <span className="game-stars"><Star size={14}/>{gameProgress.stars} {tr('stars collected', '颗练习星星')}</span></div>
+          <button className="primary" onClick={lesson.quizMode === 'none' ? () => selectTab('listen') : startChallenge}>
+            {lesson.quizMode === 'none' ? tr('Explore pair', '探索词对') : tr('Play a round', '玩一轮')}<ArrowRight size={18}/>
+          </button>
+        </section>}
 
         {tab === "history" && (
           <section className="panel history">
@@ -1153,7 +1115,7 @@ export function App() {
           </section>
         )}
 
-        <div className={`playback-dock ${tab === 'learn' && !active ? 'dormant' : ''}`}>
+        <div className={`playback-dock ${!active ? 'dormant' : ''}`}>
           <div className={active ? "play-indicator active" : "play-indicator"}>
             <AudioLines size={18} />
             <span>

@@ -14,7 +14,9 @@ export class EndOfWordDetector {
     const elapsed = now - this.started, level = Math.max(0, rms);
     // Use the quietest early blocks, rather than the median: speaking as soon
     // as Record lights up must not be mistaken for background noise.
-    if (!this.heard && elapsed <= 250) this.floor.push(level);
+    // Only quiet blocks estimate the floor. An immediately spoken soft word
+    // must not become its own noise threshold and run until the safety limit.
+    if (!this.heard && elapsed <= 250 && level < .004) this.floor.push(level);
     const sorted = [...this.floor].sort((a, b) => a - b);
     const noise = sorted[Math.floor(sorted.length * .15)] ?? 0;
     const threshold = Math.max(.006, Math.min(.018, noise * 3.5));

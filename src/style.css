@@ -1112,5 +1112,5 @@ footer details > p {
 .focused .intro { padding: 15px 0; }
 .focused .intro h1, .focused .intro .identity, .focused .intro p:last-child { display: none; }
 .focused .intro .eyebrow { margin: 0; }
-.playback-dock { position: sticky; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 5; box-shadow: 0 4px 18px #26342f0a; }
+.playback-dock { position: static; box-shadow: 0 4px 18px #26342f0a; }
 .muted, .section-label, .card-foot, .word-card > small, .small-controls button, footer { color: #68745e; }

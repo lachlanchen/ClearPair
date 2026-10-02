@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "build": 7,
+  "build": 8,
   "distribution": "automatic-local-scoring-test-and-formal-review",
   "testApps": ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese", "japanese"],
   "apps": ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese", "japanese"]

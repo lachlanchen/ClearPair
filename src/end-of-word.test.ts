@@ -9,6 +9,7 @@ describe('H & F automatic stop after speech',()=>{
  it('finishes after speech and trailing silence, including immediate speech',()=>{
   expect(feed([[.002,300],[.08,400],[.002,1500]])).toBe(1450);
   expect(feed([[.08,400],[.002,1500]])).toBe(1150);
+  expect(feed([[.009,400],[.002,1500]])).toBe(1150);
  });
  it('keeps soft frication and an internal pause; lets sentences pause longer',()=>{
   expect(feed([[.002,200],[.009,150],[.08,300],[.002,400],[.04,300],[.002,1600]])).toBe(2100);

@@ -69,6 +69,8 @@ export type ScoreResult =
       referenceVoice: string;
       scope: "word" | "sentence";
       hf?: import('./hf-score').HFDetails;
+      closestWord?: string;
+      evidence?: "sound" | "word";
     }
   | {
       status: "scored";

@@ -201,6 +201,29 @@ class OnsetDatasetProvenanceTests(unittest.TestCase):
 
 @unittest.skipIf(trainer is None, "Requires the existing Torch environment; no install is needed")
 class OnsetTrainingTests(unittest.TestCase):
+    def test_hf_focus_retains_other_phones_as_negative_evidence(self):
+        labels=trainer.hf_labels(np.array([0,1,2,3,4],dtype=np.int64))
+        np.testing.assert_array_equal(labels,[0,1,2,2,2])
+        classes=["F","HH","OTHER"]
+        weight=trainer.weights(labels,np.array(["a","a","b","c","c"]),classes)
+        for category in range(3):
+            self.assertAlmostEqual(float(weight[labels==category].sum()),5/3,places=5)
+
+    def test_hf_model_cannot_masquerade_as_existing_five_class_runtime(self):
+        model=trainer.OnsetNet(3).eval()
+        payload=trainer.export(model,{"focus":"hf","approved":False,"released":False,"normalization":"global"})
+        self.assertEqual(payload["version"],"clearpair-hf-onset-cnn:research-v1")
+        self.assertEqual(payload["classes"],["F","HH","OTHER"])
+        self.assertEqual(np.shape(payload["fc2"]["weight"]),(3,32))
+        self.assertFalse(payload["training"]["approved"])
+
+    def test_hf_confidence_diagnostic_counts_wrong_pair_and_unrelated_acceptances(self):
+        result=trainer.hf_decisions(np.array([0,1,2,2]),np.array([[8,0,0],[8,0,0],[0,8,0],[0,0,8]]))
+        self.assertEqual(result["acceptedPairErrors"],1)
+        self.assertEqual(result["otherFalsePairAcceptances"],1)
+        self.assertEqual(result["pairCoverage"],1)
+        self.assertTrue(result["notCalibrated"])
+
     def test_equal_class_mass_and_equal_speaker_mass_within_class(self):
         labels, people = [], []
         for category in range(5):

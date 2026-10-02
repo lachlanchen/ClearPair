@@ -1,13 +1,18 @@
 # H & F: one recording, automatic feedback
 
-The candidate 1.0.0 (7) adds automatic spoken-contrast feedback to all eight
-apps. H & F additionally has a dedicated consonant-focused analyser.
+Build 1.0.0 (7) added automatic spoken-contrast feedback to all eight apps.
+Candidate (8) keeps that flow and compacts the screen around the word pair,
+waveform, recording button and result. H & F has a dedicated consonant-focused
+analyser; its numerical result remains a designed reference comparison.
 
 Tap **Record your voice**, say the displayed word, then pause. After sustained
 speech and 750 ms of quiet, recording stops and local scoring starts. **Stop and
 score** does the same immediately. Sentence practice allows a longer 1.2 s pause.
 There is no required Assess step. The record control and waveform stay above the
 results, so the next take uses the same button position. Recordings remain in History.
+Spoken exploration exercises also stop after a pause, without inventing a grade.
+The idle timer and Learn hero are removed. Replay/export and optional technical
+details sit below the result; playback controls cannot overlay the record button.
 
 ## Consonant-focused analysis
 
@@ -38,6 +43,13 @@ The result preserves the reference voice, distances, segment duration, target,
 detected side and analyser version in local history. Silence, noise, missing
 segments and uncertain comparisons produce retry guidance. Device synthesis is
 silent during analysis and microphone recordings are never uploaded.
+
+If consonant segmentation fails but the opposite whole word is a clear match
+with audible edge friction, candidate (8) retains a low **word-level comparison**
+and shows “Closer to” the opposite word. It does not claim a detected consonant.
+The fallback uses contrast agreement, not the shared vowel's similarity, so an
+opposite word cannot receive a high score from its vowel. Vowel-only, weak or
+ambiguous matches and sentences remain ineligible for this fallback.
 
 These are designed comparison indices. Constants are not trained calibration,
 and human pronunciation accuracy is still being evaluated. Numerical timing is
