@@ -48,12 +48,28 @@ export function acousticReference(input:Float32Array):AcousticReference|null{
   for(let i=at;i<at+HOP;i++)sum+=(input[i]-mean)**2;energy.push(Math.sqrt(sum/HOP));
  }
  const peak=Math.max(...energy);
- if(peak<.003)return null;
+ if(peak<.001)return null;
  const floor=[...energy].sort((a,b)=>a-b)[Math.floor(energy.length*.1)];
- const threshold=Math.max(.002,Math.min(peak*.12,floor*2.5));
+ const threshold=Math.max(.0005,Math.min(peak*.12,floor*2.5));
  let first=energy.findIndex(e=>e>threshold),last=energy.length-1;
  while(last>first&&energy[last]<=threshold)last--;
  if(first<0||last-first<9)return null;
+ // First locate substantial speech, then retain a bounded weak lead-in. H,
+ // F and nasal murmurs can be far below the vowel peak on an unprocessed mic.
+ // Lowering the whole validity gate would also admit noise; retaining only the
+ // preceding 200 ms preserves the consonant without accepting noise alone.
+ const leadGate=Math.max(.00008,peak*.003,floor*2.5);
+ for(let i=Math.max(0,first-20);i<first;i++){
+  if(energy[i]>leadGate&&(energy[i+1]??0)>leadGate){first=i;break;}
+ }
+ // Unvoiced endings can be just as weak as H/F onsets. Keep up to 200 ms of
+ // adjacent weak activity after the vowel, but stop at a 30 ms quiet gap: a
+ // later room-noise burst must not become the word's final consonant.
+ const tailEnd=Math.min(energy.length-2,last+20);
+ for(let i=last+1;i<=tailEnd;i++){
+  if(energy[i]>leadGate&&energy[i+1]>leadGate)last=i+1;
+  else if(energy.slice(i,i+3).every(e=>e<=leadGate))break;
+ }
  first=Math.max(0,first-3);last=Math.min(energy.length-1,last+3);
  const audio=input.subarray(first*HOP,Math.min(input.length,(last+1)*HOP));
  const re=new Float64Array(N),im=new Float64Array(N),frames:number[][]=[],pitches:(number|null)[]=[],spectra:number[][]=[],levels:number[]=[];

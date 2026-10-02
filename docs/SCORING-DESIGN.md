@@ -1,6 +1,11 @@
 # Contrast-first scoring specification
 
 Status: implementation and validation in progress, **not a claim of validated scoring**.
+The owner-requested native practice-reference index is a separate experimental
+path, labelled as similarity rather than calibrated correctness. See the
+[current build-8 delivery](BETA-1.0.0-8.md) and
+[next contrast-focused source update](SCORING-UPDATE-20261002.md). The calibrated
+model requirements below remain targets, not achievements of that index.
 All eight apps require listening/recognition practice AND spoken-production scoring.
 Signal quality and quiz accuracy are useful but do not satisfy pronunciation scoring.
 
@@ -61,8 +66,10 @@ native, medical intelligibility, or transcription accuracy. If calibration does 
 support that interpretation, use categorical feedback rather than a numeric score.
 
 No hand-tuned rule such as “F3 below a fixed number = R” or “long = sheep” is sufficient.
-No unvalidated waveform-distance-to-one-TTS-voice grade will be shipped. TTS samples
-can catch swapped labels and obvious pipeline failures, but are not human validation.
+No unvalidated waveform-distance-to-one-TTS-voice result can be promoted to a
+calibrated correctness grade. The separately labelled native practice index
+compares both displayed references and remains uncalibrated. TTS samples can
+catch swapped labels and pipeline failures, but are not human validation.
 
 ## Model candidates and licensing
 

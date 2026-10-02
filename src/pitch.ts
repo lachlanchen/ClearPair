@@ -15,7 +15,10 @@ export function framePitch(frame: Float32Array, rate: number): number | null {
   for (const value of frame) mean += value;
   mean /= frame.length;
   for (const value of frame) energy += (value - mean) ** 2;
-  if (energy / frame.length < .008 ** 2) return null;
+  // YIN's normalized difference is gain-independent. The former .008 gate
+  // discarded clean quiet mobile recordings before that evidence was tested.
+  // Keep a small numerical floor; the strict periodicity test rejects noise.
+  if (energy / frame.length < .0005 ** 2) return null;
   const difference = new Float64Array(last + 1);
   const normalized = new Float64Array(last + 1);
   normalized[0] = 1;

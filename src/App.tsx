@@ -506,8 +506,8 @@ export function App() {
         ),
       }[analysis.status]
     : tr(
-        "Your voice stays on this device. Record up to 12 seconds.",
-        "声音保留在此设备上，每次最多录制 12 秒。",
+        "Your voice stays on this device. Tap again or pause to finish.",
+        "声音保留在此设备上，再点一次或停顿即可结束。",
       );
   const pairButton = (
     <button

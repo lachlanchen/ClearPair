@@ -51,7 +51,7 @@ export class ReferenceRuntime {
      if(event.data?.id!==id)return;
      const result=event.data.result as ScoreResult;
      if(result?.status==='matched'&&result.contrast===plan.calibrationKey&&result.referenceVoice===a.voice&&
-       result.model==='local-reference-dtw:v1'&&Number.isInteger(result.score)&&result.score>=0&&result.score<=100&&
+       (result.model==='local-reference-dtw:v1'||result.model==='local-reference-dtw:v2')&&Number.isInteger(result.score)&&result.score>=0&&result.score<=100&&
        [result.targetDistance,result.competitorDistance].every(v=>Number.isFinite(v)&&v>=0))finish(result);
      else if(result?.status==='unscored')finish(result);
      else finish({status:'unscored',reason:'invalid-evidence'});

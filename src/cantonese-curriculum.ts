@@ -45,7 +45,9 @@ export const cantoneseLessons: Lesson[] = [
     t('Both start at the lips. P has more aspiration.', '兩者都從雙唇開始，p 有較強送氣。'),
     [t('b [p]: close and release the lips with little aspiration.', 'b [p]：雙唇閉合再放開，送氣較少。'), t('p [pʰ]: use the same closure, then a stronger puff of air.', 'p [pʰ]：同樣雙唇閉合，放開時送出較強氣流。')],
     t('Hold a hand in front of your lips. The contrast is aspiration, not English-style b voicing.', '把手放在唇前感受氣流。主要区别是送氣，不是英語 b 那樣的濁音。'),
-    [pair(w('波', 'bo1', 'ball / wave'), w('坡', 'po1', 'slope')), pair(w('杯', 'bui1', 'cup'), w('胚', 'pui1', 'embryo'))], { diagram: 'air' }),
+    // 坡 also has a bo1 reading: some Cantonese device voices therefore make
+    // 波/坡 identical. Use an unambiguous same-rhyme contrast instead.
+    [pair(w('標', 'biu1', 'mark'), w('飄', 'piu1', 'drift')), pair(w('杯', 'bui1', 'cup'), w('胚', 'pui1', 'embryo'))], { diagram: 'air' }),
   base('yue-p-t', t('A quiet stop at the end', '輕輕收住韻尾'), ['p', 't'],
     t('Close the ending without adding another vowel.', '收住韻尾，不添加元音。'),
     [t('Final p: close the lips, usually without an audible release.', 'p 韻尾：雙唇閉合，通常沒有明顯爆破。'), t('Final t: close at the tongue tip behind the upper teeth, usually without an audible release.', 't 韻尾：舌尖在上齒後閉合，通常沒有明顯爆破。')],

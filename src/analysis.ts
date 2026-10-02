@@ -22,12 +22,21 @@ export function analyze(samples: Float32Array, rate: number): Analysis {
   const rms = Math.sqrt(Math.max(0, sum / count - (dc / count) ** 2)),
     waveform: number[] = [];
   const window = Math.max(1, Math.round(rate * 0.04));
+  const levels:number[]=[];
   for (let start = 0; start < samples.length; start += window) {
     const frame = samples.subarray(start, start + window);
     const mean = frame.reduce((s, v) => s + v, 0) / frame.length;
     const r = Math.sqrt(frame.reduce((s, v) => s + (v - mean) ** 2, 0) / frame.length);
-    if (r > 0.008) voiced += frame.length / rate;
+    levels.push(r);
   }
+  const peakFrame=Math.max(0,...levels);
+  const ordered=[...levels].sort((a,b)=>a-b);
+  const floor=ordered[Math.floor(ordered.length*.1)]??0;
+  // Count activity relative to this take, not a particular phone's gain.
+  // Trailing auto-stop silence must not dilute a short voiced word into silence.
+  const activityGate=Math.max(.0005,Math.min(.008,peakFrame*.12,floor*3));
+  for(let index=0;index<levels.length;index++)if(levels[index]>activityGate)
+    voiced+=Math.min(window,samples.length-index*window)/rate;
   for (let i = 0; i < 96; i++) {
     const from = Math.floor((i * samples.length) / 96),
       to = Math.floor(((i + 1) * samples.length) / 96);
@@ -45,7 +54,7 @@ export function analyze(samples: Float32Array, rate: number): Analysis {
     waveform,
     pitch: pitchContour(samples, rate),
     status:
-      rms < 0.002 || voiced < 0.12
+      peakFrame < 0.001 || voiced < 0.08
         ? "silent"
         : clipping > 0.015
           ? "clipped"

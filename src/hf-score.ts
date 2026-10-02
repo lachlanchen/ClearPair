@@ -40,7 +40,7 @@ export function fricativeSegment(a:AcousticReference,final:boolean):Segment|null
  }else{
   // H can be tens of dB quieter than its vowel. Retain its weak onset instead
   // of discarding it with a percentage-of-vowel-peak gate.
-  from=a.energy.findIndex(e=>e>Math.max(.0005,peak*.003));
+  from=a.energy.findIndex(e=>e>Math.max(.00008,peak*.003));
   to=vowel;
  }
  if(from<0||to-from<2)return null;

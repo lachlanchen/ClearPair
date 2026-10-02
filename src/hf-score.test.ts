@@ -86,6 +86,22 @@ describe('consonant-focused H & F scoring',()=>{
   expect(h.status).toBe('matched');expect(f.status).toBe('matched');
   if(h.status==='matched'&&f.status==='matched')expect(h.hf!.sound-f.hf!.sound).toBeGreaterThan(25);
  });
+ it.each([.04,.02])('keeps weak breath/friction before a quiet vowel at gain %s',gain=>{
+  const h=assess(word('h',gain)),f=assess(word('f',gain));
+  expect(h.status).toBe('matched');expect(f.status).toBe('matched');
+  if(h.status==='matched'&&f.status==='matched'){
+   expect(h.hf?.heard).toBe('h');expect(f.hf?.heard).toBe('f');
+   expect(h.hf!.sound-f.hf!.sound).toBeGreaterThan(40);
+  }
+ });
+ it('retains a quiet final fricative rather than trimming it to its vowel',()=>{
+  // Reversing this controlled friction+vowel fixture puts the friction at the
+  // end. This tests trimming, not whether the artificial word is English F/V.
+  const normal=word('f').reverse(),quiet=normal.map(v=>v*.02);
+  const a=acousticReference(normal)!,b=acousticReference(quiet)!;
+  expect(b.frames.length).toBeGreaterThanOrEqual(a.frames.length-3);
+  expect(fricativeSegment(b,true)?.duration).toBeGreaterThan(.15);
+ });
  it('locates either side inside a sentence without selecting the expected side first',()=>{
   const prefix=word('none',.8,240),suffix=word('none',.8,240),make=(kind:'h'|'f')=>{
    const target=word(kind),a=new Float32Array(prefix.length+target.length+suffix.length);

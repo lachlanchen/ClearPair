@@ -37,6 +37,22 @@ describe('beta local acoustic practice index',()=>{
   if(good.status==='matched'&&wrong.status==='matched'){
    expect(good.score).toBeGreaterThan(90);expect(wrong.score).toBeLessThan(50);
    expect(good.score-wrong.score).toBeGreaterThan(40);expect('probability' in good).toBe(false);
+   expect(good.focus?.region).toBe('vowel');expect(good.model).toBe('local-reference-dtw:v2');
+   expect(good.breakdown?.pairDistinction).toBeGreaterThan(95);
+   expect(wrong.closestWord).toBe(p.competitor.text);
+  }
+ });
+ it('uses the same A/B comparison when the selected side reverses',()=>{
+  const p=assessmentPlan('english','v-i',0,0),q=assessmentPlan('english','v-i',0,1);
+  if(p.mode!=='contrast'||q.mode!=='contrast')throw Error('plan');
+  const a=vowel(140,600),b=vowel(140,1200);
+  const first=referenceScore({id:'a',plan:p,samples:a,target:a,competitor:b,voice:'fixture'});
+  const reverse=referenceScore({id:'b',plan:q,samples:a,target:b,competitor:a,voice:'fixture'});
+  expect(first.status).toBe('matched');expect(reverse.status).toBe('matched');
+  if(first.status==='matched'&&reverse.status==='matched'){
+   expect(first.focus?.targetDistance).toBe(reverse.focus?.competitorDistance);
+   expect(first.closestWord).toBe(reverse.closestWord);
+   expect(reverse.score).toBeLessThanOrEqual(45);
   }
  });
  it('does not score a noise burst or identical reference pronunciations',()=>{

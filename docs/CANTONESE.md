@@ -17,6 +17,15 @@ Linguistic checks use the [LSHK Jyutping scheme](https://jyutping.org/en/jyutpin
 and [CUHK Cantonese phonology and tone-change examples](https://www.cuhk.edu.hk/lin/cbrc/CantoneseGrammar/multimedia/01.htm).
 These are references, not redistributed recordings. No audio was downloaded or bundled.
 
+The next scoring update replaces the ambiguous 波/坡 aspiration example with
+標 `biu1` / 飄 `piu1`. CUHK lists 坡 under both `bo1` and `po1`; our iOS device
+voice produced identical recordings for 波 and 坡. The uncertainty guard therefore
+correctly refused to grade that pair. The replacement preserves vowel and tone
+while changing aspiration. See the CUHK [b-initial, tone-1 entries](https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/pho-rel.php?s1=b&s3=1)
+and [p-initial, tone-1 entries](https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/pho-rel.php?s1=p&s3=1).
+Existing recordings retain their original word/prompt; a changed prompt is not
+silently reinterpreted during reassessment.
+
 ## Voice and scoring safeguards
 
 Web, Swift and Java voice selection require an explicit Cantonese tag (`zh-HK`,
@@ -26,8 +35,10 @@ audition; tone mergers, heteronyms and context can affect a device voice.
 
 Tone assessment plans retain all six alternatives, context and speaker normalization;
 vowel plans combine quality and duration; consonant plans require target alignment.
-These are requirements, **not a released scoring model**. Pronunciation grades remain
-disabled pending human validation. Game stars measure completed recall exercises only.
+These are calibrated-model requirements, not completed validation. Native builds
+provide a separately labelled experimental comparison with both device-voice
+references, not a calibrated pronunciation correctness percentage. Calibrated
+grades remain disabled. Game stars measure completed recall exercises only.
 
 ## Learning pictures
 
@@ -41,9 +52,10 @@ the final-L lesson. Articulatory reference:
 
 ## Release boundary
 
-All seven apps, including Cantonese, have signed **0.2.0 (2)** builds available in
-internal TestFlight and Google Play testing. Cantonese's store identity exists and
-its owner invitation was requested; internal testing is not public retail release.
+All eight apps, including Cantonese and Japanese, have signed **1.0.0 (8)** builds
+available in internal TestFlight and Google Play testing. All eight iOS versions
+are Waiting for Review; Google production submission is not complete. Testing or
+review submission is not approval or verified public retail availability.
 The scoped PWA is live at https://language-agent.lazying.art/cantonese/.
-See [the beta receipt and device-check limitations](BETA-0.2.0.md). Earlier icons,
+See [the beta receipt and device-check scope](BETA-1.0.0-8.md). Earlier icons,
 builds and release evidence are retained. Formal review is a separate release step.

@@ -15,6 +15,22 @@ const grade:ScoreResult={status:'scored',score:83,probability:.83,model:'test-on
 beforeEach(()=>{vi.clearAllMocks();mocks.save.mockResolvedValue('device');});
 afterEach(cleanup);
 describe('local scoring take lifecycle',()=>{
+ it('shows useful measured items outside the collapsed technical details',async()=>{
+  const match:ScoreResult={status:'matched',score:72,model:'local-reference-dtw:v1',contrast:'english/test',unit:'phone',targetDistance:.3,competitorDistance:.7,referenceVoice:'fixture',scope:'word',breakdown:{wordMatch:83,pairDistinction:91,speechMs:220,referenceMs:310}};
+  mocks.assess.mockResolvedValue(match);
+  render(<ScorePanel take={take()} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);await act(async()=>{});
+  for(const label of ['Word match','Pair distinction','Speech duration'])expect(screen.getByText(label).closest('details')).toBeNull();
+  expect(screen.getByText('220')).toBeDefined();expect(document.querySelector('details')?.open).toBe(false);
+ });
+ it.each([['initial','Initial contrast'],['final','Ending contrast'],['vowel','Vowel contrast']] as const)('names the measured %s region without adding another panel',async(region,label)=>{
+  const match:ScoreResult={status:'matched',score:72,model:'local-reference-dtw:v2',contrast:'english/test',unit:'phone',
+   targetDistance:.3,competitorDistance:.7,referenceVoice:'fixture',scope:'word',
+   focus:{version:'pair-focus-dtw:v1',region,targetDistance:.2,competitorDistance:.7,separation:.5,frames:8},
+   breakdown:{wordMatch:83,pairDistinction:91,speechMs:220,referenceMs:310}};
+  mocks.assess.mockResolvedValue(match);
+  render(<ScorePanel take={take()} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);await act(async()=>{});
+  expect(screen.getByText(label).closest('dl')).not.toBeNull();expect(screen.queryByText('Pair distinction')).toBeNull();
+ });
  it('shows opposite-word feedback without claiming a detected phoneme and keeps details collapsed',async()=>{
   const match:ScoreResult={status:'matched',score:28,model:'local-reference-dtw:v1',contrast:'handf/hf-en/0/0/word/en-h-f:v1',unit:'phone',targetDistance:.9,competitorDistance:.2,referenceVoice:'fixture',scope:'word',closestWord:'fat',evidence:'word'};
   mocks.assess.mockResolvedValue(match);

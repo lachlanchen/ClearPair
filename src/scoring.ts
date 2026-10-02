@@ -61,7 +61,7 @@ export type ScoreResult =
       status: "matched";
       score: number;
       contrast: string;
-      model: "local-reference-dtw:v1";
+      model: "local-reference-dtw:v1" | "local-reference-dtw:v2";
       unit: ScoreEvidence["unit"];
       // A reference similarity index, NOT a probability of correct pronunciation.
       targetDistance: number;
@@ -71,6 +71,8 @@ export type ScoreResult =
       hf?: import('./hf-score').HFDetails;
       closestWord?: string;
       evidence?: "sound" | "word";
+      breakdown?: {wordMatch:number;pairDistinction:number;speechMs:number;referenceMs:number};
+      focus?: import('./pair-focus').PairFocus;
     }
   | {
       status: "scored";

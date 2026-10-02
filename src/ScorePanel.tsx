@@ -62,15 +62,20 @@ export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarnin
         </p>
       </div>:<p>{result?.status==='unscored'?scoreMessage(result.reason,tr):automatic?tr('Record, speak, then pause for your score.','点录音，说出词语，停顿后查看评分。'):tr('Record first, then assess the confusing sound.','先录音，再评估容易混淆的音。')}</p>}
       {!running&&result?.status==='matched'&&result.closestWord&&<p className="closest-word">{tr('Closer to','更接近')}: <bdi>{result.closestWord}</bdi></p>}
+      {!running&&result?.status==='matched'&&result.hf&&<dl className="hf-score-items">
+        <div><dt>{tr('Target sound','目标音')}</dt><dd>{result.hf.sound}<small>/100</small></dd></div>
+        <div><dt>{tr('Vowel and word','元音与词语')}</dt><dd>{result.hf.word}<small>/100</small></dd></div>
+        <div><dt>{tr('Sound timing','发音时长')}</dt><dd>{result.hf.timing}<small>/100</small></dd></div>
+      </dl>}
+      {!running&&result?.status==='matched'&&!result.hf&&result.breakdown&&<dl className="hf-score-items">
+        <div><dt>{tr('Word match','词语匹配')}</dt><dd>{result.breakdown.wordMatch}<small>/100</small></dd></div>
+        <div><dt>{contrastLabel(result.focus?.region,tr)}</dt><dd>{result.breakdown.pairDistinction}<small>/100</small></dd></div>
+        <div><dt>{tr('Speech duration','有效发声时长')}</dt><dd>{result.breakdown.speechMs}<small>ms</small></dd></div>
+      </dl>}
       {!running&&result?.status==='matched'&&result.hf&&<p className="hf-coaching">{hfCue(result.hf.cue,tr)}</p>}
       {!running&&(result?.status==='matched'||result?.status==='scored')&&<details className="score-details">
         <summary>{tr('Score details','评分详情')}</summary>
         <p>{result.status==='matched'?tr('Beta practice match. Similarity to the device voice, not a pronunciation accuracy percentage.','测试版练习匹配分：与设备示范声音的相似度，不是发音正确率。'):tr('Estimated target-contrast score, not a diagnosis.','目标音对比的估计分数，不是诊断。')}</p>
-        {result.status==='matched'&&result.hf&&<dl className="hf-score-items">
-          <div><dt>{tr('Target sound','目标音')}</dt><dd>{result.hf.sound}<small>/100</small></dd></div>
-          <div><dt>{tr('Vowel and word','元音与词语')}</dt><dd>{result.hf.word}<small>/100</small></dd></div>
-          <div><dt>{tr('Sound timing','发音时长')}</dt><dd>{result.hf.timing}<small>/100</small></dd></div>
-        </dl>}
         <small>{tr('On this device. No audio uploads.','在此设备运行，不上传录音。')}</small>
       </details>}
     </div>
@@ -78,6 +83,12 @@ export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarnin
       onClick={()=>running?cancel():void assess()}>{running?<Square size={16}/>:<Sparkles size={16}/>}
       {running?tr('Stop','停止'):automatic?tr('Retry scoring','重新评分'):tr('Assess my pronunciation','评估我的发音')}</button>}</div>
   </section>;
+}
+function contrastLabel(region:import('./pair-focus').FocusRegion|undefined,tr:(en:string,zh:string)=>string){
+  if(region==='initial')return tr('Initial contrast','词首音区别');
+  if(region==='final')return tr('Ending contrast','词尾音区别');
+  if(region==='vowel')return tr('Vowel contrast','元音区别');
+  return tr('Pair distinction','词对区别');
 }
 function hfCue(cue:import('./hf-score').HFDetails['cue'],tr:(en:string,zh:string)=>string){
   switch(cue){
