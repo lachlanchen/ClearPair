@@ -6,7 +6,7 @@ const stamp=new Date().toISOString().replaceAll(/[:.]/g,'-'),out='.runtime/refer
 await mkdir(out,{recursive:true});
 const adb=(...args)=>execFileSync('adb',['-s',serial,...args],{encoding:'utf8',timeout:15_000}).trim();
 const delay=ms=>new Promise(r=>setTimeout(r,ms));
-let browser,install;
+let browser,install,page;
 try{
  let done=false;
  install=spawn('adb',['-s',serial,'install','--no-incremental','-r','native/apps/handf/android/app/build/outputs/apk/debug/app-debug.apk'],{stdio:['ignore','pipe','pipe']});
@@ -33,12 +33,18 @@ try{
  for(let i=0;i<25;i++){
   try{browser=await chromium.connectOverCDP('http://127.0.0.1:'+port,{timeout:1500,noDefaults:true,isWebView:true});break;}catch{await delay(200);}
  }
- const page=browser?.contexts()[0]?.pages()[0];if(!page)throw Error('No QA WebView');
- await page.waitForFunction(()=>window.referenceQA,{timeout:150000});
+ page=browser?.contexts()[0]?.pages()[0];if(!page)throw Error('No QA WebView');
+ await page.waitForFunction(()=>window.referenceQA,undefined,{timeout:180000});
  const receipt=await page.evaluate(()=>window.referenceQA);
  await writeFile(out+'/result.json',JSON.stringify(receipt,null,2));
  await page.screenshot({path:out+'/result.png'});
  console.log(JSON.stringify(receipt));
+}catch(error){
+ if(page){
+  await writeFile(out+'/failure-text.txt',await page.locator('body').innerText().catch(()=>''));
+  await page.screenshot({path:out+'/failure.png'}).catch(()=>{});
+ }
+ throw error;
 }finally{
  if(install?.exitCode===null)install.kill('SIGTERM');
  await browser?.close();try{adb('shell','am','force-stop',pkg);}catch{}
