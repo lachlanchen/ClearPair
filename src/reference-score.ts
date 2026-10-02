@@ -37,7 +37,13 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
   const wt=request.wordTarget?acousticReference(request.wordTarget):target;
   const wc=request.wordCompetitor?acousticReference(request.wordCompetitor):competitor;
   if(!wt||!wc)return {status:'unscored',reason:'reference-unavailable'};
-  hf=hfDetails(take,wt,wc,lesson,side,plan.calibrationKey.includes('/sentence/'));
+  const sentence=plan.calibrationKey.includes('/sentence/');
+  // In the authored Mandarin carrier the target is the final character. Keep
+  // the broad last-half search window from matching a similar earlier carrier
+  // syllable. Within that window both candidates remain equally eligible.
+  const prompt=plan.spokenPrompt.replace(/[^\p{Letter}]/gu,''),position=prompt.indexOf(plan.target.text);
+  const earliest=sentence&&lesson==='hf-zh'&&position>=0?Math.max(0,position/prompt.length-.3):0;
+  hf=hfDetails(take,wt,wc,lesson,side,sentence,earliest);
   // Do not award a vowel-only take a high F/H score.
   if(!hf)return {status:'unscored',reason:'unaligned'};
   if(hf.heard==='uncertain')return {status:'unscored',reason:'uncertain'};

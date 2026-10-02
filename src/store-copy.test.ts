@@ -12,7 +12,8 @@ describe('source-grounded store metadata',()=>{
   expect(row.subtitle.length).toBeLessThanOrEqual(30);
   expect(row.shortDescription.length).toBeLessThanOrEqual(80);
   expect(description.length).toBeLessThanOrEqual(4000);
-  expect(description).toContain('Speech accuracy scoring is not enabled');
+  expect(description).toContain('not a pronunciation accuracy percentage');
+  expect(description).toContain('on-device practice match automatically');
   expect(description).toContain('No account, ads or recording uploads');
   expect(description).toContain('eleven') ;
  });
@@ -26,6 +27,13 @@ describe('source-grounded store metadata',()=>{
    if(id!=='japanese')expect(text).not.toMatch(/Japanese|kana|furigana/);
   }
   expect(description).toContain('standalone app');
-  if(id==='japanese')expect(notes).toContain('standalone Japanese beta');
+ if(id==='japanese')expect(notes).toContain('standalone Japanese beta');
+ });
+ it.each(products.map(p=>p.id))('%s build 7 describes automatic, private reference scoring truthfully',id=>{
+  const notes=betaNotes(id,7);
+  expect(notes).toContain('automatically');
+  expect(notes).toContain('No microphone uploads');
+  expect(notes).toMatch(/Experimental|experimental/);
+  expect(notes.length).toBeLessThanOrEqual(4000);
  });
 });

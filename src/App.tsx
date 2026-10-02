@@ -119,6 +119,7 @@ export function App() {
     busy = recording !== "idle",
     visual =
       lesson.quizMode === "visual" && !(lesson.allowAudioQuiz && audioQuiz);
+  const automaticScoring = assessmentPlan(product.id,lesson.id,pairIndex,side,context).mode==='contrast';
   const tr = (en: string, zh: string) => translate(locale,en,zh),
     txt = (v: Text) => text(locale,v);
   const {
@@ -320,7 +321,7 @@ export function App() {
       if (run !== generation.current) return;
       recordingState.current = "recording";
       setRecording("recording");
-      endOfWord.current=product.id==='handf'?new EndOfWordDetector(context):undefined;
+      endOfWord.current=automaticScoring?new EndOfWordDetector(context):undefined;
       const start = Date.now();
       timer.current = setInterval(
         () => setSeconds((Date.now() - start) / 1000),
@@ -956,7 +957,7 @@ export function App() {
                     )}
                     <span>
                       {recording === "recording"
-                        ? product.id==='handf'?tr('Stop and score','停止并评分'):tr("Finish recording", "结束录音")
+                        ? automaticScoring?tr('Stop and score','停止并评分'):tr("Finish recording", "结束录音")
                         : recording === "saving"
                           ? tr("Saving…", "保存中…")
                           : recording === "starting"
@@ -969,7 +970,7 @@ export function App() {
                 <div className="result-area" aria-live="polite">
                   <p>{status}</p>
                   <p className="muted">
-                    {product.id==='handf'?tr('Say the word. A short silence scores it automatically.','说出词语，短暂停顿后自动评分。'):
+                    {automaticScoring?tr('Say the word. A short silence scores it automatically.','说出词语，短暂停顿后自动评分。'):
                     tr(
                       "Signal quality only—not a pronunciation score.",
                       "这里只评估信号质量，不是发音分数。",
@@ -1005,7 +1006,7 @@ export function App() {
                     </span>
                   </div>
                 </div>
-                <ScorePanel take={take} busy={busy} automatic={product.id==='handf'} tr={tr} onSaved={setTake}
+                <ScorePanel take={take} busy={busy} automatic={automaticScoring} tr={tr} onSaved={setTake}
                   onStorageWarning={()=>setStorageWarning(true)}/>
               </>
             ) : (

@@ -32,6 +32,16 @@ describe('local scoring take lifecycle',()=>{
   view.rerender(<ScorePanel {...props} busy/>);
   await act(async()=>pending.resolve(grade));expect(saved).not.toHaveBeenCalled();expect(mocks.save).not.toHaveBeenCalled();
  });
+ it('offers retry after an automatic attempt is interrupted by backgrounding',async()=>{
+  const pending=deferred();mocks.assess.mockReturnValue(pending.promise);
+  const hidden=vi.spyOn(document,'hidden','get').mockReturnValue(false);
+  render(<ScorePanel take={take()} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);
+  expect(mocks.assess).toHaveBeenCalledTimes(1);
+  hidden.mockReturnValue(true);fireEvent(document,new Event('visibilitychange'));
+  hidden.mockReturnValue(false);fireEvent(document,new Event('visibilitychange'));
+  expect(screen.getByRole('button',{name:'Retry scoring'})).toBeDefined();
+  hidden.mockRestore();
+ });
  it('labels experimental reference matches and preserves their provenance in history',async()=>{
   const match:ScoreResult={status:'matched',score:76,model:'local-reference-dtw:v1',contrast:'handf/hf-en/0/0/word/en-h-f:v1',unit:'phone',targetDistance:.2,competitorDistance:.3,referenceVoice:'fixture',scope:'word'};
   mocks.assess.mockResolvedValue(match);

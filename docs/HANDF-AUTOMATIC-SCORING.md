@@ -1,7 +1,7 @@
 # H & F: one recording, automatic feedback
 
-The candidate 1.0.0 (7) focuses on H & F. The other seven apps retain their
-existing tester builds while this flow is tried on the owner's phone.
+The candidate 1.0.0 (7) adds automatic spoken-contrast feedback to all eight
+apps. H & F additionally has a dedicated consonant-focused analyser.
 
 Tap **Record your voice**, say the displayed word, then pause. After sustained
 speech and 750 ms of quiet, recording stops and local scoring starts. **Stop and
@@ -24,11 +24,15 @@ classifier is not reused for unrelated fricatives. H & F has a dedicated analyse
    both displayed words. Relative spectra reduce gain and microphone-colour
    differences. English H/F and Mandarin H/F use their own language references.
    Final F/V additionally considers partial voicing and the ending transition.
+   Mandarin uses a stronger consonant-to-vowel energy contribution; sentence
+   duration contributes less because carrier context can shorten friction.
 5. Show target-sound separation, shared word/vowel match and relative sound timing.
    The overall index weights sound separation 80% and word match 20%, so a shared
    vowel cannot dominate the score for a confused consonant.
 6. In sentence mode, symmetrically search for either displayed word before
    extracting the consonant; the chosen card does not determine its location.
+   The authored Mandarin carrier restricts the search to its final-word region
+   and excludes preceding-vowel padding from the fricative segment.
 
 The result preserves the reference voice, distances, segment duration, target,
 detected side and analyser version in local history. Silence, noise, missing
@@ -53,10 +57,12 @@ motivate the feature choices; their reported results do not validate this app.
 Engineering checks for this candidate passed all 16 word pairs on the isolated
 iOS simulator and the physical MIX2S using actual native silent voice rendering.
 Correct-reference and opposite-reference cases were tested on both sides. Three
-iOS sentence routes also passed native reference generation, target search and
-the actual scoring worker. Browser tests passed repeated automatic stopping,
+sentence routes on both platforms also passed native reference generation,
+target search and the actual scoring worker. Browser tests passed repeated automatic stopping,
 manual stopping, fixed control positions, recording storage and replay. These
 tests establish the software path; they do not establish accuracy on human speech.
+The family regression suite passed 387 unit tests (three existing skips) and
+47 browser tests across all eight apps.
 
 Update H & F without uninstalling. Try hat/fat, hit/fit and heat/feet, then each
 Mandarin pair and leaf/leave. Say the selected word and its opposite deliberately.

@@ -92,7 +92,7 @@ export function referenceSlice(a:AcousticReference,from:number,to:number):Acoust
 /** Locate either displayed word within a carrier sentence. The search is
  * symmetric: its location is chosen by acoustic fit, never by the selected side.
  * The span bounds prevent a long unrelated phrase from warping into one word. */
-export function locateReference(take:AcousticReference,word:AcousticReference):{from:number;to:number;distance:number}|null {
+export function locateReference(take:AcousticReference,word:AcousticReference,minimumStart=0):{from:number;to:number;distance:number}|null {
  const n=take.frames.length,m=word.frames.length;
  if(n<m*.45||!m)return null;
  let previous=new Float64Array(m+1).fill(Infinity),starts=new Int32Array(m+1);
@@ -104,7 +104,7 @@ export function locateReference(take:AcousticReference,word:AcousticReference):{
   for(let j=1;j<=m;j++){
    const choices=[previous[j-1],previous[j]+.12,current[j-1]+.12],k=choices.indexOf(Math.min(...choices));
    const from=k===0?(j===1?i-1:starts[j-1]):k===1?starts[j]:nextStarts[j-1];
-   if(i-from>m*2.2)continue;
+   if(from<minimumStart||i-from>m*2.2)continue;
    current[j]=choices[k]+frameCost(take.frames[i-1],word.frames[j-1]);nextStarts[j]=from;
   }
   const from=nextStarts[m],span=i-from,distance=current[m]/Math.max(m,span);

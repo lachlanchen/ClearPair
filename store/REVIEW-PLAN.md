@@ -11,13 +11,17 @@ a new tested build; do not label the older binary as containing those changes.
 Reuse no upload attempt with uncertain provider status. Each platform can proceed
 independently once its gates pass.
 
-The owner's latest direction is **test build first, owner phone feedback next**.
-Build 6 adds a separately labelled, experimental local reference-match index;
-see [its design and checks](../docs/BETA-1.0.0-6.md). This does not approve the
-calibrated phonetic models or waive formal-production accuracy claims. Prepare
-and distribute all eight internal-test builds without changing prices, countries,
-production tracks or other app review states. Distribution is complete; the next
-step is the owner's phone feedback, not an assertion of calibrated accuracy.
+The owner's latest direction authorizes **new test builds and formal review**
+for all eight apps. Candidate 1.0.0 (7) adds automatic stop-and-score for spoken
+contrasts, retaining separately labelled experimental local reference matching.
+H & F has dedicated consonant analysis and bounded carrier-word search; see
+[its design and checks](../docs/HANDF-AUTOMATIC-SCORING.md). This is not approval
+of calibrated phonetic models or evidence of human pronunciation accuracy.
+Formal copy describes reference comparison without an accuracy-percentage claim.
+Preserve the existing USD0.99 price, countries and release choices. Do not
+cancel an existing review. Fresh Apple census on October 2 found all eight
+1.0.0 versions in PREPARE_FOR_SUBMISSION with no attached build; neither this
+plan nor internal delivery is evidence of formal submission.
 
 ## Truthful product boundaries
 

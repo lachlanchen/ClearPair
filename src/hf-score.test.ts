@@ -1,6 +1,8 @@
 import {describe,it,expect} from 'vitest';
 import {referenceScore} from './reference-score';
 import {assessmentPlan} from './scoring-profiles';
+import {fricativeSegment} from './hf-score';
+import {acousticReference,locateReference,type AcousticReference} from './reference-features';
 /** Controlled synthetic consonant+vowel fixtures verify segmentation and
  * invariance. They are not human pronunciation-accuracy validation. */
 function word(kind:'h'|'f'|'none',gain=1,pitch=140){
@@ -22,6 +24,19 @@ function assess(audio:Float32Array,side:0|1=0,lesson='hf-en',sentence=false){
  ...(sentence?{wordTarget:side===0?h:f,wordCompetitor:side===0?f:h}:{})});
 }
 describe('consonant-focused H & F scoring',()=>{
+ it('does not mistake a brief preceding carrier vowel for the stable target vowel',()=>{
+  const energy=[.1,.05,.04,.04,.04,.04,.04,.08,.12,.14,.14,.13,.12,.1,.09,.06,.04,.02];
+  const a:AcousticReference={energy,frames:energy.map(()=>Array(12).fill(0)),spectra:energy.map(()=>Array(32).fill(0)),
+   pitch:energy.map((_,i)=>i===0||i>=8?0:null),seconds:energy.length*.01,periodic:.5};
+  expect(fricativeSegment(a,false)?.to).toBeGreaterThanOrEqual(7);
+ });
+ it('keeps a bounded carrier search from selecting an earlier repeated word',()=>{
+  const a=acousticReference(word('h'))!,n=a.frames.length;
+  const take:AcousticReference={frames:[...a.frames,...a.frames],spectra:[...a.spectra,...a.spectra],energy:[...a.energy,...a.energy],
+   pitch:[...a.pitch,...a.pitch],periodic:a.periodic,seconds:a.seconds*2};
+  expect(locateReference(take,a,n)?.from).toBeGreaterThanOrEqual(n);
+  expect(locateReference(take,a)?.from).toBeLessThan(n);
+ });
  it('separates the onset even when the rest of the word is identical',()=>{
   const h=assess(word('h')),f=assess(word('f'));
   expect(h.status).toBe('matched');expect(f.status).toBe('matched');

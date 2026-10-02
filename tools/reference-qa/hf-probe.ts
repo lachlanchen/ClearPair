@@ -4,7 +4,7 @@ import {assessmentPlan} from '../../src/scoring-profiles';
 import {lessonById} from '../../src/curriculum';
 import {pronunciationText} from '../../src/pronunciation-text';
 import {referenceScore} from '../../src/reference-score';
-import {acousticReference} from '../../src/reference-features';
+import {acousticReference,locateReference,referenceSlice} from '../../src/reference-features';
 import {fricativeSegment} from '../../src/hf-score';
 import {ReferenceRuntime} from '../../src/reference-runtime';
 const output=document.getElementById('result')!;
@@ -34,8 +34,19 @@ async function run(){
      const correct=score(sa.samples),wrong=score(sb.samples);
      const engine=new ReferenceRuntime(()=>new Worker('./reference-score.worker.js',{type:'module'}));
      const pipeline=await engine.assess(sp,sa.samples.slice());engine.dispose();
-     sentence={correct,wrong,pipeline,passed:correct.status==='matched'&&wrong.status==='matched'&&
-      pipeline.status==='matched'&&correct.score>wrong.score+20&&!!pipeline.hf};
+     const passed=correct.status==='matched'&&wrong.status==='matched'&&
+      pipeline.status==='matched'&&correct.score>wrong.score+20&&!!pipeline.hf;
+     const diagnostic=(samples:Float32Array)=>{
+      const take=acousticReference(samples)!,target=acousticReference(a.samples)!,competitor=acousticReference(b.samples)!;
+      const prompt=sp.spokenPrompt.replace(/[^\p{Letter}]/gu,''),position=prompt.indexOf(sp.target.text);
+      const earliest=id==='hf-zh'&&position>=0?Math.floor(take.frames.length*Math.max(0,position/prompt.length-.3)):0;
+      const matches=[locateReference(take,target,earliest),locateReference(take,competitor,earliest)];
+      return {frames:take.frames.length,earliest,matches,acoustic:{take,target,competitor},segments:matches.map(m=>{
+       if(!m)return null;const s=referenceSlice(take,Math.max(0,m.from-2),Math.min(take.frames.length,m.to+2)),f=fricativeSegment(s,id==='hf-final');
+       return {from:f?.from,to:f?.to,energy:s.energy.map(v=>Math.round(v*10000)/10000),voiced:s.pitch.map((v,i)=>v!==null?i:-1).filter(i=>i>=0)};
+      })};
+     };
+     sentence={correct,wrong,pipeline,passed,...(!passed?{diagnostics:[diagnostic(sa.samples),diagnostic(sb.samples)]}:{})};
     }
     const diagnostic=(samples:Float32Array)=>{const s=acousticReference(samples)!;return {n:s.frames.length,
      voiced:s.pitch.map((v,i)=>v!==null?i:-1).filter(i=>i>=0),energy:s.energy.map(v=>Math.round(v*10000)/10000),segment:fricativeSegment(s,id==='hf-final')};};

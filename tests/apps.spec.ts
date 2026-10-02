@@ -214,11 +214,11 @@ test("a decoder failure keeps the original recording and fixed controls", async 
   );
   await button.click();
   await page
-    .getByRole("button", { name: "Finish recording", exact: true })
+    .getByRole("button", { name: "Stop and score", exact: true })
     .waitFor();
   await page.waitForTimeout(350);
   await page
-    .getByRole("button", { name: "Finish recording", exact: true })
+    .getByRole("button", { name: "Stop and score", exact: true })
     .click();
   await expect(
     page.getByText("Saved on device", { exact: true }),

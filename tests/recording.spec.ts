@@ -22,7 +22,7 @@ for(const id of ['handf','landr','english','chinese','korean','arabic','cantones
     const initial=await record.evaluate(el=>el.getBoundingClientRect().top+scrollY);
     for(let take=0;take<3;take++){
       await record.click();
-      const finish=page.getByRole('button',{name:id==='handf'?'Stop and score':'Finish recording',exact:true});
+      const finish=page.getByRole('button',{name:'Stop and score',exact:true});
       await expect(finish).toBeVisible();
       await expect(page.getByRole('button',{name:'Next word pair'})).toBeDisabled();
       await expect.poll(()=>page.locator('.waveform line').evaluateAll(lines=>
@@ -33,8 +33,7 @@ for(const id of ['handf','landr','english','chinese','korean','arabic','cantones
       await expect(page.getByText('Saved on device',{exact:true})).toBeVisible();
       await expect(page.getByRole('button',{name:'My recording',exact:true})).toBeEnabled();
       expect(await record.evaluate(el=>el.getBoundingClientRect().top+scrollY)).toBeCloseTo(initial,0);
-      if(id!=='handf')await page.getByRole('button',{name:'Assess my pronunciation',exact:true}).click();
-      else await expect(page.getByRole('button',{name:'Assess my pronunciation',exact:true})).toHaveCount(0);
+      await expect(page.getByRole('button',{name:'Assess my pronunciation',exact:true})).toHaveCount(0);
       await expect(page.getByText('The on-device pronunciation models are still being validated. No grade is invented.',{exact:true})).toBeVisible();
       await expect(page.locator('.local-grade')).toHaveCount(0);
       expect(await record.evaluate(el=>el.getBoundingClientRect().top+scrollY)).toBeCloseTo(initial,0);
@@ -50,7 +49,7 @@ for(const id of ['handf','landr','english','chinese','korean','arabic','cantones
     await expect(page.getByText('Ready when you are',{exact:true})).toBeVisible();
   });
 }
-test('H & F: speech then silence stops and assesses automatically on repeated takes',async({page})=>{
+for(const id of ['handf','landr','english','chinese','korean','arabic','cantonese','japanese'])test(`${id}: speech then silence stops and assesses automatically on repeated takes`,async({page})=>{
  await page.addInitScript(()=>{
   navigator.mediaDevices.getUserMedia=async()=>{
    const context=new AudioContext(),destination=context.createMediaStreamDestination();
@@ -61,7 +60,7 @@ test('H & F: speech then silence stops and assesses automatically on repeated ta
    track.stop=()=>{source.stop();void context.close();stop();};return destination.stream;
   };
  });
- await page.goto('/handf/');await page.getByRole('button',{name:'Practise',exact:true}).click();
+ await page.goto(`/${id}/`);await page.getByRole('button',{name:'Practise',exact:true}).click();
  const record=page.getByRole('button',{name:'Record your voice',exact:true});
  const top=await record.evaluate(el=>el.getBoundingClientRect().top+scrollY);
  for(let i=0;i<2;i++){
