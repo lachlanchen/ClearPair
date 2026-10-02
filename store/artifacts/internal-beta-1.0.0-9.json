@@ -1,0 +1,157 @@
+{
+  "version": "1.0.0",
+  "build": "9",
+  "applicationSourceCommit": "d8273cf8b7d02778a1eb7ad01199ef1d1e29d293",
+  "verifiedAt": "2026-10-02T05:39:22.679Z",
+  "distribution": [
+    "internal-testflight",
+    "google-play-internal-testing"
+  ],
+  "production": {
+    "appleSubmittedBuild": "8",
+    "appleState": "WAITING_FOR_REVIEW",
+    "build9SubmittedForProduction": false,
+    "googleSubmitted": false,
+    "publicReleaseVerified": false
+  },
+  "design": {
+    "iconVersion": "V4",
+    "uiLanguages": 11,
+    "previousIconsPreserved": true
+  },
+  "qa": {
+    "unitTestsPassed": 427,
+    "unitTestsSkipped": 3,
+    "browserTestsPassed": 47,
+    "androidSignedBuildsPassed": 8,
+    "iosSignedBuildsPassed": 8,
+    "iosNativeSpokenRoutesPassed": 86,
+    "androidNativeSpokenRoutesPassed": 46,
+    "androidRoutesUnavailableVoice": 40,
+    "nativeTests": "Actual platform synthesis and scoring worker; correct/opposite, both targets, quiet takes, silence refusal and repeats",
+    "automaticPauseAndManualStop": true,
+    "contrastFocusedWordComparison": true,
+    "visibleScoreDetails": true,
+    "experimentalPracticeMatchEnabled": true,
+    "calibratedPronunciationGradesEnabled": false,
+    "humanAccuracy": "not established; native reference checks are not physical microphone accuracy measurements"
+  },
+  "web": {
+    "deploymentChanged": false,
+    "url": "https://language-agent.lazying.art/"
+  },
+  "apps": [
+    {
+      "app": "handf",
+      "bundleId": "art.lazying.clearpair.handf",
+      "ipaSha256": "81fb9a6afcc732e368fd863731f7b35cff5a4d927c98951c4774a81b61165648",
+      "aabSha256": "a08a19d087eff61305bd6d79bb6eb07c3b3acb5ada351983778b8b709b24b8a5",
+      "appleProcessingState": "VALID",
+      "internalBuildState": "IN_BETA_TESTING",
+      "androidState": "available-to-internal-testers",
+      "androidJoinUrl": "https://play.google.com/apps/internaltest/4700504989515969850",
+      "appleProductionReviewBuild": "8",
+      "appleProductionReviewState": "WAITING_FOR_REVIEW",
+      "appleAutomaticRelease": true,
+      "googleProductionSubmitted": false
+    },
+    {
+      "app": "landr",
+      "bundleId": "art.lazying.clearpair.landr",
+      "ipaSha256": "d1cf9ddd88c9eb6059873f79c148b364626700cd60167d573b81248575741cc4",
+      "aabSha256": "3972d589c3dbff4c901a489541c2a6ddbb6a07e5085056b08defeaba74ea7ba6",
+      "appleProcessingState": "VALID",
+      "internalBuildState": "IN_BETA_TESTING",
+      "androidState": "available-to-internal-testers",
+      "androidJoinUrl": "https://play.google.com/apps/internaltest/4699964129264422650",
+      "appleProductionReviewBuild": "8",
+      "appleProductionReviewState": "WAITING_FOR_REVIEW",
+      "appleAutomaticRelease": true,
+      "googleProductionSubmitted": false
+    },
+    {
+      "app": "english",
+      "bundleId": "art.lazying.clearpair.english",
+      "ipaSha256": "b99266cb8e69f27b3a9eccddfb0916d939f8b4169842414d1d70c0f5a55b4662",
+      "aabSha256": "a689e7a3572404d5aaddce0e6de1f81fce4fa5ebcd3d5c6de3ef8d084ac4e2d6",
+      "appleProcessingState": "VALID",
+      "internalBuildState": "IN_BETA_TESTING",
+      "androidState": "available-to-internal-testers",
+      "androidJoinUrl": "https://play.google.com/apps/internaltest/4701515041942561039",
+      "appleProductionReviewBuild": "8",
+      "appleProductionReviewState": "WAITING_FOR_REVIEW",
+      "appleAutomaticRelease": true,
+      "googleProductionSubmitted": false
+    },
+    {
+      "app": "chinese",
+      "bundleId": "art.lazying.clearpair.chinese",
+      "ipaSha256": "07616478fe24631e13896828ab93080afcf3fa93a8086ca16fcd7b07bf47e77c",
+      "aabSha256": "523fc378043d70686d301ced8a6493eee55fd9ba6a132e002db65921b8175dd9",
+      "appleProcessingState": "VALID",
+      "internalBuildState": "IN_BETA_TESTING",
+      "androidState": "available-to-internal-testers",
+      "androidJoinUrl": "https://play.google.com/apps/internaltest/4701508145131584373",
+      "appleProductionReviewBuild": "8",
+      "appleProductionReviewState": "WAITING_FOR_REVIEW",
+      "appleAutomaticRelease": true,
+      "googleProductionSubmitted": false
+    },
+    {
+      "app": "korean",
+      "bundleId": "art.lazying.clearpair.korean",
+      "ipaSha256": "6f84bd6b0616e7ff2197ad1a7cc1c50ac06b7fbd6b9338a8ab3b33601c2fdcdf",
+      "aabSha256": "5d9d3f1801200d57038f48fc24dde9b30e08a5d9fdf863e139c8ef16a034bd7b",
+      "appleProcessingState": "VALID",
+      "internalBuildState": "IN_BETA_TESTING",
+      "androidState": "available-to-internal-testers",
+      "androidJoinUrl": "https://play.google.com/apps/internaltest/4701552197367057378",
+      "appleProductionReviewBuild": "8",
+      "appleProductionReviewState": "WAITING_FOR_REVIEW",
+      "appleAutomaticRelease": true,
+      "googleProductionSubmitted": false
+    },
+    {
+      "app": "arabic",
+      "bundleId": "art.lazying.clearpair.arabic",
+      "ipaSha256": "8e83e9978387ebbbca89b9cc00ac3870e41d8d2cac17da1193bc0f96baab8c89",
+      "aabSha256": "667252ad6d5610148522c2d729de7b72ce9c25f1eb4d11473b27f18aaec5e25c",
+      "appleProcessingState": "VALID",
+      "internalBuildState": "IN_BETA_TESTING",
+      "androidState": "available-to-internal-testers",
+      "androidJoinUrl": "https://play.google.com/apps/internaltest/4701081904617178358",
+      "appleProductionReviewBuild": "8",
+      "appleProductionReviewState": "WAITING_FOR_REVIEW",
+      "appleAutomaticRelease": true,
+      "googleProductionSubmitted": false
+    },
+    {
+      "app": "cantonese",
+      "bundleId": "art.lazying.clearpair.cantonese",
+      "ipaSha256": "a77fbe8ec1e59fea96e3441f6dea352eb41429b268b501ac506bd6c49af73be5",
+      "aabSha256": "c609ad03a1e85ef4b4df5618c915947a574437d51beb300275411487dd37ed95",
+      "appleProcessingState": "VALID",
+      "internalBuildState": "IN_BETA_TESTING",
+      "androidState": "available-to-internal-testers",
+      "androidJoinUrl": "https://play.google.com/apps/internaltest/4700996599031534890",
+      "appleProductionReviewBuild": "8",
+      "appleProductionReviewState": "WAITING_FOR_REVIEW",
+      "appleAutomaticRelease": true,
+      "googleProductionSubmitted": false
+    },
+    {
+      "app": "japanese",
+      "bundleId": "art.lazying.clearpair.japanese",
+      "ipaSha256": "d3e210aaf75791bb879e54124fbeb4489de3cf94c8af09298580b6e6162249b9",
+      "aabSha256": "6f1c9eb394db281f2a77943f0b77f09bdd08fc823fb7ca876918d70a4d514fbc",
+      "appleProcessingState": "VALID",
+      "internalBuildState": "IN_BETA_TESTING",
+      "androidState": "available-to-internal-testers",
+      "androidJoinUrl": "https://play.google.com/apps/internaltest/4701602453248600334",
+      "appleProductionReviewBuild": "8",
+      "appleProductionReviewState": "WAITING_FOR_REVIEW",
+      "appleAutomaticRelease": true,
+      "googleProductionSubmitted": false
+    }
+  ]
+}

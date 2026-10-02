@@ -18,7 +18,7 @@ Scores remain local experimental practice-reference comparisons, not calibrated
 pronunciation accuracy percentages. Listening/recall stars remain separate.
 
 The deeper quiet-speech and pair-focused algorithm changes in the
-[next scoring update](SCORING-UPDATE-20261002.md) are **not in build 8**.
+[build-9 scoring update](SCORING-UPDATE-20261002.md) are **not in build 8**.
 The public PWA was not changed by these native submissions.
 
 ## Test access

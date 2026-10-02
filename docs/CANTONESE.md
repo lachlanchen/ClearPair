@@ -17,7 +17,7 @@ Linguistic checks use the [LSHK Jyutping scheme](https://jyutping.org/en/jyutpin
 and [CUHK Cantonese phonology and tone-change examples](https://www.cuhk.edu.hk/lin/cbrc/CantoneseGrammar/multimedia/01.htm).
 These are references, not redistributed recordings. No audio was downloaded or bundled.
 
-The next scoring update replaces the ambiguous 波/坡 aspiration example with
+Build 9 replaces the ambiguous 波/坡 aspiration example with
 標 `biu1` / 飄 `piu1`. CUHK lists 坡 under both `bo1` and `po1`; our iOS device
 voice produced identical recordings for 波 and 坡. The uncertainty guard therefore
 correctly refused to grade that pair. The replacement preserves vowel and tone
@@ -52,10 +52,11 @@ the final-L lesson. Articulatory reference:
 
 ## Release boundary
 
-All eight apps, including Cantonese and Japanese, have signed **1.0.0 (8)** builds
-available in internal TestFlight and Google Play testing. All eight iOS versions
-are Waiting for Review; Google production submission is not complete. Testing or
+All eight apps, including Cantonese and Japanese, have signed **1.0.0 (9)** builds
+available in internal TestFlight and Google Play testing. Their eight iOS formal
+submissions still use build 8 and are Waiting for Review; Google production
+submission is not complete. Testing or
 review submission is not approval or verified public retail availability.
 The scoped PWA is live at https://language-agent.lazying.art/cantonese/.
-See [the beta receipt and device-check scope](BETA-1.0.0-8.md). Earlier icons,
+See [the beta receipt and device-check scope](BETA-1.0.0-9.md). Earlier icons,
 builds and release evidence are retained. Formal review is a separate release step.

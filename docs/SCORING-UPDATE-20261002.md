@@ -1,8 +1,9 @@
 # Contrast-focused scoring update
 
-This is the next source update after the uploaded **1.0.0 (8)** apps, not an
-assertion that an installed build has already changed. Build 8's review and
-test states are recorded separately in [its receipt](BETA-1.0.0-8.md).
+This update is included in the **1.0.0 (9)** native internal-test builds on
+TestFlight and Google Play. [Build 9's receipt](BETA-1.0.0-9.md) records exact
+source and package identities. Build 8's pending formal iOS reviews are preserved
+and recorded separately in [its receipt](BETA-1.0.0-8.md).
 
 ## Borrow the useful separation from L & N
 
@@ -57,7 +58,7 @@ claim target-only sentence scoring across all courses.
   initial window.
 
 The same investigation found that Cantonese 波/坡 could be read identically.
-The next curriculum uses verified 標 `biu1` / 飄 `piu1`; details and dictionary
+Build 9 uses verified 標 `biu1` / 飄 `piu1`; details and dictionary
 attribution are in [the Cantonese notes](CANTONESE.md). Original recordings retain
 their frozen words/prompts and are not silently reassessed as replacement words.
 
@@ -82,6 +83,12 @@ iOS sweep with correct/opposite recordings, both selected sides, quieter takes
 with trailing silence, repeat synthesis, silence refusal and the scoring worker.
 The stronger quiet-take checks caught and verified fixes for final-fricative
 trimming and final-TH position, rather than merely checking that a number appeared.
+
+On the physical MIX2S, all 46 routes supported by its installed offline voices
+pass the same native reference/worker checks. The other 40 routes report
+unavailable voices (Korean, Arabic, Cantonese and Japanese) rather than invented
+scores; those routes pass the iOS sweep. Android loopback reference tests do not
+establish physical microphone or learner pronunciation accuracy.
 
 Existing recordings, icon versions and build-8 signed artifacts are preserved.
 The new source does not alter build 8's pending iOS reviews or deploy the PWA.

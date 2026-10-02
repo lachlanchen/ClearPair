@@ -1,7 +1,8 @@
 # Japanese: practise what you mix up
 
-Status: standalone iPhone/iPad and Android [internal beta 1.0.0 (4)](BETA-1.0.0-4.md),
-not a public store release or formal review approval.
+Status: standalone iPhone/iPad and Android [internal beta 1.0.0 (9)](BETA-1.0.0-9.md).
+Its build-8 formal iOS submission is Waiting for Review; Google production
+submission is incomplete. This is not a verified public store release or approval.
 
 The eighth ClearPair course combines easily confused kana with contrasts that
 change meaning: vowel length, consonant holds, small kana and voicing. It includes
@@ -30,7 +31,9 @@ reading generator for arbitrary kanji. Romaji is a reading aid, not IPA.
 - Same-sound hiragana/katakana cards have visual recall only: no impossible
   listening test and no spoken distinction grade.
 - Japanese R is not graded with the English L/R model. Japanese H-series changes
-  with the following vowel; three-way h/b/p competition retains all categories.
+  with the following vowel; calibrated h/b/p assessment must retain all three
+  categories. The current experimental match compares the displayed pair,
+  not a claimed calibrated three-way phoneme classifier.
 - Long vowels and small っ need duration in a **relative mora context**, not a
   fixed absolute length threshold. Voicing, pitch and speaking rate are supporting
   evidence, not a shortcut to a grade.
@@ -47,9 +50,12 @@ reading generator for arbitrary kanji. Romaji is a reading aid, not IPA.
 
 ## Release gate
 
-Signed Android/iPhone/iPad builds and Apple validation passed for 1.0.0 (4);
-both internal tracks are verified available. This is not a physical-device test.
-Real microphone tests, qualified offline local-model inference,
-per-contrast human validation and paid-store review are still required. Do not
-describe source/unit tests as completed physical-device or pronunciation accuracy
-validation. No score is enabled merely because a speech model recognizes the word.
+Signed Android/iPhone/iPad builds and Apple validation passed for 1.0.0 (9);
+both internal tracks are verified available. All eight Japanese spoken lesson
+routes pass the actual iOS native reference/worker tests within the 86-route
+family sweep. This is not a physical iPhone microphone accuracy measurement.
+The local practice-match index is enabled separately from calibrated grades;
+same-sound script exploration remains ungraded. Real learner recordings and
+per-contrast human validation remain necessary for calibrated pronunciation
+claims. Source/unit or synthetic-reference tests must not be described as that
+validation. Build 8's iOS formal review is preserved; build 9 is test-only.

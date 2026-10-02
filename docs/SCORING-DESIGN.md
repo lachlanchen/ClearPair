@@ -3,8 +3,8 @@
 Status: implementation and validation in progress, **not a claim of validated scoring**.
 The owner-requested native practice-reference index is a separate experimental
 path, labelled as similarity rather than calibrated correctness. See the
-[current build-8 delivery](BETA-1.0.0-8.md) and
-[next contrast-focused source update](SCORING-UPDATE-20261002.md). The calibrated
+[current build-9 internal-test delivery](BETA-1.0.0-9.md) and
+[contrast-focused algorithm update](SCORING-UPDATE-20261002.md). The calibrated
 model requirements below remain targets, not achievements of that index.
 All eight apps require listening/recognition practice AND spoken-production scoring.
 Signal quality and quiz accuracy are useful but do not satisfy pronunciation scoring.
