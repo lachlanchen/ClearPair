@@ -1,8 +1,9 @@
 # H & F: word evidence and difficult-sound evidence
 
-This is an **H & F-only build-10 candidate**, not an update to the other seven
-apps. Build 9 remains their release identity. Availability is recorded separately
-after provider readback; this document does not claim an upload or review.
+This is an **H & F-only build-10 update**, not an update to the other seven
+apps. Build 9 remains their release identity. Verified internal-test availability
+is recorded in the [build-10 release note](BETA-HANDF-1.0.0-10.md); this algorithm
+document does not imply a formal review or public release.
 
 ## What changed
 

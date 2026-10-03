@@ -1,0 +1,70 @@
+{
+  "app": "handf",
+  "bundleId": "art.lazying.clearpair.handf",
+  "version": "1.0.0",
+  "build": 10,
+  "applicationSourceCommit": "7d103d30221418aa5baaa8e0e4192488dc8c7560",
+  "verifiedAt": "2026-10-03T05:32:29.435480Z",
+  "distribution": ["internal-testflight", "google-play-internal-testing"],
+  "apple": {
+    "ipaSha256": "bcfa56c7e317a26359cbaa469cfee833c2b685f34e46eb28749c2b8648f1b1e3",
+    "ipaBytes": 97968732,
+    "processingState": "VALID",
+    "internalBuildState": "IN_BETA_TESTING",
+    "automaticTesterNotificationEnabled": true,
+    "existingInternalTesterVerified": true
+  },
+  "android": {
+    "aabSha256": "4eff2e5fe549998ff3cfa83ea504330001a349084836feb39cd23d39be040053",
+    "aabBytes": 95498741,
+    "state": "available-to-internal-testers",
+    "draftPresent": false,
+    "existingInternalTestersVerified": true,
+    "joinUrl": "https://play.google.com/apps/internaltest/4700504989515969850"
+  },
+  "scope": {
+    "otherSevenAppsUpdated": false,
+    "existingProductionReviewsChanged": false,
+    "build10SubmittedForProduction": false,
+    "webDeployed": false,
+    "pricingIapCountriesPrivacyDeclarationsChanged": false
+  },
+  "scoring": {
+    "acousticModel": "local-reference-dtw:v2",
+    "contrastAnalysis": "hf-segment-fft:v1",
+    "wordEvidence": "hf-offline-words:v1",
+    "languages": ["en-US", "zh-CN"],
+    "offlineDecoderEnabledOn": ["Android", "iOS 26.5 or later"],
+    "olderIos": "Improved acoustic scoring; decoder initialization disabled",
+    "finalFv": "Acoustic grading only; lexical evidence excluded",
+    "recordingUploads": false,
+    "calibratedPronunciationAccuracy": false
+  },
+  "bundledModels": [
+    {
+      "language": "en-US",
+      "name": "vosk-model-small-en-us-0.15",
+      "archiveBytes": 41206354,
+      "archiveSha256": "e430479107134f279fde8cd19db54e5fb9bac62b7ef44b1978950f4506b0e1b2",
+      "license": "Apache-2.0"
+    },
+    {
+      "language": "zh-CN",
+      "name": "vosk-model-small-cn-0.22",
+      "archiveBytes": 43899765,
+      "archiveSha256": "a3e2e67b300a41a0b590d2f6f585375d580d15ab76d472ef2aaebc464017ae25",
+      "license": "Apache-2.0"
+    }
+  ],
+  "qa": {
+    "defaultUnitTestsPassed": 469,
+    "defaultUnitTestsSkipped": 8,
+    "hfEnabledFocusedTestsPassed": 75,
+    "physicalAndroidNativeChecksPassed": 17,
+    "ios265DecoderChecksPassed": 17,
+    "ios263GuardedAcousticChecksPassed": 17,
+    "typeCheckingPassed": true,
+    "nativeTestScope": "Actual native synthesized voices, saved PCM, model/runtime integration and scoring; not microphone learner accuracy",
+    "humanDevelopmentDiagnostic": "72 expert-high training-corpus crops from 42 speakers; sparse course coverage, not independent accuracy certification"
+  }
+}
