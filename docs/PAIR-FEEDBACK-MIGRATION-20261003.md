@@ -161,3 +161,27 @@ English build 10 is now [verified available on both internal test tracks](BETA-E
 Provider availability is recorded separately after readback. H & F 15, the already
 distributed L & R 10, existing reviews, recordings and account settings remain
 unchanged. No new production review or public-release claim is made here.
+
+## Subsequent native findings and fixes
+
+Japanese's extended run initially passed 113/114: a broadband noise control
+could fit a short kana reference. A gain-independent FFT flatness check now
+rejects overwhelmingly flat, non-periodic captures without using recognition as
+a speech detector. Quiet/creaky speech with a structured vowel remains eligible;
+H & F's approved signal path is unchanged. A fresh native Japanese iOS run now
+passes 114/114, including that control. Android qualification remains pending.
+
+Korean's Android run passed 132/134, exposing a plain/tense stop whose brief
+release was discarded after alignment and whose spelling was collapsed by ASR.
+Only the Korean stop profile can retain a 30 ms observed cue, with at least a
+60 ms reference mask, stronger reference separation and a bounded close fit.
+Other contrast profiles keep their existing observed-frame floor. Actual ASR
+text stays unchanged and conflicting evidence remains provisional. All 134
+retained native Android rows pass deterministic PCM/scoring re-evaluation;
+the changed lesson then passes 22/22 fresh native Android checks. Those are
+separate pieces of evidence, not a claim of a new full 134-row native run.
+
+Fresh extended native iOS checks also pass Mandarin 310/310, Cantonese 70/70
+and L & R 98/98. Pair-enabled regression tests pass 1112 (12 skipped); H & F
+regressions pass 1115 (9 skipped). Further native Android checks and exact
+packaging remain required before additional tester availability is claimed.

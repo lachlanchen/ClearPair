@@ -81,6 +81,17 @@ describe('every authored pair: offline content feedback, separate sound provenan
    {...evidence('light','en-US'),words:[{word:'light',conf:NaN,start:0,end:.4}]},
    {...evidence('light','en-US',.2),engine:'pair-offline-words:v1/en-US'}])expect(pairWordDecision(plan,e).decision).toBe('unknown');
  });
+ it('keeps a brief, strongly separated Korean stop cue when lexical spelling collapses, but not a weak cue',()=>{
+  const p=assessmentPlan('korean','ko-d-tt',1,1);if(p.mode!=='contrast')throw Error('plan');
+  const a:Extract<ScoreResult,{status:'matched'}>={status:'matched',score:99,contrast:p.calibrationKey,model:'local-reference-dtw:v2',unit:'phone',
+   targetDistance:0,competitorDistance:.18,referenceVoice:'fixture',scope:'word',closestWord:p.target.text,
+   focus:{version:'pair-focus-dtw:v1',region:'initial',targetDistance:0,competitorDistance:.45,separation:.45,frames:3},
+   breakdown:{wordMatch:100,pairDistinction:98,speechMs:270,referenceMs:270}};
+  const e={...evidence(p.competitor.text,'ko-KR'),engine:'pair-vosk-native:v1/ko-KR'};
+  expect(pairHybridScore(p,e,a,quality)).toMatchObject({status:'matched',score:78,recognition:{text:p.competitor.text,decision:'opposite'},pairFeedback:{conflict:true,soundMeasured:true}});
+  expect(pairHybridScore(p,e,{...a,focus:{...a.focus!,separation:.1}},quality)).toMatchObject({status:'matched',score:0,pairFeedback:{soundMeasured:false}});
+  expect(pairHybridScore(plan,evidence(plan.competitor.text,'en-US'),{...a,contrast:plan.calibrationKey,closestWord:plan.target.text},quality)).toMatchObject({status:'matched',score:0,pairFeedback:{soundMeasured:false}});
+ });
  it('never mistakes a carrier word for an additional answer',()=>{
   const p=assessmentPlan('chinese','z-c',1,1,true);if(p.mode!=='contrast')throw Error('plan');
   expect(pairWordDecision(p,evidence(p.spokenPrompt,'zh-CN'))).toMatchObject({decision:'target'});

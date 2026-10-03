@@ -14,6 +14,9 @@ export interface AcousticReference {
    * segmentation. These are measured from the same FFT, not a second model. */
   spectra:number[][];
   energy:number[];
+  /** Gain-independent spectral flatness before pre-emphasis, for a bounded
+   * broadband-noise check. Optional for historical/synthetic feature evidence. */
+  flatness?:number[];
 }
 const N=512,HOP=160,WIN=400,BANDS=32;
 const mel=(hz:number)=>2595*Math.log10(1+hz/700);
@@ -72,11 +75,20 @@ export function acousticReference(input:Float32Array):AcousticReference|null{
  }
  first=Math.max(0,first-3);last=Math.min(energy.length-1,last+3);
  const audio=input.subarray(first*HOP,Math.min(input.length,(last+1)*HOP));
- const re=new Float64Array(N),im=new Float64Array(N),frames:number[][]=[],pitches:(number|null)[]=[],spectra:number[][]=[],levels:number[]=[];
+ const re=new Float64Array(N),im=new Float64Array(N),frames:number[][]=[],pitches:(number|null)[]=[],spectra:number[][]=[],levels:number[]=[],flatness:number[]=[];
  for(let at=0;at+WIN<=audio.length;at+=HOP){
   re.fill(0);im.fill(0);
   for(let i=0;i<WIN;i++)re[i]=(audio[at+i]-.97*(audio[at+i-1]??0))*(.54-.46*Math.cos(2*Math.PI*i/(WIN-1)));
   fft(re,im);
+  // Undo only the known pre-emphasis response. Otherwise white microphone
+  // noise looks artificially shaped and can resemble a short vowel in DTW.
+  // Exclude DC and the Nyquist edge; no second FFT, model or recording needed.
+  let logPower=0,powerSum=0,bins=0;
+  for(let i=2;i<=240;i++){
+   const power=Math.max(1e-20,(re[i]**2+im[i]**2)/(1+.97**2-2*.97*Math.cos(2*Math.PI*i/N)));
+   logPower+=Math.log(power);powerSum+=power;bins++;
+  }
+  flatness.push(Math.exp(logPower/bins)/(powerSum/bins));
   const logs=bank.map(weights=>Math.log(1e-10+weights.reduce((s,w,i)=>s+w*(re[i]**2+im[i]**2),0)));
   const logMean=logs.reduce((s,v)=>s+v,0)/BANDS;
   spectra.push(logs.map(v=>v-logMean));
@@ -92,7 +104,7 @@ export function acousticReference(input:Float32Array):AcousticReference|null{
  const voiced=pitches.filter((p):p is number=>p!==null),median=[...voiced].sort((a,b)=>a-b)[Math.floor(voiced.length/2)];
  return {frames:frames.map(f=>f.map((v,c)=>v-.25*mean[c])),
   pitch:pitches.map(p=>p&&median?12*Math.log2(p/median):null),seconds:audio.length/16000,
-  periodic:voiced.length/pitches.length,spectra,energy:levels};
+  periodic:voiced.length/pitches.length,spectra,energy:levels,flatness};
 }
 export function frameCost(a:number[],b:number[]){
  // Lower cepstra retain vowel/spectral envelope; higher coefficients retain
@@ -103,6 +115,7 @@ export function frameCost(a:number[],b:number[]){
 export function referenceSlice(a:AcousticReference,from:number,to:number):AcousticReference {
  const frames=a.frames.slice(from,to),pitch=a.pitch.slice(from,to);
  return {frames,pitch,spectra:a.spectra.slice(from,to),energy:a.energy.slice(from,to),
+  ...(a.flatness?{flatness:a.flatness.slice(from,to)}:{}),
   seconds:frames.length*.01,periodic:pitch.filter(p=>p!==null).length/Math.max(1,frames.length)};
 }
 /** Locate either displayed word within a carrier sentence. The search is

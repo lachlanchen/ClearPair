@@ -77,6 +77,20 @@ describe('beta local acoustic practice index',()=>{
   expect(referenceScore({id:'n',plan:p,samples:noise,target:a,competitor:b,voice:'fixture'}).status).toBe('unscored');
   expect(referenceScore({id:'s',plan:p,samples:a,target:a,competitor:a,voice:'fixture'})).toEqual({status:'unscored',reason:'uncertain'});
  });
+ it('rejects broadband noise independently of which short kana reference happens to fit',()=>{
+  const p=assessmentPlan('japanese','ja-hira-loops',0,0);if(p.mode!=='contrast')throw Error('plan');
+  const a=vowel(140,600,.21),b=vowel(140,1200,.25);
+  for(const seedStart of [24681357,12345,987654,42])for(const gain of [.15,.012]){
+   let seed=seedStart;
+   const noise=Float32Array.from({length:6400},()=>{seed=(seed*1664525+1013904223)>>>0;return (seed/2**32-.5)*gain;});
+   const f=acousticReference(noise)!;
+   expect(f.periodic).toBeLessThan(.08);
+   expect(f.flatness!.filter(v=>v>.42).length/f.flatness!.length).toBeGreaterThan(.9);
+   expect(referenceScore({id:'noise-kana',plan:p,samples:noise,target:a,competitor:b,voice:'fixture'})).toEqual({status:'unscored',reason:'poor-signal'});
+  }
+  const low=vowel(58,600,.25);
+  expect(referenceScore({id:'low-kana',plan:p,samples:low,target:low,competitor:b,voice:'fixture'}).status).toBe('matched');
+ });
  it('keeps a bounded word comparison for low pitch without fabricating a tone contour',()=>{
   const p=assessmentPlan('chinese','tone-2-3',0,1);if(p.mode!=='contrast')throw Error('plan');
   const low=vowel(58,600,.4),other=vowel(145,600,.4);

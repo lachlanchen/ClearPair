@@ -136,7 +136,9 @@ export function pairHybridScore(plan:Plan,e:HfWordEvidence|undefined,acoustic:Sc
  const decision=conflict?'unknown':decoded.decision;
  const measured=!!base&&(!!base.focus||!!base.tone||plan.profile.id.startsWith('ja-mora')||plan.profile.id==='yue-vowels:v1');
  const disagrees=measured&&(decision==='target'&&base!.closestWord===plan.competitor.text||decision==='opposite'&&base!.closestWord===plan.target.text);
- const strongContrast=!!base&&(!!base.focus&&base.focus.frames>=6&&base.focus.separation>=.08||!!base.tone&&base.tone.frames>=10&&base.tone.separation>=.75)&&
+ const briefStop=plan.profile.id==='ko-three-way-stop:v1'&&!!base?.focus&&base.focus.frames>=3&&base.focus.separation>=.2&&
+  Math.min(base.targetDistance,base.competitorDistance)<.65;
+ const strongContrast=!!base&&(!!base.focus&&(base.focus.frames>=6||briefStop)&&base.focus.separation>=.08||!!base.tone&&base.tone.frames>=10&&base.tone.separation>=.75)&&
   Math.min(base.targetDistance,base.competitorDistance)<1.35&&
   ((base.breakdown?.pairDistinction??50)>=85||(base.breakdown?.pairDistinction??50)<=15);
  // A recognizer can collapse BOTH displayed pronunciations to one spelling.

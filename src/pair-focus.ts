@@ -66,7 +66,7 @@ function align(n:number,m:number,cost:(i:number,j:number)=>number):[number,numbe
  * curriculum order, irrespective of the selected target, making side reversal
  * exactly symmetric. No human accuracy probability is inferred from distance. */
 export function focusedPair(take:AcousticReference,a:AcousticReference,b:AcousticReference,
- region:FocusRegion):PairFocus|null {
+ region:FocusRegion,briefStop=false):PairFocus|null {
   const pair=align(a.frames.length,b.frames.length,(i,j)=>frameCost(a.frames[i],b.frames[j]));
   if(!pair)return null;
   const differences=pair.map(([i,j])=>frameCost(a.frames[i],b.frames[j]));
@@ -103,7 +103,11 @@ export function focusedPair(take:AcousticReference,a:AcousticReference,b:Acousti
     td+=w*frameCost(take.frames[i],a.frames[ai]);
     cd+=w*frameCost(take.frames[i],b.frames[bi]);sep+=w*differences[j];
   }
-  if(total<=0||seen.size<4||sep/total<.08)return null;
+  // A tense Korean stop release can span only 30 ms after symmetric alignment.
+  // Require a longer reference mask and stronger separation for that bounded
+  // exception. Fricatives/vowels and every other course keep the 40 ms floor.
+  const briefReliable=briefStop&&focusedFrames>=6&&sep/total>=.2;
+  if(total<=0||seen.size<(briefReliable?3:4)||sep/total<.08)return null;
   return {version:'pair-focus-dtw:v1',region,targetDistance:td/total,
     competitorDistance:cd/total,separation:sep/total,frames:seen.size};
 }

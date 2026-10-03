@@ -23,6 +23,13 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
  let take=extract(request.samples),target=extract(request.target),competitor=extract(request.competitor);
  if(!take)return {status:'unscored',reason:'poor-signal'};
  if(!target||!competitor)return {status:'unscored',reason:'model-unavailable'};
+ // Some short kana references are spectrally broad enough that DTW alone
+ // fits white noise. Reject only overwhelmingly flat, non-periodic captures.
+ // Quiet/creaky/whispered speech with structured vowels is not rejected merely
+ // for missing pitch. H/F's approved signal path remains exactly unchanged.
+ if(!hfTask&&take.periodic<.08&&take.flatness&&
+   take.flatness.filter(v=>v>.42).length/take.flatness.length>.9)
+  return {status:'unscored',reason:'poor-signal'};
  const sentence=plan.calibrationKey.includes('/sentence/');
  if(sentence&&!hfTask){
   const wt=request.wordTarget?extract(request.wordTarget):null,wc=request.wordCompetitor?extract(request.wordCompetitor):null;
@@ -85,7 +92,7 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
  // Tone register and mora length keep their existing separate route; a
  // spectral difference mask must not pretend to assess absolute pitch/length.
  const focus=!hfTask&&!tone&&!timing?
-  focusedPair(take,side===0?target:competitor,side===0?competitor:target,focusRegion(plan)):null;
+  focusedPair(take,side===0?target:competitor,side===0?competitor:target,focusRegion(plan),plan.profile.id==='ko-three-way-stop:v1'):null;
  // A brief aspiration difference can be diluted below the whole-word gate.
  // Resolve it only if the focused region supplies real reference separation;
  // identical readings still abstain instead of handing out an invented grade.
