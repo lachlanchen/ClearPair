@@ -157,7 +157,7 @@ These are synthesized saved-PCM/runtime regressions and browser layout checks,
 not human pronunciation-accuracy certification. Scores remain practice indices,
 not calibrated phoneme-correctness probabilities.
 
-English build 10 is being packaged from this qualified candidate. Provider
-availability will be recorded separately after readback. H & F 15, the already
+English build 10 is now [verified available on both internal test tracks](BETA-ENGLISH-1.0.0-10.md).
+Provider availability is recorded separately after readback. H & F 15, the already
 distributed L & R 10, existing reviews, recordings and account settings remain
-unchanged. No additional test availability or public-release claim is made here.
+unchanged. No new production review or public-release claim is made here.

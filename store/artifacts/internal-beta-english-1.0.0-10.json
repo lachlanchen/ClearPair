@@ -1,0 +1,31 @@
+{
+  "app": "english",
+  "version": "1.0.0",
+  "build": 10,
+  "sourceCommit": "0b16805344e7769574736798bad57e51c0542d84",
+  "verifiedAt": "2026-10-03T19:40:38Z",
+  "ios": {
+    "sha256": "b1bd554b80e0fed66bc4aea39fb3c3ee1abb7bcb6ddbbc49d194a92b73175d22",
+    "processingState": "VALID",
+    "internalBuildState": "IN_BETA_TESTING",
+    "autoNotifyEnabled": true,
+    "existingTesterVerified": true
+  },
+  "android": {
+    "sha256": "de605c95e9628037464d437208a76d3414cadff61b348787b2e254123cfa33f2",
+    "track": "internal",
+    "state": "Available to internal testers",
+    "existingTesterListVerified": true,
+    "native64BitElfAlignment": 16384
+  },
+  "validation": {
+    "nativeIosSavedPcm": "326/326",
+    "nativeAndroidSavedPcm": "326/326",
+    "latestPureFeedbackReevaluation": "326/326 each platform; retained native evidence, no new native execution",
+    "multilingualResultLayout": "308/308",
+    "repeatedRecordingLayout": "12/12",
+    "scope": "Synthetic regression and packaging evidence, not calibrated human pronunciation accuracy"
+  },
+  "formalReviewChanged": false,
+  "webDeployed": false
+}
