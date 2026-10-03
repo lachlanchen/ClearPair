@@ -193,3 +193,10 @@ collision. On the physical MIX 2S, word-decoding median/p95 is 593/661 ms;
 the first model load is 5108 ms. These are synthetic runtime timings, not human
 accuracy or a promise for every device. No additional store availability is
 claimed until exact package and provider verification are complete.
+
+Japanese now passes the full 114/114 native Android checks as well as iOS
+114/114. Its separate bundled Japanese decoder is activated for the build-10
+candidate. Kana/kanji readings remain explicitly authored, script-only
+same-sound exercises stay ungraded, and the original recognized text is shown.
+The latest full Korean iOS run passes 134/134, and Arabic's latest full iOS run
+passes 130/130. Further Android and packaging checks continue independently.
