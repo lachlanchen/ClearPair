@@ -20,6 +20,20 @@ describe('beta local acoustic practice index',()=>{
   expect(a.frames.length).toBeGreaterThan(30);expect(a.periodic).toBeGreaterThan(.6);
   expect(referenceDistance(a,b)).toBeLessThan(.02);
  });
+ it('retains a weak onset when a valid non-H/F recording is quieter',()=>{
+  const p=assessmentPlan('korean','ko-g-kk',1,1);if(p.mode!=='contrast')throw Error('plan');
+  const a=vowel(140,600,.4),b=vowel(140,1200,.4);
+  // A low-level, short consonant cue precedes an otherwise shared nucleus.
+  for(let i=0;i<640;i++){a[i]+=.003*Math.sin(2*Math.PI*3100*i/16000);b[i]+=.003*Math.sin(2*Math.PI*1200*i/16000);}
+  const request={id:'quiet-gain',plan:p,target:a,competitor:b,voice:'fixture'};
+  const normal=referenceScore({...request,samples:a}),quiet=referenceScore({...request,samples:a.map(v=>v*.08)});
+  expect(normal.status).toBe('matched');expect(quiet.status).toBe('matched');
+  if(normal.status==='matched'&&quiet.status==='matched'){
+   expect(quiet.breakdown?.speechMs).toBe(normal.breakdown?.speechMs);
+   expect(quiet.score).toBeGreaterThanOrEqual(normal.score-1);
+   expect(quiet.targetDistance).toBeLessThan(.002);
+  }
+ });
  it('rejects silence, DC and too-short input; validates numeric bounds',()=>{
   for(const value of [new Float32Array(16000),new Float32Array(16000).fill(.4),vowel().slice(0,1000)])expect(acousticReference(value)).toBeNull();
   expect(()=>acousticReference(new Float32Array([NaN,...new Array(2000).fill(.1)]))).toThrow();
@@ -62,6 +76,13 @@ describe('beta local acoustic practice index',()=>{
   const noise=Float32Array.from({length:12000},()=>{seed=(seed*1664525+1013904223)>>>0;return (seed/2**32-.5)*.2;});
   expect(referenceScore({id:'n',plan:p,samples:noise,target:a,competitor:b,voice:'fixture'}).status).toBe('unscored');
   expect(referenceScore({id:'s',plan:p,samples:a,target:a,competitor:a,voice:'fixture'})).toEqual({status:'unscored',reason:'uncertain'});
+ });
+ it('keeps a bounded word comparison for low pitch without fabricating a tone contour',()=>{
+  const p=assessmentPlan('chinese','tone-2-3',0,1);if(p.mode!=='contrast')throw Error('plan');
+  const low=vowel(58,600,.4),other=vowel(145,600,.4);
+  const r=referenceScore({id:'low-pitch',plan:p,samples:low,target:low,competitor:other,voice:'fixture'});
+  expect(r.status).toBe('matched');
+  if(r.status==='matched'){expect(r.targetDistance).toBe(0);expect(r).not.toHaveProperty('tone');expect(r.evidence).toBe('word');}
  });
  it('locates the word inside a shared carrier rather than grading shared carrier speech',()=>{
   const p=assessmentPlan('english','v-i',0,0,true);if(p.mode!=='contrast')throw Error('plan');

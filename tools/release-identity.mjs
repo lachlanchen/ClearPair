@@ -12,3 +12,9 @@ export function selectedRelease(release,selected){
  if(new Set(identities.map(r=>r.build)).size!==1)throw Error('Different app build numbers: select one release lane explicitly');
  return {...identities[0],apps};
 }
+// Build numbers are per app. Freeze each selected lane independently so a
+// later English 10 cannot overwrite evidence for an already distributed L&R 10.
+export function sourceManifestPaths(release){
+ const lane=release.apps.length===1?`${release.apps[0]}-${release.build}`:`family-${release.build}`;
+ return {files:`.runtime/store/source-files-${lane}.txt`,verification:`.runtime/store/source-verification-${lane}.json`};
+}

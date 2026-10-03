@@ -18,4 +18,10 @@ describe('authored carrier anchors',()=>{
    for(const pair of lesson.pairs)for(const word of pair)expect(carrierContext(word,lesson.language),`${id}/${word.text}`).not.toBeNull();
   }
  });
+ it('keeps beginner nasal endings before a pause, not a following vowel',()=>{
+  for(const pair of lessonById('n-ng').pairs)for(const word of pair){
+   expect(carrierContext(word,'en-US')).toEqual({prefix:'I said',suffix:''});
+   expect(word.sentence).toBe(`I said ${word.text}.`);
+  }
+ });
 });

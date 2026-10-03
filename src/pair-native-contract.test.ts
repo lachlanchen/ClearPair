@@ -27,4 +27,10 @@ describe('language-specific native decoder linkage',()=>{
   expect(freeze).toContain("release.apps.includes('cantonese')");
   expect(freeze).toContain('native/audio-yue/ios/Sources');
  });
+ it('uses packaged pair decoders directly without altering H/F Apple-first behavior',()=>{
+  expect(source('src/hf-word-runtime.ts')).toContain("this.config.version==='pair-offline-words:v1'?{preferBundled:true}:{}");
+  const bridge=source('native/audio/ios/Sources/ClearPairAudio/HFOfflineWords.swift');
+  expect(bridge).toContain('call.getBool("preferBundled") == true && bundle != "art.lazying.clearpair.handf"');
+  expect(bridge.indexOf('call.getBool("preferBundled")')).toBeLessThan(bridge.indexOf('switch SFSpeechRecognizer.authorizationStatus()'));
+ });
 });

@@ -31,7 +31,14 @@ def main():
     assert all(p.is_relative_to(private) for p in (assets, project, derived))
     assert packages.is_relative_to(root / '.runtime') and packages.is_dir()
     assert project.name == 'ModelQA.xcodeproj' and project.is_dir()
-    assert subprocess.run(['pgrep', '-x', 'xcodebuild'], stdout=subprocess.DEVNULL).returncode != 0, 'Another Mac build is active'
+    # This unsigned helper has its own project, DerivedData, simulator and app
+    # ID, and never uses the desktop/keychain. Reject OUR concurrent build, not
+    # a peer project's independent XCTest. Never stop another project's job.
+    active = subprocess.run(['pgrep', '-x', 'xcodebuild'], capture_output=True, text=True)
+    for pid in active.stdout.split():
+        cwd = subprocess.run(['lsof', '-a', '-p', pid, '-d', 'cwd', '-Fn'], capture_output=True, text=True, timeout=5)
+        locations = [Path(line[1:]) for line in cwd.stdout.splitlines() if line.startswith('n')]
+        assert locations and not any(p.is_relative_to(root) for p in locations), 'A ClearPair build is active or ownership is unknown'
     devices = json.loads(subprocess.check_output(['xcrun', 'simctl', 'list', 'devices', '--json']))
     device = next(d for group in devices['devices'].values() for d in group if d['udid'] == args.device)
     assert device['state'] == 'Shutdown' and (device['name'] == 'ClearPairBetaQA' or device['name'].startswith('ClearPair-Audio-QA-'))

@@ -60,7 +60,7 @@ export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarnin
       {take&&<small className="score-target">{tr('Recorded word','录制的词')}: <WordText value={take.word} reading={take.reading}/></small>}
       {running?<p>{tr('Analysing the target sound…','正在分析目标音…')}</p>:result?.status==='scored'||result?.status==='matched'?<div className="local-grade">
         <strong>{result.score}<small>/ 100</small></strong>
-        <p>{result.status==='matched'&&result.hf&&!result.recognition?tr('Target sound','目标音'):result.status==='matched'&&result.evidence==='word'&&result.recognition?tr('Word match','词语匹配'):tr('Practice match','练习匹配分')}
+        <p>{result.status==='matched'&&result.hf&&!result.recognition?tr('Target sound','目标音'):result.status==='matched'&&result.evidence==='word'&&result.recognition&&(!result.pairFeedback||!['unconfirmed','mixed'].includes(result.pairFeedback.kind))?tr('Word match','词语匹配'):tr('Practice match','练习匹配分')}
           {result.status==='matched'&&result.hf&&!result.recognition&&<small>{tr('Heard','听到的音')}: {result.hf.heard==='uncertain'?tr('Uncertain','不确定'):`/${result.hf.heard==='h'&&take?.language==='zh-CN'?'x':result.hf.heard}/`}</small>}
         </p>
       </div>:<p>{result?.status==='unscored'?result.diagnostics&&['clear','quiet'].includes(result.diagnostics.signal)&&['uncertain','unaligned','sound-unresolved'].includes(result.reason)?take?.app==='handf'?tr('Speech was captured, but word recognition could not confirm H/F. Try the sentence option; your recording is saved.','已录到语音，但词语识别未能确认 H/F。可尝试短句模式，录音仍保留。'):tr('Recording captured. Sound details could not be measured.','录音已保存，但未能测量发音细节。'):scoreMessage(result.reason,tr):automatic?tr('Record, speak, then pause for your score.','点录音，说出词语，停顿后查看评分。'):tr('Record first, then assess the confusing sound.','先录音，再评估容易混淆的音。')}</p>}
@@ -119,8 +119,9 @@ function contrastLabel(region:import('./pair-focus').FocusRegion|undefined,tr:(e
 }
 function PairScoreItems({result,tr}:{result:Extract<ScoreResult,{status:'matched'}>;tr:(en:string,zh:string)=>string}){
  const feedback=result.pairFeedback!;
+ const wordConfirmed=!['unconfirmed','mixed'].includes(feedback.kind);
  return <dl className="hf-score-items pair-score-items">
-  <div><dt>{tr('Word match','词语匹配')}</dt><dd>{result.breakdown?.wordMatch??tr('Not measured','未测量')}<small>/100</small></dd></div>
+  <div><dt>{tr('Word match','词语匹配')}</dt><dd>{wordConfirmed?<>{result.breakdown?.wordMatch??tr('Not measured','未测量')}<small>/100</small></>:<span className="score-empty">—</span>}</dd></div>
   <div><dt>{feedback.region==='tone'?tr('Tone contrast','声调区别'):feedback.region==='timing'?tr('Timing contrast','节奏区别'):feedback.region==='letter-name'?tr('Letter name','字母名称'):contrastLabel(feedback.region,tr)}</dt>
    <dd>{feedback.soundMeasured?<>{result.breakdown?.pairDistinction}<small>/100</small></>:<span className="score-empty">{tr('Word evidence','词语证据')}</span>}</dd></div>
   <div><dt>{tr('Speech duration','有效发声时长')}</dt><dd>{result.breakdown?.speechMs}<small>ms</small></dd></div>

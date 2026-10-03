@@ -3,6 +3,7 @@ import manifest from '../models/hf-words.json';
 import type {HfWordEvidence} from './hf-word-score';
 import {Capacitor} from '@capacitor/core';
 import {nativeAudio} from './native';
+import {hfAnalysisSamples} from './hf-score';
 type ModelFactory=(url:string,signal?:AbortSignal)=>Promise<Model>;
 /** H & F only, exact saved PCM, unrestricted decoder. iOS uses native offline
  * Apple Speech first. No second microphone, cloud fallback or target hints. */
@@ -61,10 +62,15 @@ export class HfWordRuntime {
    const token=this.generation,id=crypto.randomUUID();this.nativeId=id;
    let timer:ReturnType<typeof setTimeout>|undefined;
    try{
-    const bytes=new Uint8Array(samples.length*2),view=new DataView(bytes.buffer);
-    for(let i=0;i<samples.length;i++)view.setInt16(i*2,Math.max(-32767,Math.min(32767,Math.round(samples[i]*32767))),true);
+    // Same saved utterance, gain only: preserve the original recording and all
+    // timestamps. H/F stays unchanged. Pair decoders should not lose a weak
+    // consonant simply because the phone's PCM level was lower.
+    const input=this.config.version==='pair-offline-words:v1'?hfAnalysisSamples(samples):samples;
+    const bytes=new Uint8Array(input.length*2),view=new DataView(bytes.buffer);
+    for(let i=0;i<input.length;i++)view.setInt16(i*2,Math.max(-32767,Math.min(32767,Math.round(input[i]*32767))),true);
     let binary='';for(let at=0;at<bytes.length;at+=8192)binary+=String.fromCharCode(...bytes.subarray(at,at+8192));
-    const native=await Promise.race([nativeAudio.recognizeWords({id,language,pcm16Base64:btoa(binary)}),
+    const native=await Promise.race([nativeAudio.recognizeWords({id,language,pcm16Base64:btoa(binary),
+      ...(this.config.version==='pair-offline-words:v1'?{preferBundled:true}:{})}),
      new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Native offline words timed out')),31_000);})]);
     if(token!==this.generation)return undefined;
     const completedPartial=native.engine===`apple-on-device-words:v1/${language}`&&native.completed===true&&native.final===false;

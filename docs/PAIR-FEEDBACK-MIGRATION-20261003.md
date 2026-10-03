@@ -27,7 +27,7 @@ store binary are preserved; the other courses use a separate hybrid adapter.
   flat tones do not establish absolute high/mid/low register. Empty standalone
   letter/kana transcripts retain measured sound feedback with a provisional cap.
 
-## Qualification at this checkpoint
+## Earlier qualification checkpoint
 
 | Course | Word-model route | Evidence |
 | --- | --- | --- |
@@ -93,6 +93,20 @@ are used to force the recognized words into the displayed pair.
 - A sentence supplies a same-speaker pitch baseline for level-tone comparisons;
   isolated flat tones still do not establish register. The new carrier path is
   under separate native qualification, not yet a shipping claim.
+- A brief disconnected carrier pitch fragment before an unvoiced onset no
+  longer invalidates the target vowel's reliable contour. Only fragments of at
+  most four voiced frames are excluded; two substantial separated nuclei still
+  abstain. No interpolation crosses the consonant gap.
+
+Fresh extended iOS regressions now pass English 325/325 and Cantonese 69/69:
+word and sentence modes, every graded pair-side, opposite/quiet recordings,
+repeat/cancel/dispose and silence. English Android's extended run and the other
+courses' sentence/native checks remain in progress. These are synthesized
+saved-PCM regressions, not human accuracy certification or new distribution.
+English build 10 is reserved for its independently verified candidate; H & F
+15 and the distributed L & R 10 remain unchanged. Release source evidence now
+uses immutable per-app filenames so equal build numbers cannot overwrite one
+another's provenance.
 
 At this source checkpoint, Pair-enabled unit/regression checks pass 1094 tests
 (12 intentionally skipped); H/F-enabled checks pass 1097 (9 skipped). Layout
@@ -106,3 +120,44 @@ original prompt/score; re-assessment never silently changes that prompt to a new
 carrier. Existing L & R build 10 distribution and H & F build 15 are preserved.
 No additional test upload, production review or web deployment is claimed by
 this source-hardening checkpoint.
+
+## Current extended qualification, 2026-10-04
+
+English now passes **326/326 fresh native checks on both iOS and Android**:
+word and short-sentence prompts, every graded pair-side in both directions,
+quiet recordings, repeated recognizer lifecycle checks, silence and noise.
+The latest answer-slot feedback change was separately re-evaluated against both
+retained native receipts: 326/326 on each. That re-evaluation is pure feedback
+over the actual saved decoder/acoustic evidence, not another native execution.
+Arabic also passes its first full **130/130 native iOS checks**; its Android
+qualification remains pending. Korean previously passed 133/133 native iOS
+checks; its current noise-inclusive, two-platform qualification remains pending.
+
+- Reuse H & F's bounded analysis gain normalization for quiet consonants. Saved
+  audio, waveform, clipping and recording-quality checks use original PCM.
+- The other pair apps use their bundled native decoder directly on iOS, avoiding
+  a repeated wait for absent Apple language assets. H & F keeps its approved
+  Apple-first recognition path and unchanged audio normalization.
+- Evaluate sentence word identity and confidence inside the explicitly authored
+  answer slot. Shared carrier words cannot count as another practice answer.
+  Preserve actual decoder text and its original segment confidence values.
+- End English n/ng carriers immediately after the target, reducing interference
+  from a following vowel. Historical recordings retain their original prompts.
+- Low/creaky tone speech may retain tightly fitting word-reference evidence, but
+  insufficient F0 still cannot become a measured tone grade.
+- Strong independent sound evidence can remain useful with an unconfirmed word;
+  the word card shows a dash, not an invented perfect word score. Noise remains
+  unscored even if recognition happens to produce the displayed word.
+
+Pair-enabled unit/regression checks pass 1110 tests (12 deliberately skipped).
+H & F-enabled regression checks pass 1113 tests (9 deliberately skipped).
+The compact layout passes 308 multilingual result cases and twelve repeated
+recording checks, with a centered, fixed recording control and no visible timer.
+These are synthesized saved-PCM/runtime regressions and browser layout checks,
+not human pronunciation-accuracy certification. Scores remain practice indices,
+not calibrated phoneme-correctness probabilities.
+
+English build 10 is being packaged from this qualified candidate. Provider
+availability will be recorded separately after readback. H & F 15, the already
+distributed L & R 10, existing reviews, recordings and account settings remain
+unchanged. No additional test availability or public-release claim is made here.

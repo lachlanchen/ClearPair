@@ -47,6 +47,12 @@ final class HFOfflineWords {
             guard let self, self.pending === call, self.identifier == id else { return }
             self.begin(call, pcm: pcm, language: language, id: id)
         }
+        // Pair apps ship their own language decoder. Never wait ten seconds
+        // on EACH take for absent Apple language assets or speech consent.
+        // H/F's owner-approved Apple-first path cannot be switched by this flag.
+        if call.getBool("preferBundled") == true && bundle != "art.lazying.clearpair.handf" {
+            bundled(call, pcm: pcm, language: language, id: id); return
+        }
         #if canImport(CNativeSenseVoice)
         // The Yue-only package always uses its bundled Cantonese decoder.
         // Avoid an unrelated Apple speech-consent/model-download wait before

@@ -15,6 +15,15 @@ const grade:ScoreResult={status:'scored',score:83,probability:.83,model:'test-on
 beforeEach(()=>{vi.clearAllMocks();mocks.save.mockResolvedValue('device');});
 afterEach(cleanup);
 describe('local scoring take lifecycle',()=>{
+ it('does not display reference similarity as a confirmed lexical score',async()=>{
+  mocks.assess.mockResolvedValue({status:'matched',score:77,model:'local-pair-hybrid:v1',contrast:'english/test',unit:'phone',targetDistance:0,competitorDistance:.3,referenceVoice:'fixture',scope:'word',evidence:'sound',
+   recognition:{engine:'fixture',text:'height',decision:'unknown',confidence:.5},breakdown:{wordMatch:100,pairDistinction:98,speechMs:300,referenceMs:300},
+   pairFeedback:{version:'pair-feedback:v1',expected:'light',heard:'height',kind:'unconfirmed',region:'initial',targetSound:'laɪt',partnerSound:'raɪt',cue:{en:'Compare the tongue position.',zh:'比较舌头位置。'},soundMeasured:true,conflict:false}});
+  render(<ScorePanel take={take()} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);await act(async()=>{});
+  const cells=[...document.querySelectorAll('.pair-score-items dd')].map(v=>v.textContent);
+  expect(cells).toEqual(['—','98/100','300ms']);
+  expect(screen.getByText(/Recognized words/).textContent).toContain('height');
+ });
  it('explains an unresolved capture with actual words and duration instead of claiming the microphone failed',async()=>{
   mocks.assess.mockResolvedValue({status:'unscored',reason:'uncertain',diagnostics:{speechMs:260,signal:'clear',acousticState:'unaligned',wordState:'recognized',wordEngine:'hf-vosk-native:v1/en-US',wordText:'that',wordFinal:true}});
   render(<ScorePanel take={{...take(),app:'handf',word:'hat'}} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);await act(async()=>{});

@@ -6,6 +6,7 @@ import type {ScoreResult} from './scoring';
 import type {Analysis,Word,Text} from './types';
 import type {HfWordEvidence} from './hf-word-score';
 import {japanesePairGuidance} from './japanese-curriculum';
+import {carrierContext} from './carrier-context';
 type Plan=Extract<AssessmentPlan,{mode:'contrast'}>;
 type Match=Extract<ScoreResult,{status:'matched'}>;
 type Decision=NonNullable<Match['recognition']>['decision'];
@@ -57,26 +58,46 @@ export function pairWordDecision(plan:Plan,e:HfWordEvidence):{decision:Decision;
    e.words.some(w=>!w.word||![w.conf,w.start,w.end].every(Number.isFinite)||w.conf<0||w.conf>1||w.start<0||w.end<w.start||w.end>15))return unknown;
  const text=normalize(e.text),tokens=e.words.map(w=>normalize(w.word));
  if(!text||!untimed&&text!==normalize(tokens.join(' ')))return unknown;
- const confidence=e.words.length?Math.min(...e.words.map(w=>w.conf)):0;
+ let confidence=e.words.length?Math.min(...e.words.map(w=>w.conf)):0;
  const apple=e.engine===`apple-on-device-words:v1/${lang}`&&(e.final===true||e.completed===true&&e.final===false);
  if(e.engine===`apple-on-device-words:v1/${lang}`&&!apple)return unknown;
- if(!apple&&!untimed&&confidence<.65)return {decision:'unknown',confidence,valid:true};
  const sentence=plan.calibrationKey.includes('/sentence/');
  const candidates=(word:Word)=>forms(word,lang,keepMarks);
- const has=(word:Word)=>candidates(word).some(form=>sentence?
-  (['zh-CN','zh-HK','ja-JP'].includes(lang)?text.includes(form):text.split(' ').includes(form)):text===form);
+ const compact=['zh-CN','zh-HK','ja-JP'].includes(lang);
+ const contexts=sentence?[plan.target,plan.competitor].flatMap(word=>{
+  const c=carrierContext(word,lang),result=c?[{prefix:normalize(c.prefix),suffix:normalize(c.suffix)}]:[];
+  // Japanese's displayed 一度 and spoken いちど are explicitly authored
+  // spellings of the same carrier. Accept either without guessing new kanji
+  // readings or replacing the decoder's original text.
+  if(word.sentenceReading){
+   const display=normalize(word.sentence),form=normalize(word.text),at=display.lastIndexOf(form);
+   if(at>=0)result.push({prefix:display.slice(0,at).trim(),suffix:display.slice(at+form.length).trim()});
+  }
+  return result;
+ }):[];
+ const slots=contexts.map(({prefix,suffix})=>{
+  if(!text.startsWith(prefix)||!text.endsWith(suffix)||text.length<=prefix.length+suffix.length)return null;
+  const from=prefix.length,to=text.length-suffix.length;
+  return {from,to,body:text.slice(from,to).trim()};
+ }).filter((v):v is NonNullable<typeof v>=>!!v);
+ if(slots.length&&e.words.length){
+  // Only actual decoder segments overlapping the answer slot contribute.
+  // Low confidence in a shared carrier word must not hide a clear answer,
+  // and an earlier 字/말/I in that carrier is never a second practice word.
+  const slot=slots[0];let at=0;const confidences:number[]=[];
+  for(const w of e.words){const token=normalize(w.word);if(!token)continue;
+   if(at&&!compact)at++;const from=at;at+=token.length;
+   if(at>slot.from&&from<slot.to)confidences.push(w.conf);
+  }
+  if(confidences.length)confidence=Math.min(...confidences);
+ }
+ if(!apple&&!untimed&&confidence<.65)return {decision:'unknown',confidence,valid:true};
+ const has=(word:Word)=>candidates(word).some(form=>sentence?slots.some(slot=>slot.body===form):text===form);
  const target=has(plan.target),other=has(plan.competitor);
  if(target&&other)return {decision:candidates(plan.target).some(f=>candidates(plan.competitor).includes(f))?'unknown':'both',confidence,valid:true};
- if(sentence&&(target||other)){
-  // Match the authored carrier as well: an isolated target buried in unrelated
-  // speech cannot validate a sentence. No ASR hints or fuzzy target correction.
-  const selected=target?plan.target:plan.competitor;
-  const carrier=normalizeWords(pronunciationText(selected,lang,true),lang);
-  const carrierWithoutWord=carrier.replace(normalizeWords(pronunciationText(selected,lang,false),lang),'');
-  const heardWithoutWord=candidates(selected).reduce((v,f)=>v.replace(f,''),text);
-  const compact=(v:string)=>v.replace(/ /g,'');
-  if(compact(carrierWithoutWord)!==compact(heardWithoutWord))return {decision:'other',confidence,valid:true};
- }
+ const contains=(slot:string,word:Word)=>candidates(word).some(form=>compact?slot.includes(form):slot.split(' ').includes(form));
+ if(sentence&&!target&&!other&&slots.some(slot=>contains(slot.body,plan.target)&&contains(slot.body,plan.competitor)))
+  return {decision:'both',confidence,valid:true};
  return {decision:target?'target':other?'opposite':'other',confidence,valid:true};
 }
 export function feedbackFor(plan:Plan,heard:string,decision:Decision,soundMeasured:boolean,conflict=false):PairFeedback{
@@ -92,7 +113,7 @@ export function feedbackFor(plan:Plan,heard:string,decision:Decision,soundMeasur
  * leads feedback; only a separately aligned acoustic region measures sound. */
 export function pairHybridScore(plan:Plan,e:HfWordEvidence|undefined,acoustic:ScoreResult,quality:Analysis):ScoreResult{
  if(plan.calibrationKey.startsWith('handf/'))return acoustic;
- if(acoustic.status==='scored'||acoustic.status==='unscored'&&['cancelled','invalid-evidence'].includes(acoustic.reason)||!['clear','quiet'].includes(quality.status))return acoustic;
+ if(acoustic.status==='scored'||acoustic.status==='unscored'&&['cancelled','invalid-evidence','poor-signal'].includes(acoustic.reason)||!['clear','quiet'].includes(quality.status))return acoustic;
  const base=acoustic.status==='matched'?acoustic:undefined;
  // Isolated kana/letter names may have no lexical ASR result. Keep genuinely
  // measured sound feedback, with an explicit provisional cap, rather than
@@ -131,7 +152,7 @@ export function pairHybridScore(plan:Plan,e:HfWordEvidence|undefined,acoustic:Sc
   decision==='opposite'?Math.min(35,Math.round((sound??0)*.25)):
   decision==='other'?Math.min(25,Math.round((sound??0)*.2)):
   decision==='both'?Math.min(40,base?.score??0):Math.min(strongContrast&&!conflict?79:59,
-   base?Math.round((base.breakdown?.pairDistinction??0)*.6):0);
+   base?Math.round((base.breakdown?.pairDistinction??0)*(strongContrast&&!conflict?.79:.6)):0);
  if(decision==='unknown'&&!base)return {...acoustic,diagnostics:{speechMs:Math.round(quality.voicedSeconds*1000),signal:quality.status,
   acousticState:acoustic.status==='unscored'?acoustic.reason:'unknown',wordState:'recognized',wordEngine:e.engine,wordText:e.text.slice(0,500),wordFinal:e.final,wordProvisional:provisional}};
  return {status:'matched',score,contrast:plan.calibrationKey,model:'local-pair-hybrid:v1',unit:plan.profile.unit,

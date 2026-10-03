@@ -10,6 +10,7 @@ import {analyze} from '../../src/analysis';
 import {carrierContext} from '../../src/carrier-context';
 import type {AppId} from '../../src/types';
 declare const CLEARPAIR_QA_COURSE:string;
+declare const CLEARPAIR_QA_LESSON:string;
 declare const CLEARPAIR_QA_CAPTURE_REFERENCES:boolean;
 declare const CLEARPAIR_QA_USE_FIXTURES:boolean;
 declare const CLEARPAIR_QA_REFERENCE_ONLY:boolean;
@@ -18,6 +19,8 @@ const output=document.getElementById('result')!;
 async function run(){
  const app=CLEARPAIR_QA_COURSE as AppId,product=productById(app),rows:unknown[]=[],engine=new PairWordRuntime();
  if(!['landr','english','chinese','japanese','korean','arabic','cantonese'].includes(app))throw Error('Unqualified word-model language');
+ const selectedLessons=CLEARPAIR_QA_LESSON?product.lessons.filter(id=>id===CLEARPAIR_QA_LESSON):product.lessons;
+ if(!selectedLessons.length)throw Error('Diagnostic lesson is not in this app');
  const emit=(row:unknown)=>{const index=rows.length;rows.push(row);output.textContent=JSON.stringify(rows,null,2);
   const bytes=new TextEncoder().encode(JSON.stringify(row)),encoded=btoa(String.fromCharCode(...bytes)),count=Math.ceil(encoded.length/400);
   for(let part=0;part<count;part++)console.log(`CLEARPAIR_REFERENCE_PART ${index} ${part} ${count} ${encoded.slice(part*400,(part+1)*400)} END`);};
@@ -55,7 +58,7 @@ async function run(){
  };
  try{
   if(CLEARPAIR_QA_REFERENCE_ONLY){
-   for(const lesson of product.lessons)for(const [pair] of lessonById(lesson).pairs.entries())for(const sentence of CLEARPAIR_QA_INCLUDE_SENTENCES?[false,true]:[false])for(const side of [0,1] as const){
+   for(const lesson of selectedLessons)for(const [pair] of lessonById(lesson).pairs.entries())for(const sentence of CLEARPAIR_QA_INCLUDE_SENTENCES?[false,true]:[false])for(const side of [0,1] as const){
     const plan=assessmentPlan(app,lesson,pair,side,sentence);if(plan.mode!=='contrast')continue;
     const {samples,voice}=await reference(plan.spokenPrompt,plan.profile.language);
     if(sentence){
@@ -68,7 +71,7 @@ async function run(){
    (window as unknown as {referenceQA:unknown}).referenceQA={scope:'Synthetic reference capture only; no decoder/scoring qualification',app,results:rows};
    output.dataset.complete=String(rows.length);console.log('CLEARPAIR_REFERENCE_DONE '+rows.length);return;
   }
-  for(const lesson of product.lessons)for(const [pair,words] of lessonById(lesson).pairs.entries())for(const sentence of CLEARPAIR_QA_INCLUDE_SENTENCES?[false,true]:[false]){
+  for(const lesson of selectedLessons)for(const [pair,words] of lessonById(lesson).pairs.entries())for(const sentence of CLEARPAIR_QA_INCLUDE_SENTENCES?[false,true]:[false]){
    const plan=assessmentPlan(app,lesson,pair,0,sentence);if(plan.mode!=='contrast')continue;
    try{
     const a=await reference(plan.spokenPrompt,plan.profile.language),b=await reference(pronunciationText(plan.competitor,plan.profile.language,sentence),plan.profile.language);
@@ -95,7 +98,7 @@ async function run(){
     }
    }catch(error){emit({app,lesson:lesson+(sentence?'-carrier':''),pair,passed:false,error:String(error)});}
   }
-  const first=product.lessons[0],plan=assessmentPlan(app,first,0,0);if(plan.mode!=='contrast')throw Error('plan');
+  const first=selectedLessons[0],plan=assessmentPlan(app,first,0,0);if(plan.mode!=='contrast')throw Error('plan');
   const a=await reference(plan.spokenPrompt,plan.profile.language),b=await reference(pronunciationText(plan.competitor,plan.profile.language),plan.profile.language);
   for(let i=0;i<12;i++){
    if(i===4)engine.cancel();if(i===8)engine.dispose();
@@ -105,8 +108,14 @@ async function run(){
   }
   const silence=await engine.recognize(plan.profile.language,new Float32Array(6400),new URL('./',location.href).href);
   emit({app,lesson:'silence-control',passed:!silence?.text.trim(),recognition:silence});
+  let seed=24681357;
+  const noise=Float32Array.from({length:6400},()=>{seed=(seed*1664525+1013904223)>>>0;return (seed/2**32-.5)*.15;});
+  const noiseWords=await engine.recognize(plan.profile.language,noise,new URL('./',location.href).href);
+  const noiseAcoustic=referenceScore({id:'noise-control',plan,samples:noise,target:a.samples,competitor:b.samples,voice:a.voice});
+  const noiseScore=pairHybridScore(plan,noiseWords,noiseAcoustic,analyze(noise,16000));
+  emit({app,lesson:'noise-control',recognition:noiseWords,acoustic:noiseAcoustic,score:noiseScore,passed:noiseScore.status==='unscored'});
   if(CLEARPAIR_QA_CAPTURE_REFERENCES)await exportFixtures();
-  (window as unknown as {referenceQA:unknown}).referenceQA={scope:'Native saved-PCM/model plumbing with synthetic voices, not human pronunciation accuracy',app,results:rows};
+  (window as unknown as {referenceQA:unknown}).referenceQA={scope:'Native saved-PCM/model plumbing with synthetic voices, not human pronunciation accuracy',app,...(CLEARPAIR_QA_LESSON?{diagnosticLesson:CLEARPAIR_QA_LESSON}:{}),results:rows};
   output.dataset.complete=String(rows.length);console.log('CLEARPAIR_REFERENCE_DONE '+rows.length);
  }finally{engine.dispose();}
 }

@@ -1,6 +1,7 @@
 import {describe,it,expect,vi} from 'vitest';
 import type {Model} from 'vosk-browser/dist/model';
 import {HfWordRuntime} from './hf-word-runtime';
+import {PairWordRuntime} from './pair-word-runtime';
 import {Capacitor} from '@capacitor/core';
 const compatibility=vi.hoisted(()=>({support:vi.fn(),model:vi.fn(),native:vi.fn(),cancel:vi.fn().mockResolvedValue(undefined),release:vi.fn().mockResolvedValue(undefined)}));
 vi.mock('./native',()=>({nativeAudio:{offlineWordSupport:compatibility.support,recognizeWords:compatibility.native,cancelWords:compatibility.cancel,releaseWords:compatibility.release}}));
@@ -25,6 +26,20 @@ class FakeDecoder{
 const samples=()=>new Float32Array(6400).fill(.04);
 const cast=(m:FakeModel)=>m as unknown as Model;
 describe('H & F offline decoder lifecycle',()=>{
+ it('requests the packaged pair decoder without changing H/F Apple-first requests',async()=>{
+  const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios');
+  compatibility.native.mockClear();compatibility.model.mockClear();
+  const pair=new PairWordRuntime(),hf=new HfWordRuntime();
+  try{
+   compatibility.native.mockResolvedValue({engine:'pair-vosk-native:v1/en-US',text:'light',words:[{word:'light',conf:.9,start:.3,end:.6}],final:true});
+   expect((await pair.recognize('en-US',samples(),'capacitor://localhost/'))?.text).toBe('light');
+   expect(compatibility.native.mock.calls[0][0].preferBundled).toBe(true);
+   compatibility.native.mockResolvedValue({engine:'apple-on-device-words:v1/en-US',text:'hat',words:[{word:'hat',conf:0,start:.3,end:.6}],final:true});
+   expect((await hf.recognize('en-US',samples(),'capacitor://localhost/'))?.text).toBe('hat');
+   expect(compatibility.native.mock.calls[1][0]).not.toHaveProperty('preferBundled');
+   expect(compatibility.model).not.toHaveBeenCalled();
+  }finally{pair.dispose();hf.dispose();platform.mockRestore();}
+ });
  it('accepts only a completed Apple partial and never initializes WASM for it',async()=>{
   const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios');
   const result={engine:'apple-on-device-words:v1/en-US',text:'hat',words:[{word:'hat',conf:0,start:.32,end:.7}],final:false,completed:true};

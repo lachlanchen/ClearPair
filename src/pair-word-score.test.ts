@@ -30,6 +30,12 @@ describe('every authored pair: offline content feedback, separate sound provenan
   expect(r).toMatchObject({status:'matched',recognition:{text:'banana',decision:'other'},pairFeedback:{kind:'different',targetSound:'laɪt',soundMeasured:false}});
   if(r.status==='matched'){expect(r.score).toBeLessThanOrEqual(25);expect(r.pairFeedback?.heardSound).toBeUndefined();}
  });
+ it('cannot turn a decoded target hallucination over poor signal into a grade',()=>{
+  const noise:ScoreResult={status:'unscored',reason:'poor-signal'};
+  expect(pairHybridScore(plan,evidence('light','en-US'),noise,quality)).toBe(noise);
+  // Missing references remain different from poor/noisy captured audio.
+  expect(pairHybridScore(plan,evidence('light','en-US'),unresolved,quality).status).toBe('matched');
+ });
  it('accepts only explicitly authored English homophones and retains the spelling',()=>{
   const right=assessmentPlan('landr','lr-start',0,1,false);if(right.mode!=='contrast')throw Error('fixture');
   expect(pairWordDecision(right,evidence('write','en-US'))).toMatchObject({decision:'target'});
@@ -54,6 +60,13 @@ describe('every authored pair: offline content feedback, separate sound provenan
   expect(r).toMatchObject({status:'matched',score:79,evidence:'sound',pairFeedback:{kind:'unconfirmed',heard:'',soundMeasured:true}});
   expect(r).not.toHaveProperty('recognition');
  });
+ it('retains a strong measured contrast when bundled lexical confidence is low, without confirming its text',()=>{
+  const acoustic:ScoreResult={status:'matched',score:99,contrast:plan.calibrationKey,model:'local-reference-dtw:v2',unit:'phone',targetDistance:0,competitorDistance:.3,referenceVoice:'fixture',scope:'word',closestWord:'light',
+   focus:{version:'pair-focus-dtw:v1',region:'initial',targetDistance:0,competitorDistance:.6,separation:.6,frames:9},breakdown:{wordMatch:100,pairDistinction:98,speechMs:300,referenceMs:300}};
+  const e={...evidence('height','en-US',.5),engine:'pair-vosk-native:v1/en-US'};
+  expect(pairHybridScore(plan,e,acoustic,quality)).toMatchObject({status:'matched',score:77,evidence:'sound',recognition:{text:'height',decision:'unknown'},pairFeedback:{kind:'unconfirmed',soundMeasured:true}});
+  expect(pairHybridScore(plan,{...e,words:[{...e.words[0],conf:.95}]},acoustic,quality)).toMatchObject({status:'matched',score:59,recognition:{text:'height',decision:'unknown'},pairFeedback:{conflict:true}});
+ });
  it('does not let collapsed ASR spelling hide a strongly measured opposite vowel or ending',()=>{
   const acoustic:ScoreResult={status:'matched',score:20,contrast:plan.calibrationKey,model:'local-reference-dtw:v2',unit:'phone',targetDistance:.1,competitorDistance:0,referenceVoice:'fixture',scope:'word',closestWord:'right',
    focus:{version:'pair-focus-dtw:v1',region:'initial',targetDistance:.3,competitorDistance:0,separation:.3,frames:9},breakdown:{wordMatch:94,pairDistinction:2,speechMs:400,referenceMs:500}};
@@ -67,6 +80,30 @@ describe('every authored pair: offline content feedback, separate sound provenan
   for(const e of [{...evidence('light','en-US'),text:'right'}, {...evidence('light','en-US'),engine:'cloud/en-US'},
    {...evidence('light','en-US'),words:[{word:'light',conf:NaN,start:0,end:.4}]},
    {...evidence('light','en-US',.2),engine:'pair-offline-words:v1/en-US'}])expect(pairWordDecision(plan,e).decision).toBe('unknown');
+ });
+ it('never mistakes a carrier word for an additional answer',()=>{
+  const p=assessmentPlan('chinese','z-c',1,1,true);if(p.mode!=='contrast')throw Error('plan');
+  expect(pairWordDecision(p,evidence(p.spokenPrompt,'zh-CN'))).toMatchObject({decision:'target'});
+  expect(pairWordDecision(p,evidence(pronunciationText(p.competitor,'zh-CN',true),'zh-CN'))).toMatchObject({decision:'opposite'});
+ });
+ it('uses actual answer confidence rather than the weakest shared carrier segment',()=>{
+  const p=assessmentPlan('english','v-i',0,0,true);if(p.mode!=='contrast')throw Error('plan');
+  const e:HfWordEvidence={engine:'pair-vosk-native:v1/en-US',text:'i said sheep again',final:true,
+   words:['i','said','sheep','again'].map((word,i)=>({word,conf:i===1?.3:.9,start:i*.2,end:(i+1)*.2}))};
+  expect(pairWordDecision(p,e)).toMatchObject({decision:'target',confidence:.9});
+  expect(pairWordDecision(p,{...e,words:e.words.map(w=>({...w,conf:w.word==='sheep'?.3:.9}))})).toMatchObject({decision:'unknown',confidence:.3});
+  expect(pairWordDecision(p,{...e,text:'sheep is a different sentence',words:[{word:'sheep is a different sentence',conf:.95,start:0,end:1}]})).toMatchObject({decision:'other'});
+ });
+ it('keeps accepted homophones and mixed answers inside the authored slot',()=>{
+  const p=assessmentPlan('landr','lr-start',0,1,true);if(p.mode!=='contrast')throw Error('plan');
+  expect(pairWordDecision(p,evidence('I said write again.','en-US'))).toMatchObject({decision:'target'});
+  expect(pairWordDecision(p,evidence('I said light right again.','en-US'))).toMatchObject({decision:'both'});
+ });
+ it('accepts explicitly authored Japanese carrier orthography without guessing target readings',()=>{
+  const p=assessmentPlan('japanese','ja-h-b-p',0,0,true);if(p.mode!=='contrast')throw Error('plan');
+  expect(pairWordDecision(p,evidence('もう一度、ハ。','ja-JP'))).toMatchObject({decision:'target'});
+  expect(pairWordDecision(p,evidence('もういちど、ぱ。','ja-JP'))).toMatchObject({decision:'opposite'});
+  expect(pairWordDecision(p,evidence('もう一度、ワ。','ja-JP'))).toMatchObject({decision:'other'});
  });
  it('keeps same-sound script drills ungraded and uses pair-specific Japanese cues',()=>{
   expect(assessmentPlan('japanese','ja-script-bridge',0,0).mode).toBe('explore');

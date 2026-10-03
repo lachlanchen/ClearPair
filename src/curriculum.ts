@@ -844,10 +844,12 @@ export const lessons: Lesson[] = [
       "可在鼻旁轻放手指感受振动。",
     ),
     [
-      pair(e("sin", "sɪn"), e("sing", "sɪŋ")),
-      pair(e("thin", "θɪn"), e("thing", "θɪŋ")),
-      pair(e("ban", "bæn"), e("bang", "bæŋ")),
-      pair(e("ran", "ɹæn"), e("rang", "ɹæŋ")),
+      // Keep nasal endings at the carrier's end. A following vowel in "again"
+      // can resyllabify a weak /n/ or /ŋ/, obscuring the beginner's target.
+      pair(e("sin", "sɪn", "I said sin."), e("sing", "sɪŋ", "I said sing.")),
+      pair(e("thin", "θɪn", "I said thin."), e("thing", "θɪŋ", "I said thing.")),
+      pair(e("ban", "bæn", "I said ban."), e("bang", "bæŋ", "I said bang.")),
+      pair(e("ran", "ɹæn", "I said ran."), e("rang", "ɹæŋ", "I said rang.")),
     ],
     { difficulty: 2 },
   ),

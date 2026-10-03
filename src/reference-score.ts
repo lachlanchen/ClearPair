@@ -15,7 +15,11 @@ export interface ReferenceRequest {
 export function referenceScore(request:ReferenceRequest):ScoreResult {
  const {plan}=request;
  const hfTask=plan.calibrationKey.startsWith('handf/');
- const extract=(samples:Float32Array)=>acousticReference(hfTask?hfAnalysisSamples(samples):samples);
+ // Reuse H/F's bounded active-frame gain normalization for the other courses.
+ // Availability, clipping, waveform and saved audio still use ORIGINAL PCM.
+ // Without this, a quiet Korean tense release could be trimmed out while the
+ // same louder take retained it. The H/F extraction path is exactly unchanged.
+ const extract=(samples:Float32Array)=>acousticReference(hfAnalysisSamples(samples));
  let take=extract(request.samples),target=extract(request.target),competitor=extract(request.competitor);
  if(!take)return {status:'unscored',reason:'poor-signal'};
  if(!target||!competitor)return {status:'unscored',reason:'model-unavailable'};
@@ -59,7 +63,10 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
   take=referenceSlice(take,heard.from,heard.to);target=referenceSlice(target,a.from,a.to);competitor=referenceSlice(competitor,b.from,b.to);
  }
  const tone=plan.profile.unit==='tone',timing=plan.profile.id.startsWith('ja-mora')||plan.profile.id==='yue-vowels:v1';
- if(tone&&take.periodic<.35)return {status:'unscored',reason:'poor-signal'};
+ // Low/creaky third tones may not supply a reliable F0 contour. Keep a
+ // tightly fitting WORD-reference comparison when available; compareTone
+ // still refuses insufficient pitch, so this cannot become a tone grade.
+ // The bounded low-periodicity/noise fit gate below remains in force.
  const targetDistance=referenceDistance(take,target,tone,timing),competitorDistance=referenceDistance(take,competitor,tone,timing);
  const separation=referenceDistance(target,competitor,tone,timing);
  if(!Number.isFinite(targetDistance+competitorDistance+separation))return {status:'unscored',reason:'invalid-evidence'};

@@ -32,4 +32,15 @@ describe('relative tone-shape evidence, not absolute register',()=>{
   const a=fixture(x=>6*x-3),b=fixture(x=>3-6*x);
   for(const take of [fixture(()=>null),fixture(x=>x>.2&&x<.8?null:x),fixture(()=>NaN),{...a,periodic:.1}])expect(compareTone(take,a,b)).toBeNull();
  });
+ it('excludes a tiny carrier pitch fragment before an unvoiced target onset',()=>{
+  const target=fixture(x=>x<.075?-6:x<.3?null:2-(x-.3));
+  const other=fixture(x=>x<.075?-3:x<.3?null:-2-(x-.3));
+  const r=compareTone(target,target,other,true)!;
+  expect(r.targetDistance).toBe(0);expect(r.competitorDistance).toBeGreaterThan(3);
+  expect(r.frames).toBe(28);expect(Math.min(...r.heard)).toBeGreaterThan(1);
+ });
+ it('does not select one of two substantial voiced nuclei around a long gap',()=>{
+  const target=fixture(x=>x>.3&&x<.65?null:x*6);
+  expect(compareTone(target,target,fixture(x=>-x*6),true)).toBeNull();
+ });
 });

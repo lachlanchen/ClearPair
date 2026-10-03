@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
-import {selectedRelease} from './release-identity.mjs';
+import {selectedRelease,sourceManifestPaths} from './release-identity.mjs';
 if(process.cwd()!=='/home/lachlan/ProjectsLFS/Pronunciation')throw Error('Wrong source checkout');
 if(execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim())throw Error('Dirty source');
 const sourceCommit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
@@ -27,6 +27,11 @@ for(const name of names){
  if(name.includes('..')||!/^[A-Za-z0-9/_.@-]+$/.test(name)||name.startsWith('.runtime/'))throw Error('Unsafe source path');
  hashes[name]=crypto.createHash('sha256').update(fs.readFileSync(name)).digest('hex');
 }
-fs.writeFileSync(`.runtime/store/source-files${release.build}.txt`,names.join('\n')+'\n',{mode:0o600});
-fs.writeFileSync(`.runtime/store/source-verification${release.build}.json`,JSON.stringify({sourceCommit,version:release.version,build:release.build,files:hashes},null,2)+'\n',{mode:0o600});
-console.log(`Candidate ${release.build}: ${names.length} verified source/assets paths.`);
+const manifests=sourceManifestPaths(release);
+const verification=JSON.stringify({sourceCommit,version:release.version,build:release.build,apps:release.apps,files:hashes},null,2)+'\n';
+for(const [file,text] of [[manifests.files,names.join('\n')+'\n'],[manifests.verification,verification]]){
+ if(fs.existsSync(file)&&fs.readFileSync(file,'utf8')!==text)throw Error('Preserve the existing frozen source; select a new build lane.');
+}
+fs.writeFileSync(manifests.files,names.join('\n')+'\n',{mode:0o600});
+fs.writeFileSync(manifests.verification,verification,{mode:0o600});
+console.log(`Candidate ${release.apps.join(',')} ${release.build}: ${names.length} verified source/assets paths.`);
