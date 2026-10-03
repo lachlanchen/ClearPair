@@ -1,0 +1,29 @@
+{
+  "app": "chinese",
+  "version": "1.0.0",
+  "build": 10,
+  "sourceCommit": "46b948cc8ab1f2b3ac3aec6c3054e59573045cfe",
+  "verifiedAt": "2026-10-03T23:28:57.898Z",
+  "ios": {
+    "sha256": "88d69f4ee414a96189550684fcbb628ede76cf737478e4d82218451e1ad36e47",
+    "processingState": "VALID",
+    "internalBuildState": "IN_BETA_TESTING",
+    "autoNotifyEnabled": true,
+    "existingTesterVerified": true
+  },
+  "android": {
+    "sha256": "bdc0a439c262101b237930e9f01292075a21368da6c3e7478aeecc22240f6ee0",
+    "track": "internal",
+    "state": "Available to internal testers",
+    "existingTesterListVerified": true,
+    "native64BitElfAlignment": 16384
+  },
+  "validation": {
+    "nativeIosSavedPcmBaseline": "310/310",
+    "nativeAndroidSavedPcmBaseline": "308/310",
+    "correctedFeedbackOnRetainedNativeEvidence": "310/310",
+    "freshFocusedNativeFollowupEachPlatform": "30/30",
+    "scope": "Synthetic regressions and packaging evidence, not calibrated human pronunciation accuracy. Feedback re-evaluation is not another decoder execution."
+  },
+  "webDeployed": false
+}

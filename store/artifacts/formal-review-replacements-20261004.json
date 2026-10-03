@@ -2,6 +2,45 @@
   "platform": "IOS",
   "apps": [
     {
+      "app": "chinese",
+      "version": "1.0.0",
+      "build": 10,
+      "sourceCommit": "46b948cc8ab1f2b3ac3aec6c3054e59573045cfe",
+      "sha256": "88d69f4ee414a96189550684fcbb628ede76cf737478e4d82218451e1ad36e47",
+      "state": "WAITING_FOR_REVIEW",
+      "reviewState": "WAITING_FOR_REVIEW",
+      "releaseType": "AFTER_APPROVAL",
+      "previousBuild": 8,
+      "screenshotsPreserved": 6,
+      "verifiedAt": "2026-10-03T23:09:18Z"
+    },
+    {
+      "app": "landr",
+      "version": "1.0.0",
+      "build": 11,
+      "sourceCommit": "46b948cc8ab1f2b3ac3aec6c3054e59573045cfe",
+      "sha256": "8a5f1724917b21418b657d916d589f9db56a956cb74f4458efdcc8fd525591c6",
+      "state": "WAITING_FOR_REVIEW",
+      "reviewState": "WAITING_FOR_REVIEW",
+      "releaseType": "AFTER_APPROVAL",
+      "previousBuild": 8,
+      "screenshotsPreserved": 6,
+      "verifiedAt": "2026-10-03T23:21:53Z"
+    },
+    {
+      "app": "english",
+      "version": "1.0.0",
+      "build": 11,
+      "sourceCommit": "46b948cc8ab1f2b3ac3aec6c3054e59573045cfe",
+      "sha256": "a0e9605c180dfe9908400a35be4028fdb3552195e8cd6d940e0f9542d4a1d419",
+      "state": "WAITING_FOR_REVIEW",
+      "reviewState": "WAITING_FOR_REVIEW",
+      "releaseType": "AFTER_APPROVAL",
+      "previousBuild": 8,
+      "screenshotsPreserved": 6,
+      "verifiedAt": "2026-10-03T23:27:15Z"
+    },
+    {
       "app": "arabic",
       "version": "1.0.0",
       "build": 10,
