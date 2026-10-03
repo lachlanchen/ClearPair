@@ -1,0 +1,29 @@
+{
+  "app": "cantonese",
+  "version": "1.0.0",
+  "build": 11,
+  "sourceCommit": "78fcdf8878ecd4ce482398d5ddec8532e410b8c2",
+  "verifiedAt": "2026-10-03T21:24:53Z",
+  "ios": {
+    "sha256": "5d95b10f9668b51e60e422f6773b94e478c1d92d71077c2ef3b75b37979279d8",
+    "processingState": "VALID",
+    "internalBuildState": "IN_BETA_TESTING",
+    "autoNotifyEnabled": true,
+    "existingTesterVerified": true,
+    "frameworkMinimumOsMetadataVerified": true
+  },
+  "android": {
+    "sha256": "b7a0f00376bb65fd3267ee1a0f06dda8e5e5f7650425c6a80dfd15707c726328",
+    "track": "internal",
+    "state": "Available to internal testers",
+    "existingTesterListVerified": true,
+    "native64BitElfAlignment": 16384
+  },
+  "validation": {
+    "nativeIosSavedPcm": "70/70 before metadata-only packaging correction; scoring core unchanged",
+    "nativeAndroidSavedPcm": "70/70; Cantonese model and decoder behavior unchanged",
+    "scope": "Synthetic regression and packaging evidence, not calibrated human pronunciation accuracy"
+  },
+  "formalReviewAtDistribution": "Older build 8 preserved; later replacement has its own receipt",
+  "webDeployed": false
+}

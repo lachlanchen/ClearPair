@@ -1,0 +1,37 @@
+{
+  "platform": "IOS",
+  "apps": [
+    {
+      "app": "cantonese",
+      "version": "1.0.0",
+      "build": 11,
+      "sourceCommit": "78fcdf8878ecd4ce482398d5ddec8532e410b8c2",
+      "sha256": "5d95b10f9668b51e60e422f6773b94e478c1d92d71077c2ef3b75b37979279d8",
+      "state": "WAITING_FOR_REVIEW",
+      "reviewState": "WAITING_FOR_REVIEW",
+      "releaseType": "AFTER_APPROVAL",
+      "previousBuild": 8,
+      "screenshotsPreserved": 6,
+      "verifiedAt": "2026-10-03T21:37:04Z"
+    },
+    {
+      "app": "japanese",
+      "version": "1.0.0",
+      "build": 10,
+      "sourceCommit": "7ba37cc2d574f4a06c971810a8faa9b812b585d5",
+      "sha256": "e7dd56d326c985f69351b3b639f7873d58c93d4728b32cff0948a8af0ca5c45b",
+      "state": "WAITING_FOR_REVIEW",
+      "reviewState": "WAITING_FOR_REVIEW",
+      "releaseType": "AFTER_APPROVAL",
+      "previousBuild": 8,
+      "screenshotsPreserved": 6,
+      "verifiedAt": "2026-10-03T21:37:46Z"
+    }
+  ],
+  "authorization": "Owner requested latest fixes for formal review and authorized replacing pending reviews",
+  "pricingChanged": false,
+  "privacyDeclarationsChanged": false,
+  "countriesChanged": false,
+  "googleProductionSubmitted": false,
+  "approvalClaimed": false
+}
