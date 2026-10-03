@@ -1,0 +1,27 @@
+{
+  "app": "korean",
+  "version": "1.0.0",
+  "build": 10,
+  "sourceCommit": "c44a5f8140e5340063fa3b98dded9c6ee32d6f1d",
+  "verifiedAt": "2026-10-03T21:58:58Z",
+  "ios": {
+    "sha256": "40fa2793ed7593d376d4a2455a142790a0ce1243ba294c1369a08c716f8e947a",
+    "processingState": "VALID",
+    "internalBuildState": "IN_BETA_TESTING",
+    "autoNotifyEnabled": true,
+    "existingTesterVerified": true
+  },
+  "android": {
+    "sha256": "dd2e069cdb2f0010292c08d5ff1784e3d55b5ac089f7079526f4cfe1a7f6005a",
+    "track": "internal",
+    "state": "Available to internal testers",
+    "existingTesterListVerified": true,
+    "native64BitElfAlignment": 16384
+  },
+  "validation": {
+    "nativeIosSavedPcm": "134/134",
+    "nativeAndroidSavedPcm": "134/134",
+    "scope": "Synthetic regression and packaging evidence, not calibrated human pronunciation accuracy"
+  },
+  "webDeployed": false
+}

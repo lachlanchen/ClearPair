@@ -5,9 +5,22 @@ one at a time. Reuse dependable capture, cancellation, History, playback,
 evidence provenance and compact layout. Do not copy an H/F classifier or an
 English word dictionary onto another language's contrasts.
 
-The current focused candidate is H & F build 15. The other seven apps' release
-identities and provider reviews are unchanged. No shared migration is claimed
-complete by this document.
+H & F build 15 is owner-approved and remains unchanged. The seven other courses
+now have independent unrestricted on-device word recognition plus language-
+specific contrast handling. Exact test distributions and formal review states
+are recorded in `store/artifacts/`; a test upload is not a production approval.
+Mandarin's current candidate additionally preserves cautious word-reference
+feedback when final n/ng recognition collapses to one spelling without enough
+focused evidence to call the ending measured. Actual transcripts stay visible.
+
+The next curriculum milestone, requested 2026-10-04, expands sound/letter
+inventories and useful contrasts, including Mandarin and Cantonese tone
+categories and tone sequences. Research uses primary teaching references and
+privately retained tutorial captions. It is queued after the current scoring
+release, not inserted into already frozen binaries. Script inventories,
+phoneme inventories and contextual realizations must be tracked separately;
+accepted dialect mergers stay ungraded. No trained/calibrated model accuracy
+claim follows merely from collecting tutorials or synthetic regressions.
 
 | Order | App | Contrast-specific requirements |
 | --- | --- | --- |

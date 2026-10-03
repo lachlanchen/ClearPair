@@ -1,0 +1,28 @@
+{
+  "app": "arabic",
+  "version": "1.0.0",
+  "build": 10,
+  "sourceCommit": "e1e431bed1c0de6092f4d7d175113b63aa638c93",
+  "verifiedAt": "2026-10-03T22:28:05Z",
+  "ios": {
+    "sha256": "9591d72bbc68c0f54e7c980752b4167190a55ca10d37cd4f6bbc3c67fc3255b0",
+    "processingState": "VALID",
+    "internalBuildState": "IN_BETA_TESTING",
+    "autoNotifyEnabled": true,
+    "existingTesterVerified": true,
+    "transportRecovery": "Completed one missing part within the original upload; no duplicate build upload"
+  },
+  "android": {
+    "sha256": "7eb54c6ce05afa72ae62437804209283cc7a4f88c65a1a817addfd9d07c10599",
+    "track": "internal",
+    "state": "Available to internal testers",
+    "existingTesterListVerified": true,
+    "native64BitElfAlignment": 16384
+  },
+  "validation": {
+    "nativeIosSavedPcm": "130/130",
+    "nativeAndroidSavedPcm": "130/130, including cold model preparation",
+    "scope": "Synthetic regression and packaging evidence, not calibrated human pronunciation accuracy"
+  },
+  "webDeployed": false
+}

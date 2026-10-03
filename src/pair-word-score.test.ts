@@ -97,6 +97,43 @@ describe('every authored pair: offline content feedback, separate sound provenan
   expect(pairWordDecision(p,evidence(p.spokenPrompt,'zh-CN'))).toMatchObject({decision:'target'});
   expect(pairWordDecision(p,evidence(pronunciationText(p.competitor,'zh-CN',true),'zh-CN'))).toMatchObject({decision:'opposite'});
  });
+ it('retains capped Mandarin nasal reference disagreement without inventing a final-sound measurement',()=>{
+  for(const side of [0,1] as const){
+   const p=assessmentPlan('chinese','in-ing',1,side,true);if(p.mode!=='contrast')throw Error('plan');
+   const a:Extract<ScoreResult,{status:'matched'}>={status:'matched',score:side?45:90,contrast:p.calibrationKey,model:'local-reference-dtw:v1',unit:'phone',
+    targetDistance:side?.055:0,competitorDistance:side?0:.055,referenceVoice:'fixture',scope:'sentence',closestWord:'林',
+    breakdown:{wordMatch:100,pairDistinction:side?19:81,speechMs:330,referenceMs:330}};
+   const e={...evidence('这个字是零。','zh-CN',.85),engine:'pair-vosk-native:v1/zh-CN'};
+   const r=pairHybridScore(p,e,a,quality);
+   expect(r).toMatchObject({status:'matched',score:side?31:49,evidence:'word',recognition:{text:e.text},pairFeedback:{conflict:true,soundMeasured:false}});
+   expect(r).not.toHaveProperty('focus');expect(r).not.toHaveProperty('tone');
+   if(r.status==='matched'){expect(r.breakdown?.pairDistinction).toBe(0);expect(r.score).toBeLessThanOrEqual(59);}
+   // A rounded 80/20 reference index can sit just below the stronger named
+   // closest-word threshold. It remains provisional, not a measured n/ng.
+   const boundary={...a,closestWord:undefined,targetDistance:side?.05195:0,competitorDistance:side?0:.05195,
+    breakdown:{...a.breakdown!,pairDistinction:side?20:80}};
+   expect(pairHybridScore(p,e,boundary,quality)).toMatchObject({score:side?32:48,pairFeedback:{conflict:true,soundMeasured:false}});
+   const identical={...a,targetDistance:0,competitorDistance:0};
+   expect(pairHybridScore(p,e,identical,quality)).toMatchObject({status:'matched',score:side?85:0,pairFeedback:{conflict:false,soundMeasured:false}});
+   const loose={...a,targetDistance:.4,competitorDistance:.5};
+   expect(pairHybridScore(p,e,loose,quality)).toMatchObject({status:'matched',score:side?85:0,pairFeedback:{conflict:false}});
+   expect(pairHybridScore(p,{...e,text:'香蕉',words:[{word:'香蕉',conf:.95,start:0,end:.3}]},a,quality))
+    .toMatchObject({recognition:{text:'香蕉',decision:'unknown'},pairFeedback:{kind:'unconfirmed',soundMeasured:false}});
+  }
+ });
+ it('retains provisional English ending disagreement when mouth is recognized as mouse, without fabricating TH evidence',()=>{
+  for(const side of [0,1] as const){
+   const p=assessmentPlan('english','th-s',4,side);if(p.mode!=='contrast')throw Error('plan');
+   const a:Extract<ScoreResult,{status:'matched'}>={status:'matched',score:side?43:98,contrast:p.calibrationKey,model:'local-reference-dtw:v1',unit:'phone',
+    targetDistance:side?.1301:0,competitorDistance:side?0:.1301,referenceVoice:'fixture',scope:'word',closestWord:'mouth',
+    breakdown:{wordMatch:100,pairDistinction:side?3:97,speechMs:480,referenceMs:480}};
+   const r=pairHybridScore(p,evidence('mouse','en-US',1),a,quality);
+   expect(r).toMatchObject({status:'matched',score:side?22:58,evidence:'word',recognition:{text:'mouse',decision:side?'target':'opposite'},pairFeedback:{conflict:true,soundMeasured:false}});
+   expect(r).not.toHaveProperty('focus');
+   if(r.status==='matched')expect(r.breakdown?.pairDistinction).toBe(0);
+   expect(pairHybridScore(p,evidence('house','en-US',1),a,quality)).toMatchObject({recognition:{text:'house',decision:'unknown'},pairFeedback:{kind:'unconfirmed',soundMeasured:false}});
+  }
+ });
  it('uses actual answer confidence rather than the weakest shared carrier segment',()=>{
   const p=assessmentPlan('english','v-i',0,0,true);if(p.mode!=='contrast')throw Error('plan');
   const e:HfWordEvidence={engine:'pair-vosk-native:v1/en-US',text:'i said sheep again',final:true,

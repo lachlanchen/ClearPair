@@ -148,8 +148,19 @@ export function pairHybridScore(plan:Plan,e:HfWordEvidence|undefined,acoustic:Sc
  const soundMeasured=measured&&(!disagrees||strongContrast);
  const sound=soundMeasured?base!.breakdown?.pairDistinction:undefined;
  const word=decision==='target'?100:decision==='opposite'||decision==='other'?0:base?.breakdown?.wordMatch??0;
+ // Mandarin n/ng and quiet English final fricatives can collapse to one ASR
+ // spelling while the reference mask is too weak to call a measured ending. Preserve a
+ // tightly fitting, separated WORD-reference disagreement as provisional
+ // feedback, never as a measured n/ng or TH sound. Both directions use the same
+ // gate; an unrelated transcript, identical references, poor signal or a loose
+ // fit cannot enter this path. No spelling is replaced or accepted as truth.
+ const referenceDisagrees=!measured&&['cmn-final:v1','en-fricative:v1'].includes(plan.profile.id)&&focusRegion(plan)==='final'&&!!base&&
+  (decision==='target'&&base.competitorDistance<base.targetDistance||decision==='opposite'&&base.targetDistance<base.competitorDistance)&&
+  Math.min(base.targetDistance,base.competitorDistance)<.25&&
+  Math.abs(base.targetDistance-base.competitorDistance)>=.04&&
+  ((base.breakdown?.pairDistinction??50)>=80||(base.breakdown?.pairDistinction??50)<=20);
  const needsAcoustics=plan.profile.unit==='tone'||plan.profile.id.startsWith('ja-mora')||plan.profile.id==='yue-vowels:v1';
- const score=disagrees&&strongContrast?Math.min(79,Math.round(.2*word+.8*(sound??0))):decision==='target'?Math.min(provisional?79:sound===undefined?(needsAcoustics?60:85):100,
+ const score=referenceDisagrees?Math.min(59,Math.round(.2*word+.6*(base!.breakdown?.pairDistinction??0))):disagrees&&strongContrast?Math.min(79,Math.round(.2*word+.8*(sound??0))):decision==='target'?Math.min(provisional?79:sound===undefined?(needsAcoustics?60:85):100,
   Math.round(sound===undefined?85:needsAcoustics?0.15*word+0.85*sound:0.65*word+0.35*sound)):
   decision==='opposite'?Math.min(35,Math.round((sound??0)*.25)):
   decision==='other'?Math.min(25,Math.round((sound??0)*.2)):
@@ -161,7 +172,7 @@ export function pairHybridScore(plan:Plan,e:HfWordEvidence|undefined,acoustic:Sc
   targetDistance:base?.targetDistance??0,competitorDistance:base?.competitorDistance??0,referenceVoice:base?.referenceVoice??'none:word-identification-only',
   scope:plan.calibrationKey.includes('/sentence/')?'sentence':'word',evidence:soundMeasured?'sound':'word',
   recognition:{engine:e.engine,text:e.text.slice(0,500),decision,confidence:decoded.confidence,...(provisional?{provisional:true}:{})},
-  pairFeedback:feedbackFor(plan,e.text.slice(0,500),decision,soundMeasured,conflict||disagrees),
+  pairFeedback:feedbackFor(plan,e.text.slice(0,500),decision,soundMeasured,conflict||disagrees||referenceDisagrees),
   ...(base?.focus&&soundMeasured?{focus:base.focus}:{}),
   ...(base?.tone&&soundMeasured?{tone:base.tone}:{}),
   ...(decision==='target'?{closestWord:plan.target.text}:decision==='opposite'?{closestWord:plan.competitor.text}:{}),

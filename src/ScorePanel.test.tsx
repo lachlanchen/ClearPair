@@ -38,6 +38,20 @@ describe('local scoring take lifecycle',()=>{
   expect(screen.getByText('Word match').closest('.local-grade')).not.toBeNull();
   expect(screen.getByText(/Provisional word recognition/)).toBeDefined();expect(screen.queryByText('Practice match')).toBeNull();
  });
+ it('labels conflicting unmeasured Mandarin evidence as practice match, preserving the actual transcript',async()=>{
+  mocks.assess.mockResolvedValue({status:'matched',score:48,model:'local-pair-hybrid:v1',contrast:'chinese/test',unit:'phone',
+   targetDistance:0,competitorDistance:.05195,referenceVoice:'fixture',scope:'sentence',evidence:'word',
+   recognition:{engine:'pair-vosk-native:v1/zh-CN',text:'这个字是零',decision:'opposite',confidence:.85},
+   breakdown:{wordMatch:0,pairDistinction:0,speechMs:300,referenceMs:300},
+   pairFeedback:{version:'pair-feedback:v1',expected:'林',heard:'这个字是零',kind:'opposite',region:'final',targetSound:'lin',partnerSound:'liŋ',
+    cue:{en:'Compare the ending.',zh:'比较韵尾。'},soundMeasured:false,conflict:true}});
+  render(<ScorePanel take={{...take(),app:'chinese',word:'林',language:'zh-CN'}} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);await act(async()=>{});
+  expect(screen.getByText('Practice match').closest('.local-grade')).not.toBeNull();
+  expect(screen.getByText(/Beta practice match. Similarity/)).toBeDefined();
+  expect(screen.getByText(/Recognized words/).textContent).toContain('这个字是零');
+  expect(screen.getByText('Word match').closest('dl')).not.toBeNull();
+  expect(screen.queryByText(/This is a word-match score/)).toBeNull();
+ });
  it('shows the measured unclear H/F score and useful items instead of a dead-end uncertainty message',async()=>{
   const result:ScoreResult={status:'matched',score:56,model:'local-reference-dtw:v2',contrast:'handf/hf-en/0/0/word/en-h-f:v1',unit:'phone',targetDistance:.5,competitorDistance:.51,referenceVoice:'fixture',scope:'word',
    hf:{version:'hf-segment-fft:v1',target:'h',heard:'uncertain',position:'initial',sound:51,word:78,timing:64,segmentMs:70,targetDistance:.5,competitorDistance:.51,margin:.01,cue:'uncertain'},

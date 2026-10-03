@@ -2,6 +2,45 @@
   "platform": "IOS",
   "apps": [
     {
+      "app": "arabic",
+      "version": "1.0.0",
+      "build": 10,
+      "sourceCommit": "e1e431bed1c0de6092f4d7d175113b63aa638c93",
+      "sha256": "9591d72bbc68c0f54e7c980752b4167190a55ca10d37cd4f6bbc3c67fc3255b0",
+      "state": "WAITING_FOR_REVIEW",
+      "reviewState": "WAITING_FOR_REVIEW",
+      "releaseType": "AFTER_APPROVAL",
+      "previousBuild": 8,
+      "screenshotsPreserved": 6,
+      "verifiedAt": "2026-10-03T22:30:25Z"
+    },
+    {
+      "app": "korean",
+      "version": "1.0.0",
+      "build": 10,
+      "sourceCommit": "c44a5f8140e5340063fa3b98dded9c6ee32d6f1d",
+      "sha256": "40fa2793ed7593d376d4a2455a142790a0ce1243ba294c1369a08c716f8e947a",
+      "state": "WAITING_FOR_REVIEW",
+      "reviewState": "WAITING_FOR_REVIEW",
+      "releaseType": "AFTER_APPROVAL",
+      "previousBuild": 8,
+      "screenshotsPreserved": 6,
+      "verifiedAt": "2026-10-03T22:04:52Z"
+    },
+    {
+      "app": "handf",
+      "version": "1.0.0",
+      "build": 15,
+      "sourceCommit": "07d45441e001674da69536e8904545fff798e224",
+      "sha256": "2f6ed7f452b621b4a67ffe203306cea6f15ca030b09b99e18d8dc82341fe62fb",
+      "state": "WAITING_FOR_REVIEW",
+      "reviewState": "WAITING_FOR_REVIEW",
+      "releaseType": "AFTER_APPROVAL",
+      "previousBuild": 8,
+      "screenshotsPreserved": 6,
+      "verifiedAt": "2026-10-03T21:51:00Z"
+    },
+    {
       "app": "cantonese",
       "version": "1.0.0",
       "build": 11,
