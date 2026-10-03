@@ -898,7 +898,7 @@ export function App() {
                   }
                   live={recording === "recording"}
                 />
-                <div className="record-controls">
+                <div className={`record-controls${product.id==='handf'?' record-controls-compact':''}`}>
                   <button
                     className={`record ${recording === "recording" ? "recording" : ""}`}
                     disabled={
@@ -923,7 +923,7 @@ export function App() {
                             : tr("Record your voice", "录下你的声音")}
                     </span>
                   </button>
-                  <span className="timer" aria-hidden={recording!=='recording'}>{recording==='recording'?`${seconds.toFixed(1)}s`:''}</span>
+                  {product.id!=='handf'&&<span className="timer" aria-hidden={recording!=='recording'}>{recording==='recording'?`${seconds.toFixed(1)}s`:''}</span>}
                 </div>
                 <ScorePanel take={take} busy={busy} automatic={automaticScoring} tr={tr} onSaved={setTake}
                   onStorageWarning={()=>setStorageWarning(true)}/>

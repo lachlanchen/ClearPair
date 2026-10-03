@@ -77,6 +77,20 @@ describe('consonant-focused H & F scoring',()=>{
    pitch:energy.map((_,i)=>i===0||i>=8?0:null),seconds:energy.length*.01,periodic:.5};
   expect(fricativeSegment(a,false)?.to).toBeGreaterThanOrEqual(7);
  });
+ it('recovers discarded strong unvoiced friction without selecting a future vowel too early',()=>{
+  const friction=.4;
+  const energy=[...Array(6).fill(friction),...Array(20).fill(.1)];
+  const a:AcousticReference={energy,frames:energy.map(()=>Array(12).fill(0)),spectra:energy.map(()=>Array(32).fill(0)),
+   pitch:energy.map((_,i)=>i>=6?0:null),seconds:.26,periodic:20/26};
+  // A future vowel is not evidence that preceding high-energy F is voiced.
+  expect(fricativeSegment(a,false)).toMatchObject({from:0,to:6});
+ });
+ it('does not locate a vowel in friction with no periodic evidence',()=>{
+  const energy=Array(30).fill(.1);
+  const a:AcousticReference={energy,frames:energy.map(()=>Array(12).fill(0)),spectra:energy.map(()=>Array(32).fill(0)),
+   pitch:energy.map(()=>null),seconds:.3,periodic:0};
+  expect(fricativeSegment(a,false)).toBeNull();
+ });
  it('keeps a bounded carrier search from selecting an earlier repeated word',()=>{
   const a=acousticReference(word('h'))!,n=a.frames.length;
   const take:AcousticReference={frames:[...a.frames,...a.frames],spectra:[...a.spectra,...a.spectra],energy:[...a.energy,...a.energy],

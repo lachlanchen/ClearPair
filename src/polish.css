@@ -96,6 +96,10 @@ body{background:#f8f9fc}
 .work-panel .word-card{min-height:138px}.work-panel .pair-navigation{margin:12px 0}
 .work-panel .waveform{height:42px;margin:8px 0}.record-controls{min-height:58px}
 .timer{width:38px;min-width:38px;font-size:10px;text-align:end}
+.record-controls-compact{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;gap:0}
+.record-controls-compact .record{width:100%;max-width:350px;min-height:58px}
+.hf-score-items dd .score-evidence{display:block;font-size:10px;line-height:1.35;margin-top:3px;font-weight:500;color:#616d85}
+.hf-score-items .score-empty{display:inline-block;max-width:100%;font-size:12px;line-height:1.35;overflow-wrap:anywhere}
 .local-score-panel{margin-top:10px;padding-top:10px}.local-score-result{min-height:56px;padding:6px 0}
 .local-score-actions:empty{display:none}.score-target{display:block;font-size:10px;margin-bottom:5px}
 .result-area{min-height:72px;margin-top:8px;padding-top:4px}.record-signal-status{font-size:10px;color:#687987;line-height:1.5;margin:5px 0}

@@ -109,11 +109,14 @@ export function hfHybridScore(plan:Plan,e:HfWordEvidence|undefined,acoustic:Scor
  if(decision==='other'&&(!base||confidence<.85||Math.min(base.targetDistance,base.competitorDistance)<1.35||
    (base.hf?.word??base.breakdown?.wordMatch??100)>50))decision='unknown';
  if(decision==='unknown'&&!base)return {status:'unscored',reason:'uncertain'};
- const recognition={engine:e.engine,text:e.text.slice(0,500),decision,confidence,
-  ...(wordMatch!==undefined&&wordMatch<100?{partialWord:true}:{}),...(provisional?{provisional:true}:{})};
  const labels=plan.calibrationKey.includes('/hf-final/')?['f','v'] as const:['h','f'] as const;
  const side=plan.calibrationKey.split('/')[3]==='1'?1:0;
  const lexicalSide=decision==='target'?side:decision==='opposite'?1-side:undefined;
+ // This phoneme is supported by WORD identity, not independently measured
+ // acoustics. Keep that provenance explicit for live results and History.
+ const recognition={engine:e.engine,text:e.text.slice(0,500),decision,confidence,
+  ...(lexicalSide!==undefined?{wordSound:lexicalSide===0?'h' as const:'f' as const}:{}),
+  ...(wordMatch!==undefined&&wordMatch<100?{partialWord:true}:{}),...(provisional?{provisional:true}:{})};
  const inconsistentSound=lexicalSide!==undefined&&!!base?.hf&&
   (native&&base.hf.heard!==labels[lexicalSide]||finalNativeWords(plan,e)&&base.hf.heard==='uncertain');
  // L & N lets final word identity lead. A disagreeing synthetic boundary is

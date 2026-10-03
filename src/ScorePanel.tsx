@@ -64,21 +64,28 @@ export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarnin
         </p>
       </div>:<p>{result?.status==='unscored'?result.diagnostics&&['clear','quiet'].includes(result.diagnostics.signal)&&['uncertain','unaligned','sound-unresolved'].includes(result.reason)?tr('Speech was captured, but word recognition could not confirm H/F. Try the sentence option; your recording is saved.','已录到语音，但词语识别未能确认 H/F。可尝试短句模式，录音仍保留。'):scoreMessage(result.reason,tr):automatic?tr('Record, speak, then pause for your score.','点录音，说出词语，停顿后查看评分。'):tr('Record first, then assess the confusing sound.','先录音，再评估容易混淆的音。')}</p>}
       {!running&&result?.status==='matched'&&(result.recognition?.text||result.closestWord)&&<p className="closest-word">{result.recognition?.text?tr('Recognized words','识别的词语'):tr('Closer to','更接近')}: <bdi>{result.recognition?.text??result.closestWord}</bdi></p>}
-      {!running&&result?.status==='matched'&&result.hf&&<dl className="hf-score-items">
+      {!running&&take?.app==='handf'&&result?.status==='matched'&&(result.hf||result.breakdown)&&<HfScoreItems result={result} language={take.language} tr={tr}/>}
+      {!running&&take?.app!=='handf'&&result?.status==='matched'&&result.hf&&<dl className="hf-score-items">
         <div><dt>{tr('Target sound','目标音')}</dt><dd>{result.hf.sound}<small>/100</small></dd></div>
         <div><dt>{result.recognition?tr('Word match','词语匹配'):tr('Vowel and word','元音与词语')}</dt><dd>{result.hf.word}<small>/100</small></dd></div>
         <div><dt>{result.recognition?tr('Speech duration','有效发声时长'):tr('Sound timing','发音时长')}</dt><dd>{result.recognition?result.breakdown?.speechMs:result.hf.timing}<small>{result.recognition?'ms':'/100'}</small></dd></div>
       </dl>}
-      {!running&&result?.status==='matched'&&!result.hf&&result.breakdown&&<dl className="hf-score-items">
+      {!running&&take?.app!=='handf'&&result?.status==='matched'&&!result.hf&&result.breakdown&&<dl className="hf-score-items">
         <div><dt>{tr('Word match','词语匹配')}</dt><dd>{result.breakdown.wordMatch}<small>/100</small></dd></div>
-        <div><dt>{result.recognition||take?.app==='handf'?tr('Target sound','目标音'):contrastLabel(result.focus?.region,tr)}</dt><dd>{(result.recognition||take?.app==='handf')&&result.evidence==='word'?tr('Not measured','未测量'):<>{result.breakdown.pairDistinction}<small>/100</small></>}</dd></div>
+        <div><dt>{result.recognition?tr('Target sound','目标音'):contrastLabel(result.focus?.region,tr)}</dt><dd>{result.recognition&&result.evidence==='word'?tr('Not measured','未测量'):<>{result.breakdown.pairDistinction}<small>/100</small></>}</dd></div>
         <div><dt>{tr('Speech duration','有效发声时长')}</dt><dd>{result.breakdown.speechMs}<small>ms</small></dd></div>
       </dl>}
       {!running&&result?.status==='matched'&&result.hf&&<p className="hf-coaching">{result.hf.cue==='uncertain'?tr('Both sounds are close in this recording. The score shows the measured difference; try clearer breath for H or lip friction for F.','这段录音的两个音较接近。分数反映测量到的区别；H 可加强轻柔呼气，F 可加强唇齿摩擦。'):hfCue(result.hf.cue,tr)}</p>}
       {!running&&take?.app==='handf'&&result?.status==='matched'&&!result.hf&&!result.recognition&&<p className="hf-coaching">{tr('The word shape was compared, but the consonant boundary was unclear. This score is provisional, not a confirmed H/F sound grade.','已比较词语的声音特征，但辅音边界不清晰。这是暂定匹配分，不是已确认的 H/F 发音分。')}</p>}
-      {!running&&result?.status==='matched'&&!result.hf&&result.recognition&&result.recognition.decision!=='target'&&<p className="hf-coaching">{hfCue(result.recognition.decision==='omitted'?'missing':result.recognition.decision==='other'?'different-word':'uncertain',tr)}</p>}
+      {!running&&result?.status==='matched'&&!result.hf&&result.recognition&&result.recognition.decision!=='target'&&<p className="hf-coaching">{hfCue(result.recognition.decision==='omitted'?'missing':result.recognition.decision==='other'?'different-word':result.recognition.decision==='opposite'&&result.recognition.wordSound?result.recognition.wordSound==='h'?'lip-friction':take?.language==='zh-CN'?'back-friction':'gentle-breath':'uncertain',tr)}</p>}
       {!running&&result?.status==='matched'&&result.recognition?.partialWord&&<p className="hf-coaching">{tr('A nearby word supports the initial sound, but the complete word was not confirmed. Compare the vowel and ending too.','识别到的近似词支持词首音，但完整词语未确认。请同时比较元音和词尾。')}</p>}
-      {!running&&result?.status==='unscored'&&result.diagnostics&&<dl className="hf-score-items">
+      {!running&&take?.app==='handf'&&result?.status==='unscored'&&result.diagnostics?.wordText&&<p className="closest-word">{tr('Recognized words','识别的词语')}: <bdi>{result.diagnostics.wordText}</bdi></p>}
+      {!running&&take?.app==='handf'&&result?.status==='unscored'&&result.diagnostics&&<dl className="hf-score-items">
+        <div><dt>{tr('Word match','词语匹配')}</dt><dd><span className="score-empty">{tr('Not measured','未测量')}</span></dd></div>
+        <div><dt>{tr('Target sound','目标音')}</dt><dd><span className="score-empty">{tr('Not measured','未测量')}</span></dd></div>
+        <div><dt>{tr('Speech duration','有效发声时长')}</dt><dd>{result.diagnostics.speechMs}<small>ms</small></dd></div>
+      </dl>}
+      {!running&&take?.app!=='handf'&&result?.status==='unscored'&&result.diagnostics&&<dl className="hf-score-items">
         <div><dt>{tr('Speech duration','有效发声时长')}</dt><dd>{result.diagnostics.speechMs}<small>ms</small></dd></div>
         <div><dt>{tr('Recognized words','识别的词语')}</dt><dd>{result.diagnostics.wordText||tr('Not measured','未测量')}</dd></div>
         <div><dt>{tr('Target sound','目标音')}</dt><dd>{tr('Not measured','未测量')}</dd></div>
@@ -87,6 +94,7 @@ export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarnin
         <summary>{tr('Score details','评分详情')}</summary>
         <p>{result.status==='matched'?result.recognition?result.evidence==='word'?tr('The word was identified offline; its consonant could not be measured reliably. This is a word-match score, not a pronunciation accuracy percentage.','离线识别到了词语，但无法可靠测量辅音。这是词语匹配分，不是发音正确率。'):tr('Offline word recognition plus sound comparison. This practice index is not a pronunciation accuracy percentage.','离线词语识别结合声音比较：练习分数不是发音正确率。'):tr('Beta practice match. Similarity to the device voice, not a pronunciation accuracy percentage.','测试版练习匹配分：与设备示范声音的相似度，不是发音正确率。'):result.status==='scored'?tr('Estimated target-contrast score, not a diagnosis.','目标音对比的估计分数，不是诊断。'):scoreMessage(result.reason,tr)}</p>
         {result.status==='matched'&&result.recognition?.provisional&&<p>{tr('Provisional word recognition: Apple returned useful words but did not finalize the transcript.','暂定词语识别：Apple 返回了有效词语，但未完成最终转写。')}</p>}
+        {take?.app==='handf'&&result.status==='matched'&&result.hf&&<p>{tr('Sound timing','发音时长')}: {result.hf.timing}/100 · {result.hf.segmentMs}ms</p>}
         {result.status!=='scored'&&result.diagnostics&&<small className="score-diagnostics">{result.diagnostics.wordEngine??'offline-words-unavailable'} · {result.diagnostics.acousticState} · {result.diagnostics.wordState}</small>}
         <small>{tr('On this device. No audio uploads.','在此设备运行，不上传录音。')}</small>
       </details>}
@@ -95,6 +103,15 @@ export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarnin
       onClick={()=>running?cancel():void assess()}>{running?<Square size={16}/>:<Sparkles size={16}/>}
       {running?tr('Stop','停止'):automatic?tr('Retry scoring','重新评分'):tr('Assess my pronunciation','评估我的发音')}</button>}</div>
   </section>;
+}
+function HfScoreItems({result,language,tr}:{result:Extract<ScoreResult,{status:'matched'}>;language:string;tr:(en:string,zh:string)=>string}){
+  const wordSound=result.recognition?.wordSound;
+  const phoneme=wordSound==='h'&&language==='zh-CN'?'x':wordSound;
+  return <dl className="hf-score-items">
+    <div><dt>{tr('Word match','词语匹配')}</dt><dd>{result.breakdown?.wordMatch??result.hf?.word}<small>/100</small></dd></div>
+    <div><dt>{tr('Target sound','目标音')}</dt><dd>{result.hf?<>{result.hf.sound}<small>/100</small></>:phoneme?<><bdi>/{phoneme}/</bdi><small className="score-evidence">{tr('Word evidence','词语证据')}</small></>:<span className="score-empty">{tr('Not measured','未测量')}</span>}</dd></div>
+    <div><dt>{tr('Speech duration','有效发声时长')}</dt><dd>{result.breakdown?.speechMs??result.diagnostics?.speechMs??tr('Not measured','未测量')}{(result.breakdown||result.diagnostics)&&<small>ms</small>}</dd></div>
+  </dl>;
 }
 function contrastLabel(region:import('./pair-focus').FocusRegion|undefined,tr:(en:string,zh:string)=>string){
   if(region==='initial')return tr('Initial contrast','词首音区别');

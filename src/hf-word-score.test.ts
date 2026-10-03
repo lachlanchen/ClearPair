@@ -38,7 +38,14 @@ describe('H & F word/content and sound evidence stay separate',()=>{
   const e={...evidence('hat',.9),engine:'hf-vosk-native:v1/en-US',final:true};
   const wordOnly={...acoustic,score:59,hf:undefined,evidence:'word' as const,breakdown:{wordMatch:100,pairDistinction:99,speechMs:300,referenceMs:300}};
   const r=hfHybridScore(plan(),e,wordOnly,quality);
-  expect(r).toMatchObject({status:'matched',score:85,evidence:'word',breakdown:{pairDistinction:0},recognition:{decision:'target'}});
+  expect(r).toMatchObject({status:'matched',score:85,evidence:'word',breakdown:{pairDistinction:0},recognition:{decision:'target',wordSound:'h'}});
+ });
+ it.each([0,1] as const)('keeps the actual recognized word sound independent of selected side %s',side=>{
+  for(const text of ['hat','fat']){
+   const e={...evidence(text,0),engine:'apple-on-device-words:v1/en-US',final:true};
+   const r=hfHybridScore(plan('hf-en',side),e,{status:'unscored',reason:'sound-unresolved'},quality);
+   expect(r).toMatchObject({status:'matched',recognition:{wordSound:text==='hat'?'h':'f'}});
+  }
  });
  it('does not discard a final bundled-native word on a high acoustic result',()=>{
   const e={...evidence('hat',.9),engine:'hf-vosk-native:v1/en-US',final:true};

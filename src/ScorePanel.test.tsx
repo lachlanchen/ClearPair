@@ -36,7 +36,9 @@ describe('local scoring take lifecycle',()=>{
   mocks.assess.mockResolvedValue(result);
   render(<ScorePanel take={{...take(),app:'handf',word:'hat'}} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);await act(async()=>{});
   expect(document.querySelector('.local-grade strong')?.textContent).toContain('56');
-  for(const value of ['51','78','64'])expect(screen.getByText(value)).toBeDefined();
+  for(const value of ['51','78','340'])expect(screen.getByText(value)).toBeDefined();
+  expect([...document.querySelectorAll('.hf-score-items dt')].map(e=>e.textContent)).toEqual(['Word match','Target sound','Speech duration']);
+  expect(screen.getByText(/64\/100/).closest('details')).not.toBeNull();
   expect(screen.getByText(/Both sounds are close/)).toBeDefined();
   expect(screen.queryByText('The sound is uncertain. Compare the pair and record again.')).toBeNull();
  });
@@ -47,6 +49,25 @@ describe('local scoring take lifecycle',()=>{
   mocks.assess.mockResolvedValue(match);
   render(<ScorePanel take={{...take(),app:'handf',word:'hat'}} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);await act(async()=>{});
   expect(screen.getByText('Not measured')).toBeDefined();expect(screen.getByText(/consonant could not be measured reliably/)).toBeDefined();
+ });
+ it.each(['h','f'] as const)('labels /%s/ as word evidence, not fabricated acoustic points, in the same card order',async(wordSound)=>{
+  const match:ScoreResult={status:'matched',score:85,model:'local-hf-native:v1',contrast:'handf/test',unit:'phone',
+   targetDistance:0,competitorDistance:0,referenceVoice:'none',scope:'word',evidence:'word',
+   recognition:{engine:'fixture',text:wordSound==='h'?'hat':'fat',decision:'target',confidence:.95,wordSound},
+   breakdown:{wordMatch:100,pairDistinction:0,speechMs:300,referenceMs:0}};
+  mocks.assess.mockResolvedValue(match);
+  render(<ScorePanel take={{...take(),app:'handf',word:match.recognition!.text}} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);await act(async()=>{});
+  expect(screen.getByText(`/${wordSound}/`)).toBeDefined();expect(screen.getByText('Word evidence')).toBeDefined();
+  expect([...document.querySelectorAll('.hf-score-items dt')].map(e=>e.textContent)).toEqual(['Word match','Target sound','Speech duration']);
+  expect(document.querySelectorAll('.hf-score-items dd')[1].textContent).toBe(`/${wordSound}/Word evidence`);
+ });
+ it('gives the selected F cue for a recognized opposite H word rather than claiming unclear sound',async()=>{
+  mocks.assess.mockResolvedValue({status:'matched',score:10,model:'local-hf-native:v1',contrast:'handf/test',unit:'phone',targetDistance:0,competitorDistance:0,
+   referenceVoice:'none',scope:'word',evidence:'word',recognition:{engine:'fixture',text:'hat',decision:'opposite',confidence:0,wordSound:'h'},
+   breakdown:{wordMatch:0,pairDistinction:0,speechMs:300,referenceMs:0}});
+  render(<ScorePanel take={{...take(),app:'handf',word:'fat'}} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);await act(async()=>{});
+  expect(screen.getByText(/For F, let your upper teeth/)).toBeDefined();
+  expect(screen.queryByText(/The consonant is unclear/)).toBeNull();
  });
  it('shows the offline recognized word and missing-consonant coaching without a false sound label',async()=>{
   const match:ScoreResult={status:'matched',score:18,model:'local-hf-hybrid:v1',contrast:'handf/hf-en/0/0/word/en-h-f:v1',unit:'phone',

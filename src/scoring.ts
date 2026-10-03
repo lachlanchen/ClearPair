@@ -71,7 +71,7 @@ export type ScoreResult =
       scope: "word" | "sentence";
       hf?: import('./hf-score').HFDetails;
       closestWord?: string;
-      recognition?: {engine:string;text:string;decision:'target'|'opposite'|'omitted'|'other'|'both'|'unknown';confidence:number;provisional?:boolean;partialWord?:boolean};
+      recognition?: {engine:string;text:string;decision:'target'|'opposite'|'omitted'|'other'|'both'|'unknown';confidence:number;provisional?:boolean;partialWord?:boolean;wordSound?:'h'|'f'};
       diagnostics?:HfDiagnostics;
       evidence?: "sound" | "word";
       breakdown?: {wordMatch:number;pairDistinction:number;speechMs:number;referenceMs:number};

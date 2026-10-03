@@ -1,7 +1,7 @@
 import {referenceDistance,referenceSlice,locateReference,type AcousticReference} from './reference-features';
 
 export interface HFDetails {
-  version:'hf-segment-fft:v1'|'hf-segment-fft:v2';
+  version:'hf-segment-fft:v1'|'hf-segment-fft:v2'|'hf-segment-fft:v3';
   target:'h'|'f'|'v';
   heard:'h'|'f'|'v'|'uncertain';
   position:'initial'|'final';
@@ -37,6 +37,7 @@ export function hfAnalysisSamples(input:Float32Array):Float32Array {
 }
 export function fricativeSegment(a:AcousticReference,final:boolean):Segment|null {
  const n=a.frames.length,peak=Math.max(...a.energy);
+ const vowelPeak=Math.max(0,...a.energy.filter((_,i)=>a.pitch[i]!==null));
  let vowel=-1;
  // Require a stable vowel nucleus. A fricative alone or a click cannot count.
  for(let i=0;i<n-4;i++){
@@ -45,6 +46,24 @@ export function fricativeSegment(a:AcousticReference,final:boolean):Segment|null
   // nearby, instead of waiting for a perfectly periodic run or a nasal coda.
   const levels=a.energy.slice(i,i+3);
   if(levels.filter(e=>e>peak*.6).length>=2&&a.pitch.slice(i,i+8).some(p=>p!==null)){vowel=i;break;}
+ }
+ const onset=a.energy.findIndex(e=>e>Math.max(.00008,peak*.003));
+ // A strong unvoiced F can exceed vowel energy and make the legacy boundary
+ // select its own friction. Recover ONLY a discarded initial segment. Moving
+ // valid H boundaries to their first periodic frame regressed human crops.
+ // This is not an alternative global classifier and never changes final F/V.
+ if(!final&&(vowel<0||onset<0||vowel-onset<2)){
+  vowel=-1;
+  for(let i=Math.max(0,onset+2);i<n-4;i++){
+   if(vowelPeak>0&&a.pitch[i]!==null&&a.pitch.slice(i,i+4).filter(p=>p!==null).length>=2&&
+    a.energy.slice(i,i+3).filter(e=>e>vowelPeak*.5).length>=2){
+    // Recovery requires a real unvoiced, high-energy prefix, not the ramp
+    // into a vowel-only take. Do not keep searching later in that vowel.
+    if(i-onset>=4&&a.pitch.slice(onset,i).every(p=>p===null)&&
+      Math.max(...a.energy.slice(onset,i))>vowelPeak*1.2)vowel=i;
+    break;
+   }
+  }
  }
  if(vowel<0)return null;
  let from:number,to:number;
@@ -57,7 +76,7 @@ export function fricativeSegment(a:AcousticReference,final:boolean):Segment|null
  }else{
   // H can be tens of dB quieter than its vowel. Retain its weak onset instead
   // of discarding it with a percentage-of-vowel-peak gate.
-  from=a.energy.findIndex(e=>e>Math.max(.00008,peak*.003));
+  from=onset;
   to=vowel;
  }
  if(from<0||to-from<2)return null;
@@ -108,7 +127,7 @@ export function hfDetails(take:AcousticReference,target:AcousticReference,compet
   const bodyT=referenceSlice(target,t.to,target.frames.length),bodyC=referenceSlice(competitor,c.to,competitor.frames.length);
   const d=Math.min(referenceDistance(take,bodyT),referenceDistance(take,bodyC));
   if(!Number.isFinite(d)||d>1.35)return null;
-  return {version:'hf-segment-fft:v2',target:labels[side],heard:'uncertain',position:final?'final':'initial',
+  return {version:'hf-segment-fft:v3',target:labels[side],heard:'uncertain',position:final?'final':'initial',
    sound:0,word:Math.round(100*Math.exp(-d/1.6)),timing:0,segmentMs:0,targetDistance:3.5,competitorDistance:3.5,margin:0,cue:'missing'};
  }
  const mandarin=lesson==='hf-zh';
@@ -122,6 +141,6 @@ export function hfDetails(take:AcousticReference,target:AcousticReference,compet
  const heard=uncertain?'uncertain':margin>=0?labels[side]:labels[1-side];
  const cue=uncertain?'uncertain':margin>=0?'good':final?(side===0?'keep-ending':'add-voice'):
   side===1?'lip-friction':lesson==='hf-zh'?'back-friction':'gentle-breath';
- return {version:'hf-segment-fft:v1',target:labels[side],heard,position:final?'final':'initial',
+ return {version:final?'hf-segment-fft:v1':'hf-segment-fft:v3',target:labels[side],heard,position:final?'final':'initial',
   sound,word,timing,segmentMs:Math.round((a.to-a.from)*10),targetDistance:td,competitorDistance:cd,margin,cue};
 }
