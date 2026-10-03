@@ -29,6 +29,7 @@ final class OfflinePairWords {
  private final AtomicReference<String> active=new AtomicReference<>();
  private Model model;
  private String modelIdentity;
+ private OfflineYueWords cantonese;
  OfflinePairWords(Context context){this.context=context.getApplicationContext();}
  void recognize(PluginCall call){
   final String id=call.getString("id"),language=call.getString("language"),encoded=call.getString("pcm16Base64");
@@ -41,6 +42,7 @@ final class OfflinePairWords {
     case "art.lazying.clearpair.japanese"->"ja-JP";
     case "art.lazying.clearpair.korean"->"ko-KR";
     case "art.lazying.clearpair.arabic"->"ar-SA";
+    case "art.lazying.clearpair.cantonese"->"zh-HK";
     case "art.lazying.clearpair.qa.reference"->language;
     default->null;};
    if(expected==null||!expected.equals(language)||encoded==null||encoded.length()>576000)throw new IllegalArgumentException();
@@ -51,6 +53,14 @@ final class OfflinePairWords {
   queue.execute(()->{
    try{
     if(!id.equals(active.get())){call.reject("Offline recognition cancelled.");return;}
+    if(language.equals("zh-HK")){
+     if(model!=null)model.close();model=null;modelIdentity=null;
+     if(cantonese==null)cantonese=new OfflineYueWords(context);
+     JSObject value=cantonese.decode(pcm);
+     if(!id.equals(active.get())){call.reject("Offline recognition cancelled.");return;}
+     call.resolve(value);return;
+    }
+    if(cantonese!=null){cantonese.release();cantonese=null;}
     JSONObject pin=pin(language);String code=pin.getString("code"),identity=code+"-"+pin.getString("zipSha256").substring(0,16);
     if(!identity.equals(modelIdentity)){
      if(model!=null)model.close();model=null;modelIdentity=null;
@@ -73,7 +83,7 @@ final class OfflinePairWords {
     if(!id.equals(active.get())){call.reject("Offline recognition cancelled.");return;}
     output.put("engine","pair-vosk-native:v1/"+language);output.put("text",text.toString());output.put("words",words);output.put("final",true);
     call.resolve(JSObject.fromJSONObject(output));
-   }catch(Exception error){call.reject("Bundled offline words unavailable.","OFFLINE_WORD_MODEL");}
+   }catch(Exception|LinkageError error){call.reject("Bundled offline words unavailable.","OFFLINE_WORD_MODEL");}
    finally{active.compareAndSet(id,null);}
   });
  }
@@ -121,6 +131,6 @@ final class OfflinePairWords {
   if(!file.delete())throw new java.io.IOException();
  }
  void cancel(String id){if(id!=null)active.compareAndSet(id,null);}
- void release(){if(active.get()!=null)return;queue.execute(()->{if(active.get()!=null)return;if(model!=null)model.close();model=null;modelIdentity=null;});}
- void close(){active.set(null);queue.execute(()->{if(model!=null)model.close();model=null;modelIdentity=null;});queue.shutdown();}
+ void release(){if(active.get()!=null)return;queue.execute(()->{if(active.get()!=null)return;if(model!=null)model.close();model=null;modelIdentity=null;if(cantonese!=null)cantonese.release();cantonese=null;});}
+ void close(){active.set(null);queue.execute(()->{if(model!=null)model.close();model=null;modelIdentity=null;if(cantonese!=null)cantonese.release();cantonese=null;});queue.shutdown();}
 }

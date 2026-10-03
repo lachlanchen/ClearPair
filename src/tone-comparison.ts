@@ -7,8 +7,9 @@ export interface ToneComparison {
  version:'relative-tone-shape:v1';
  heard:number[];target:number[];partner:number[];
  targetDistance:number;competitorDistance:number;separation:number;frames:number;
+ baseline?:'word-median'|'carrier-median';
 }
-function contour(a:AcousticReference):number[]|null {
+function contour(a:AcousticReference,preserveCarrierRegister=false):number[]|null {
  const voiced=a.pitch.map((p,i)=>({p,i})).filter((v):v is {p:number;i:number}=>v.p!==null&&Number.isFinite(v.p));
  if(voiced.length<10||a.periodic<.35)return null;
  // Exclude unreliable edge frames; interpolate only small internal gaps.
@@ -24,17 +25,17 @@ function contour(a:AcousticReference):number[]|null {
   const mix=right.i===left.i?0:(position-left.i)/(right.i-left.i);
   bins.push(Math.max(-12,Math.min(12,left.p+(right.p-left.p)*mix)));
  }
- const center=[...bins].sort((a,b)=>a-b)[10];
+ const center=preserveCarrierRegister?0:[...bins].sort((a,b)=>a-b)[10];
  return bins.map(v=>v-center);
 }
 const distance=(a:number[],b:number[])=>Math.sqrt(a.reduce((sum,v,i)=>sum+Math.min(64,(v-b[i])**2),0)/a.length);
-export function compareTone(take:AcousticReference,target:AcousticReference,partner:AcousticReference):ToneComparison|null {
- const heard=contour(take),a=contour(target),b=contour(partner);
+export function compareTone(take:AcousticReference,target:AcousticReference,partner:AcousticReference,preserveCarrierRegister=false):ToneComparison|null {
+ const heard=contour(take,preserveCarrierRegister),a=contour(target,preserveCarrierRegister),b=contour(partner,preserveCarrierRegister);
  if(!heard||!a||!b)return null;
  const separation=distance(a,b);
  // Identical or almost-flat centered reference shapes cannot establish tone
  // register. Lexical feedback may still work, but must not masquerade as F0.
  if(separation<.75)return null;
- return {version:'relative-tone-shape:v1',heard,target:a,partner:b,separation,
+ return {version:'relative-tone-shape:v1',baseline:preserveCarrierRegister?'carrier-median':'word-median',heard,target:a,partner:b,separation,
   targetDistance:distance(heard,a),competitorDistance:distance(heard,b),frames:take.pitch.filter(p=>p!==null).length};
 }

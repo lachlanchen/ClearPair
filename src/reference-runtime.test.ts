@@ -40,4 +40,17 @@ describe('beta reference runtime',()=>{
   engine.cancel();resolve({base64:'YQ==',mimeType:'audio/wav',voice:'test-voice'});
   expect(await pending).toEqual({status:'unscored',reason:'cancelled'});expect(create).not.toHaveBeenCalled();engine.dispose();
  });
+ it('supplies independent word references for non-H/F carrier localization',async()=>{
+  const p=assessmentPlan('landr','lr-start',0,0,true);if(p.mode!=='contrast')throw Error('plan');
+  native.reference.mockResolvedValue({base64:'YXVkaW8=',mimeType:'audio/wav',voice:'test-voice'});
+  const posted:unknown[]=[],worker={onmessage:null,onerror:null,terminate:vi.fn(),postMessage:vi.fn((r:{id:string})=>{
+   posted.push(r);queueMicrotask(()=>worker.onmessage?.({data:{id:r.id,result:{status:'unscored',reason:'uncertain'}}} as MessageEvent));
+  })} as unknown as Worker;
+  const engine=new ReferenceRuntime(()=>worker);await engine.assess(p,new Float32Array(3200));
+  expect(native.reference).toHaveBeenCalledTimes(6);
+  expect(posted[0]).toMatchObject({wordTarget:expect.any(Float32Array),wordCompetitor:expect.any(Float32Array),
+   carrierAnchors:{target:{prefix:expect.any(Float32Array),suffix:expect.any(Float32Array)},
+    competitor:{prefix:expect.any(Float32Array),suffix:expect.any(Float32Array)}}});
+  expect(native.reference.mock.calls.slice(4).map(c=>c[0].text)).toEqual(['I said','again.']);engine.dispose();
+ });
 });

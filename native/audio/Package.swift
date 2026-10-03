@@ -10,6 +10,6 @@ let package = Package(
         // checksum-verified. No weights or recorder in this binary target.
         .binaryTarget(name: "libvosk", url: "https://github.com/santalex/libvosk/releases/download/v0.3.50/libvosk-v0.3.50-ios-xcframework.zip", checksum: "13348851e77887fec83631e1651655057801677472dfd0a53f1670cbe06eb735"),
         .target(name: "CNativeVosk", dependencies: ["libvosk"], path: "ios/Sources/CNativeVosk", publicHeadersPath: "include"),
-        .target(name: "ClearpairAudio", dependencies: ["CNativeVosk", .product(name: "Capacitor", package: "capacitor-swift-pm"), .product(name: "Cordova", package: "capacitor-swift-pm")], path: "ios/Sources/ClearPairAudio", resources: [.process("PrivacyInfo.xcprivacy")], linkerSettings: [.linkedLibrary("c++"), .linkedFramework("Accelerate")])
+        .target(name: "ClearpairAudio", dependencies: ["CNativeVosk", .product(name: "Capacitor", package: "capacitor-swift-pm"), .product(name: "Cordova", package: "capacitor-swift-pm")], path: "ios/Sources/ClearPairAudio", exclude: ["SenseVoiceWords.swift"], resources: [.process("PrivacyInfo.xcprivacy")], linkerSettings: [.linkedLibrary("c++"), .linkedFramework("Accelerate")])
     ]
 )

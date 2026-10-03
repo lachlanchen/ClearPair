@@ -47,6 +47,12 @@ final class HFOfflineWords {
             guard let self, self.pending === call, self.identifier == id else { return }
             self.begin(call, pcm: pcm, language: language, id: id)
         }
+        #if canImport(CNativeSenseVoice)
+        // The Yue-only package always uses its bundled Cantonese decoder.
+        // Avoid an unrelated Apple speech-consent/model-download wait before
+        // processing the same saved PCM; H/F and Vosk app routes are unchanged.
+        if language == "zh-HK" { bundled(call, pcm: pcm, language: language, id: id); return }
+        #endif
         switch SFSpeechRecognizer.authorizationStatus() {
         case .authorized: begin()
         case .notDetermined:

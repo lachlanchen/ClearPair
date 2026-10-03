@@ -32,7 +32,9 @@ describe('Japanese confusion-first course',()=>{
   for(const l of japaneseLessons)for(const pair of l.pairs)for(const w of pair){
    if(/\p{Script=Han}/u.test(w.text))expect(w.reading,w.text).toBeTruthy();
    expect(()=>morae(w.reading??w.spoken??w.text)).not.toThrow();
-   expect(w.sentenceReading).toBe(w.sentence);
+    expect(w.sentenceReading).not.toMatch(/\p{Script=Han}|[a-z]/u);
+    expect(w.sentenceReading).toMatch(/^もういちど、/u);
+    expect(w.sentence).toMatch(/^もう一度、/u);
   }
  });
  it('does not turn same-sound scripts into a listening or pronunciation test',()=>{

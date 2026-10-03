@@ -1,0 +1,4 @@
+# Deterministic source staging from ../audio, not a second maintained adapter.
+ios/Sources/
+.build/
+.swiftpm/

@@ -11,4 +11,9 @@ dependencies {
     implementation "androidx.core:core:${rootProject.ext.androidxCoreVersion}"
     implementation 'com.alphacephei:vosk-android:0.3.75@aar'
     implementation 'net.java.dev.jna:jna:5.18.1@aar'
+    def sherpa = file('../../../.runtime/reference-qa/vosk-models/sherpa-onnx-static-link-onnxruntime-1.13.8.aar')
+    if (!sherpa.isFile() || java.security.MessageDigest.getInstance('SHA-256').digest(sherpa.bytes).encodeHex().toString() != 'b22c3fc1b6a45666d28892bb2f7694beeb77a8362d7ebd77c1a5431ec9435471')
+        throw new GradleException('Run node tools/prepare-native-decoders.mjs; pinned native SDK is missing or changed')
+    implementation files(sherpa)
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.25'
 }

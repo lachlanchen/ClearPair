@@ -1,0 +1,21 @@
+ClearPair native offline decoder dependencies
+
+sherpa-onnx 1.13.8, Apache License 2.0.
+Copyright 2022-2023 Xiaomi Corporation and sherpa-onnx contributors.
+https://github.com/k2-fsa/sherpa-onnx/blob/v1.13.8/LICENSE
+Android static-link AAR SHA-256:
+b22c3fc1b6a45666d28892bb2f7694beeb77a8362d7ebd77c1a5431ec9435471
+iOS static XCFramework SHA-256:
+6b8e769cb153343270fdccbe92e3b3db0d1c421d67fa0989ab01fdf5b2fcf2de
+
+ONNX Runtime, MIT License, Microsoft Corporation and contributors.
+https://github.com/microsoft/onnxruntime
+Full MIT license is included alongside this notice as ONNXRuntime-MIT.txt.
+The iOS distribution is pinned through onnxruntime-libs 1.28.2.
+
+Kotlin standard library, Apache License 2.0, JetBrains and contributors.
+https://github.com/JetBrains/kotlin
+Full Apache License 2.0 is included alongside this notice as Apache-2.0.txt.
+
+Only the selected app's separately licensed model weights are bundled.
+An SDK dependency alone does not enable another language or model.

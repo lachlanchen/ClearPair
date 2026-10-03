@@ -36,6 +36,17 @@ describe('authored reference speech', () => {
     expect(pronunciationText(word('ـبـ', { spoken: 'باء' }), 'ar-SA')).toBe('باء');
     expect(pronunciationText(word('发', { ipa: 'fā' }), 'zh-CN')).toBe('发');
   });
+  it('supplies real short carriers for Korean, Arabic and Japanese without changing word readings', () => {
+    for (const language of ['ko-KR','ar-SA','ja-JP'] as const) {
+      for (const lesson of lessons.filter(l=>l.language===language)) for (const pair of lesson.pairs) for (const value of pair) {
+        const single=pronunciationText(value,language),sentence=pronunciationText(value,language,true);
+        expect(sentence).not.toBe(single);
+        expect(sentence).toContain(single);
+      }
+    }
+    const ha=japaneseLessons.find(l=>l.id==='ja-h-b-p')!.pairs[0][0];
+    expect(pronunciationText(ha,'ja-JP',true)).toBe('もういちど、ハ。');
+  });
   it('never sends display-only IPA/romanization/connected forms from the curricula', () => {
     for (const lesson of lessons) for (const pair of lesson.pairs) for (const value of pair) {
       const spoken = pronunciationText(value, lesson.language);

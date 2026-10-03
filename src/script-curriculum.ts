@@ -8,6 +8,11 @@ const w = (
   spoken?: string,
 ): Word => ({ text, ipa, gloss, sentence, spoken });
 const p = (a: Word, b: Word): [Word, Word] => [a, b];
+/** A short neutral carrier ends with the quoted target, avoiding liaison with
+ * a following particle. Do not replace an explicitly authored longer example. */
+const context = (pairs: [Word, Word][], prefix: string): [Word, Word][] => pairs.map(pair =>
+  pair.map(word => word.sentence === (word.spoken ?? word.text)
+    ? {...word, sentence: `${prefix}${word.spoken ?? word.text}.`} : word) as [Word, Word]);
 const k = (
   id: string,
   title: Text,
@@ -24,7 +29,7 @@ const k = (
   sounds,
   cue,
   sides,
-  pairs,
+  pairs: context(pairs, '다시 말할게요. '),
   diagram: "glyph",
   difficulty: 1,
   tip: t(
@@ -49,7 +54,7 @@ const a = (
   sounds,
   cue,
   sides,
-  pairs,
+  pairs: context(pairs, 'أقول مرة أخرى: '),
   diagram: "glyph",
   difficulty: 1,
   quizMode: "visual",

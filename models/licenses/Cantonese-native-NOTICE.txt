@@ -1,0 +1,27 @@
+ClearPair Cantonese offline word identification candidate
+
+WSYue-ASR SenseVoiceSmall Cantonese fine-tune (ASLP-lab), Apache License 2.0:
+https://huggingface.co/ASLP-lab/WSYue-ASR
+https://github.com/ASLP-lab/WSYue-ASR
+
+The int8 ONNX conversion is distributed by the official sherpa-onnx project:
+https://k2-fsa.github.io/sherpa/onnx/sense-voice/pretrained.html
+https://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models
+Exact archive, model and token hashes are in models/pair-words.json.
+Language is explicitly Yue; Mandarin is never used as a substitute.
+
+sherpa-onnx 1.13.8, Apache License 2.0, k2-fsa contributors:
+https://github.com/k2-fsa/sherpa-onnx/blob/v1.13.8/LICENSE
+Android AAR SHA-256:
+b22c3fc1b6a45666d28892bb2f7694beeb77a8362d7ebd77c1a5431ec9435471
+iOS static XCFramework SHA-256:
+6b8e769cb153343270fdccbe92e3b3db0d1c421d67fa0989ab01fdf5b2fcf2de
+
+ONNX Runtime, MIT License, Microsoft Corporation and contributors:
+https://github.com/microsoft/onnxruntime/blob/main/LICENSE
+The iOS wrapper package is checksum-pinned by onnxruntime-libs 1.28.2.
+Kotlin standard library, Apache License 2.0, JetBrains and contributors.
+
+This recognizer identifies words, not calibrated phoneme or tone accuracy.
+SenseVoice's absent word confidence/timestamps are not fabricated.
+No training audio is redistributed, and captured user audio stays on device.

@@ -1,8 +1,14 @@
 import type { Lesson, Text, Word } from './types';
 import { morae } from './japanese-mora';
 const t = (en: string, zh: string): Text => ({ en, zh });
-const w = (text: string, ipa: string, gloss: string, reading = text, sentence = reading): Word =>
-  ({ text, ipa, gloss, reading, spoken: reading, sentence, sentenceReading: sentence });
+const w = (text: string, ipa: string, gloss: string, reading = text, sentence?: string): Word => {
+  // The quoted isolated H-series is a sound, not the particle は/へ. Keep a
+  // separate phonetic carrier reading so TTS cannot turn /ha/ into /wa/.
+  const sound = ({'は':'ハ','へ':'ヘ','を':'オ','ヲ':'オ'} as Record<string,string>)[reading] ?? reading;
+  return {text, ipa, gloss, reading, spoken: reading,
+    sentence: sentence ?? `もう一度、「${text}」。`,
+    sentenceReading: sentence ?? `もういちど、${sound}。`};
+};
 const p = (left: Word, right: Word): [Word, Word] => [left, right];
 function lesson(id: string, title: Text, sounds: [string, string], cue: Text,
   sides: [Text, Text], pairs: [Word, Word][], extra: Partial<Lesson> = {}): Lesson {

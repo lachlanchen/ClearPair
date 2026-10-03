@@ -108,7 +108,7 @@ export function referenceSlice(a:AcousticReference,from:number,to:number):Acoust
 /** Locate either displayed word within a carrier sentence. The search is
  * symmetric: its location is chosen by acoustic fit, never by the selected side.
  * The span bounds prevent a long unrelated phrase from warping into one word. */
-export function locateReference(take:AcousticReference,word:AcousticReference,minimumStart=0):{from:number;to:number;distance:number}|null {
+export function locateReference(take:AcousticReference,word:AcousticReference,minimumStart=0,maximumStart=Infinity):{from:number;to:number;distance:number}|null {
  const n=take.frames.length,m=word.frames.length;
  if(n<m*.45||!m)return null;
  let previous=new Float64Array(m+1).fill(Infinity),starts=new Int32Array(m+1);
@@ -120,7 +120,7 @@ export function locateReference(take:AcousticReference,word:AcousticReference,mi
   for(let j=1;j<=m;j++){
    const choices=[previous[j-1],previous[j]+.12,current[j-1]+.12],k=choices.indexOf(Math.min(...choices));
    const from=k===0?(j===1?i-1:starts[j-1]):k===1?starts[j]:nextStarts[j-1];
-   if(from<minimumStart||i-from>m*2.2)continue;
+   if(from<minimumStart||from>maximumStart||i-from>m*2.2)continue;
    current[j]=choices[k]+frameCost(take.frames[i-1],word.frames[j-1]);nextStarts[j]=from;
   }
   const from=nextStarts[m],span=i-from,distance=current[m]/Math.max(m,span);
@@ -128,6 +128,17 @@ export function locateReference(take:AcousticReference,word:AcousticReference,mi
   previous=current;starts=nextStarts;
  }
  return best;
+}
+/** Surrounding speech constrains a word window without guessing its phonemes.
+ * Anchors must match the beginning/end, not any similar syllable in the middle.
+ * A small edge allowance retains weak consonants at the join. */
+export function carrierWordSpan(carrier:AcousticReference,prefix:AcousticReference|null,suffix:AcousticReference|null):{from:number;to:number;distance:number}|null{
+ const reverse=(a:AcousticReference):AcousticReference=>({...a,frames:[...a.frames].reverse(),pitch:[...a.pitch].reverse(),spectra:[...a.spectra].reverse(),energy:[...a.energy].reverse()});
+ const a=prefix?locateReference(carrier,prefix,0,6):null,b=suffix?locateReference(reverse(carrier),reverse(suffix),0,6):null;
+ if(prefix&&!a||suffix&&!b||[a,b].some(v=>v&&v.distance>1.35))return null;
+ const from=a?Math.max(0,a.to-3):0,to=b?Math.min(carrier.frames.length,carrier.frames.length-b.to+3):carrier.frames.length;
+ if(to-from<8)return null;
+ return {from,to,distance:((a?.distance??0)+(b?.distance??0))/Math.max(1,Number(!!a)+Number(!!b))};
 }
 export function referenceDistance(a:AcousticReference,b:AcousticReference,tone=false,timing=false):number{
  const n=a.frames.length,m=b.frames.length;

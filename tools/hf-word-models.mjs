@@ -33,6 +33,8 @@ export async function prepareHfWordModels(destination,languages=hfWordModels.map
  }
  await copyFile('models/hf-words.json',resolve(destination,'hf-words.json'));
  await copyFile('models/licenses/Apache-2.0.txt',resolve(destination,'Apache-2.0.txt'));
+ await copyFile('models/licenses/ONNXRuntime-MIT.txt',resolve(destination,'ONNXRuntime-MIT.txt'));
+ await copyFile('models/licenses/Native-SDK-NOTICE.txt',resolve(destination,'Native-SDK-NOTICE.txt'));
 }
 /** Native iOS reads unpacked weights, avoiding WebKit's WASM compatibility
  * dependency. Staged into H/F only, from the same checksum-pinned model zips. */
@@ -58,6 +60,8 @@ export async function prepareHfNativeWordModels(destination,languages=hfWordMode
  await copyFile('models/hf-words.json',resolve(destination,'hf-words.json'));
  await copyFile('models/licenses/Apache-2.0.txt',resolve(destination,'Apache-2.0.txt'));
  await copyFile('models/licenses/HF-native-NOTICE.txt',resolve(destination,'HF-native-NOTICE.txt'));
+ await copyFile('models/licenses/ONNXRuntime-MIT.txt',resolve(destination,'ONNXRuntime-MIT.txt'));
+ await copyFile('models/licenses/Native-SDK-NOTICE.txt',resolve(destination,'Native-SDK-NOTICE.txt'));
 }
 if(process.argv[1]&&resolve(process.argv[1])===resolve('tools/hf-word-models.mjs')){
  await prepareHfWordModels(process.argv[2]||'.runtime/public/handf/models');

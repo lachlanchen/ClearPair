@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {resolve} from 'node:path';
 export const pairManifest=JSON.parse(await readFile('models/pair-words.json','utf8'));
-export const pairCandidateLanguages={landr:['en-US'],english:['en-US'],chinese:['zh-CN'],japanese:['ja-JP'],korean:['ko-KR'],arabic:['ar-SA']};
+export const pairCandidateLanguages={landr:['en-US'],english:['en-US'],chinese:['zh-CN'],japanese:['ja-JP'],korean:['ko-KR'],arabic:['ar-SA'],cantonese:['zh-HK']};
 export const pairWordLanguages=Object.fromEntries(Object.entries(pairCandidateLanguages).filter(([app])=>pairManifest.activeApps.includes(app)));
 export async function preparePairWordModels(app,destination,nativeIos=false){
  const languages=pairCandidateLanguages[app];
@@ -13,6 +13,18 @@ export async function preparePairWordModels(app,destination,nativeIos=false){
  await mkdir(destination,{recursive:true});
  for(const language of languages){
   const model=pairManifest.models.find(m=>m.language===language);if(!model)throw Error('No pinned model for practice language');
+  if(model.format==='sensevoice-int8'){
+   const cache=resolve('.runtime/reference-qa/vosk-models'),archive=resolve(cache,model.name+'.tar.bz2');
+   const bytes=await readFile(archive);
+   if(model.language!=='zh-HK'||bytes.length!==model.archiveBytes||createHash('sha256').update(bytes).digest('hex')!==model.archiveSha256)throw Error('Cantonese model source hash mismatch');
+   const out=resolve(destination,'pair-native','yue');await mkdir(out,{recursive:true});
+   for(const [name,hash,size] of [['model.int8.onnx',model.sha256,model.bytes],['tokens.txt',model.tokensSha256,model.tokensBytes]]){
+    const source=resolve(cache,model.name,name),data=await readFile(source);
+    if(data.length!==size||createHash('sha256').update(data).digest('hex')!==hash)throw Error('Cantonese native weight hash mismatch');
+    await copyFile(source,resolve(out,name));
+   }
+   continue;
+  }
   const cache=resolve('.runtime/reference-qa/vosk-models'),zip=resolve(cache,model.name+'.zip'),archive=resolve(cache,model.asset.split('/').at(-1));
   if(model.source!==`https://alphacephei.com/vosk/models/${model.name}.zip`||createHash('sha256').update(await readFile(zip)).digest('hex')!==model.zipSha256)throw Error('Pair model source hash mismatch');
   if(nativeIos){
@@ -29,4 +41,9 @@ export async function preparePairWordModels(app,destination,nativeIos=false){
  await copyFile('models/licenses/Apache-2.0.txt',resolve(destination,'Apache-2.0.txt'));
  await copyFile('models/licenses/HF-native-NOTICE.txt',resolve(destination,'Vosk-native-NOTICE.txt'));
  await copyFile('models/licenses/Pair-native-NOTICE.txt',resolve(destination,'Pair-native-NOTICE.txt'));
+ // Native SDK licence is retained even when unused code is stripped from a
+ // non-Cantonese app. The model-specific notice is only bundled with Yue.
+ await copyFile('models/licenses/ONNXRuntime-MIT.txt',resolve(destination,'ONNXRuntime-MIT.txt'));
+ await copyFile('models/licenses/Native-SDK-NOTICE.txt',resolve(destination,'Native-SDK-NOTICE.txt'));
+ if(languages.includes('zh-HK'))await copyFile('models/licenses/Cantonese-native-NOTICE.txt',resolve(destination,'Cantonese-native-NOTICE.txt'));
 }

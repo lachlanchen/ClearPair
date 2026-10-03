@@ -1,6 +1,7 @@
 import {nativeAudio} from './native';
 import {decodeRecording,resamplePCM} from './pcm';
 import {pronunciationText} from './pronunciation-text';
+import {carrierContext} from './carrier-context';
 import type {AssessmentPlan} from './scoring-profiles';
 import type {ScoreResult} from './scoring';
 type Plan=Extract<AssessmentPlan,{mode:'contrast'}>;
@@ -37,11 +38,24 @@ export class ReferenceRuntime {
    const b=await reference(pronunciationText(plan.competitor,plan.profile.language,sentence));
    if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
    if(a.voice!==b.voice){this.cache.clear();return {status:'unscored',reason:'model-unavailable'};}
-   const focused=plan.calibrationKey.startsWith('handf/')&&sentence;
+   // Every carrier sentence needs independent word references to locate the
+   // target. Its common carrier must not dilute an opposite initial/ending.
+   const focused=sentence;
    const wa=focused?await reference(pronunciationText(plan.target,plan.profile.language)):a;
    const wb=focused?await reference(pronunciationText(plan.competitor,plan.profile.language)):b;
    if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
    if([wa.voice,wb.voice].some(v=>v!==a.voice)){this.cache.clear();return {status:'unscored',reason:'model-unavailable'};}
+   let carrierAnchors:import('./reference-score').ReferenceRequest['carrierAnchors'];
+   if(sentence&&!plan.calibrationKey.startsWith('handf/')){
+    const context=async(word:typeof plan.target)=>{
+     const parts=carrierContext(word,plan.profile.language);if(!parts)throw Error('reference-unavailable');
+     const prefix=parts.prefix?await reference(parts.prefix):undefined,suffix=parts.suffix?await reference(parts.suffix):undefined;
+     if([prefix,suffix].some(v=>v&&v.voice!==a.voice)){this.cache.clear();throw Error('Invalid reference voice');}
+     return {...(prefix?{prefix:prefix.samples}:{}),...(suffix?{suffix:suffix.samples}:{})};
+    };
+    carrierAnchors={target:await context(plan.target),competitor:await context(plan.competitor)};
+    if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
+   }
    return await new Promise<ScoreResult>(resolve=>{
     const worker=this.create();this.worker=worker;
     const finish=(result:ScoreResult)=>{worker.terminate();if(this.worker===worker)this.worker=undefined;resolve(result);};
@@ -58,6 +72,7 @@ export class ReferenceRuntime {
     };
     // Clone reference buffers so cancellation cannot detach cached audio.
     worker.postMessage({id,plan,samples,target:a.samples,competitor:b.samples,voice:a.voice,
+     ...(carrierAnchors?{carrierAnchors}:{}),
      ...(focused?{wordTarget:wa.samples,wordCompetitor:wb.samples}:{})},[samples.buffer]);
    });
   };

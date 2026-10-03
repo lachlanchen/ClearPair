@@ -5,6 +5,7 @@ import {saveTake} from './storage';
 import {WordText} from './WordText';
 import type {Take} from './types';
 import type {ScoreReason,ScoreResult} from './scoring';
+import {pairContrastText,type ContrastText} from './pair-contrast-text';
 export function scoreMessage(reason:ScoreReason,tr:(en:string,zh:string)=>string):string {
   switch(reason){
     case 'ungraded-exercise':return tr('This is an ungraded exploration, not a spoken contrast test.','这是不计分的探索，不是发音对比测试。');
@@ -127,6 +128,7 @@ function PairScoreItems({result,tr}:{result:Extract<ScoreResult,{status:'matched
 }
 function PairFeedbackView({result,tr}:{result:Extract<ScoreResult,{status:'matched'}>;tr:(en:string,zh:string)=>string}){
  const f=result.pairFeedback!;
+ const [target,partner]=pairContrastText(f.targetSound,f.partnerSound);
  const summary=f.conflict?tr('Words and sound disagree. Neither is treated as certain.','词语识别与声音比较不一致，两者都不作为确定结论。'):
   f.kind==='target'?tr('The displayed word was recognized.','识别到了屏幕上的词语。'):
   f.kind==='opposite'?tr('The other word in this pair was recognized.','识别到了这个词对中的另一个词。'):
@@ -136,22 +138,25 @@ function PairFeedbackView({result,tr}:{result:Extract<ScoreResult,{status:'match
   return <div className={`pair-feedback pair-feedback-${f.kind}`}>
   <p className="pair-feedback-summary">{summary}</p>
   <div className="pair-feedback-contrast" aria-label={tr('Compare the confusing part','比较容易混淆的部分')}>
-   <div><small>{tr('Target','目标')}</small><bdi>{f.targetSound}</bdi></div>
-   {f.heardSound&&<><span aria-hidden="true">↔</span><div><small>{tr('Word evidence','词语证据')}</small><bdi>{f.heardSound}</bdi></div></>}
+   <div><small>{tr('Target','目标')}</small><bdi><ContrastPronunciation value={target}/></bdi></div>
+   <span aria-hidden="true">↔</span><div><small>{tr('Pair distinction','词对区别')}</small><bdi><ContrastPronunciation value={partner}/></bdi></div>
   </div>
   {f.soundMeasured&&result.breakdown&&<div className="pair-comparison" role="meter" aria-label={tr('Pair distinction','词对区别')} aria-valuemin={0} aria-valuemax={100} aria-valuenow={result.breakdown.pairDistinction}>
    <div className="pair-comparison-track"><span style={{left:`${Math.max(2,Math.min(98,result.breakdown.pairDistinction))}%`}}/></div>
    <div className="pair-comparison-labels"><small><bdi>{f.partnerSound}</bdi></small><small><bdi>{f.targetSound}</bdi></small></div>
   </div>}
   {f.soundMeasured&&result.tone&&<ToneComparisonView tone={result.tone} tr={tr}/>}
-  {f.kind!=='target'&&<p className="hf-coaching">{tr(f.cue.en,f.cue.zh)}</p>}
+  {f.region==='tone'&&!f.soundMeasured&&result.scope==='word'?<p className="hf-coaching">{tr('For pitch level, try the sentence option.','要比较音高位置，请试试短句模式。')}</p>:f.kind!=='target'&&<p className="hf-coaching">{tr(f.cue.en,f.cue.zh)}</p>}
  </div>;
+}
+function ContrastPronunciation({value}:{value:ContrastText}){
+ return <>{value.before}{value.contrast&&<mark className="pair-phone-focus">{value.contrast}</mark>}{value.after}</>;
 }
 function ToneComparisonView({tone,tr}:{tone:import('./tone-comparison').ToneComparison;tr:(en:string,zh:string)=>string}){
  const all=[...tone.heard,...tone.target,...tone.partner],extent=Math.max(3,...all.map(Math.abs));
  const path=(values:number[])=>values.map((v,i)=>`${12+i*216/(values.length-1)},${50-v/extent*35}`).join(' ');
  return <figure className="pair-tone-chart">
-  <svg viewBox="0 0 240 100" role="img" aria-label={tr('Relative pitch shape','相对音高走势')}>
+  <svg viewBox="0 0 240 100" role="img" aria-label={tone.baseline==='carrier-median'?tr('Pitch relative to the sentence','相对于短句的音高'):tr('Relative pitch shape','相对音高走势')}>
    <line x1="12" x2="228" y1="50" y2="50" className="pair-tone-axis"/>
    <polyline points={path(tone.partner)} className="pair-tone-partner"/>
    <polyline points={path(tone.target)} className="pair-tone-target"/>

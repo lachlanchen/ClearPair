@@ -40,7 +40,7 @@ describe('every authored pair: offline content feedback, separate sound provenan
   const acoustic:ScoreResult={status:'matched',score:95,contrast:plan.calibrationKey,model:'local-reference-dtw:v2',unit:'phone',targetDistance:.1,competitorDistance:.8,referenceVoice:'fixture',scope:'word',closestWord:'light',
    focus:{version:'pair-focus-dtw:v1',region:'initial',targetDistance:.1,competitorDistance:.8,separation:.7,frames:9},breakdown:{wordMatch:90,pairDistinction:95,speechMs:400,referenceMs:500}};
   const r=pairHybridScore(plan,evidence('height','en-US'),acoustic,quality);
-  expect(r).toMatchObject({status:'matched',score:59,recognition:{text:'height',decision:'unknown'},pairFeedback:{conflict:true}});
+  expect(r).toMatchObject({status:'matched',score:57,recognition:{text:'height',decision:'unknown'},pairFeedback:{conflict:true}});
  });
  it('does not invent a target-sound score from word identity, or turn partial Apple results into final',()=>{
   const r=pairHybridScore(plan,{...evidence('light','en-US'),final:false,completed:true},unresolved,quality);
@@ -77,5 +77,34 @@ describe('every authored pair: offline content feedback, separate sound provenan
  it('normalizes scripts/marks for content only, never as measured tones or vowel length',()=>{
   expect(normalizeWords('ビール','ja-JP')).toBe(normalizeWords('びーる','ja-JP'));
   expect(normalizeWords('بَ','ar-SA')).toBe('ب');
+  expect(normalizeWords('呢個字係「標」。','zh-HK')).toBe(normalizeWords('呢个字系标','zh-HK'));
+  const p=assessmentPlan('cantonese','yue-b-p',0,0,true);if(p.mode!=='contrast')throw Error('fixture');
+  const e:HfWordEvidence={engine:'pair-sensevoice-native:v1/zh-HK',text:'呢个字系飘',words:[],final:true,untimed:true};
+  expect(pairWordDecision(p,e)).toMatchObject({decision:'opposite',confidence:0});
+  expect(pairHybridScore(p,e,unresolved,quality)).toMatchObject({status:'matched',recognition:{text:'呢个字系飘'},pairFeedback:{soundMeasured:false}});
+ });
+ it('accepts exact final Cantonese untimed text without inventing confidence or sound measurements',()=>{
+  const product=products.find(p=>p.id==='cantonese')!,id=product.lessons[0],p=assessmentPlan('cantonese',id,0,0);
+  if(p.mode!=='contrast')throw Error('fixture');
+  const text=pronunciationText(p.target,p.profile.language),e:HfWordEvidence={engine:'pair-sensevoice-native:v1/zh-HK',text,words:[],final:true,untimed:true};
+  expect(pairWordDecision(p,e)).toMatchObject({valid:true,decision:'target',confidence:0});
+  const r=pairHybridScore(p,e,unresolved,quality);
+  expect(r).toMatchObject({status:'matched',recognition:{text,confidence:0},pairFeedback:{soundMeasured:false}});
+  if(r.status==='matched')expect(r.score).toBeLessThanOrEqual(p.profile.unit==='tone'?60:85);
+  for(const bad of [{...e,untimed:false},{...e,final:false},{...e,engine:'pair-sensevoice-native:v1/zh-CN'}])expect(pairWordDecision(p,bad).valid).toBe(false);
+  expect(pairWordDecision(plan,e).valid).toBe(false);
+ });
+ it('does not let shared word similarity lift a measured opposite Japanese timing contrast',()=>{
+  const p=assessmentPlan('japanese','ja-small-tsu',0,0);if(p.mode!=='contrast')throw Error('fixture');
+  const base:ScoreResult={status:'matched',score:42,contrast:p.calibrationKey,model:'local-reference-dtw:v1',unit:'phone',targetDistance:.15,competitorDistance:0,referenceVoice:'fixture',scope:'word',breakdown:{wordMatch:91,pairDistinction:2,speechMs:400,referenceMs:450}};
+  const e:HfWordEvidence={engine:'pair-vosk-native:v1/ja-JP',text:'サッカー',words:[{word:'サッカー',conf:.95,start:0,end:.5}],final:true};
+  expect(pairHybridScore(p,e,base,quality)).toMatchObject({status:'matched',score:1,recognition:{text:'サッカー',decision:'unknown'},pairFeedback:{conflict:true,soundMeasured:true}});
+  expect(pairHybridScore(p,undefined,base,quality)).toMatchObject({status:'matched',score:2,pairFeedback:{heard:'',soundMeasured:true}});
+ });
+ it('keeps an opposite whole-word comparison low when the consonant mask cannot be measured',()=>{
+  const p=assessmentPlan('cantonese','yue-b-p',1,1);if(p.mode!=='contrast')throw Error('fixture');
+  const base:ScoreResult={status:'matched',score:42,contrast:p.calibrationKey,model:'local-reference-dtw:v1',unit:'phone',targetDistance:.15,competitorDistance:0,referenceVoice:'fixture',scope:'word',closestWord:'杯',breakdown:{wordMatch:91,pairDistinction:2,speechMs:360,referenceMs:430}};
+  const e:HfWordEvidence={engine:'pair-sensevoice-native:v1/zh-HK',text:'背',words:[],final:true,untimed:true};
+  expect(pairHybridScore(p,e,base,quality)).toMatchObject({status:'matched',score:1,recognition:{text:'背',decision:'unknown'},pairFeedback:{conflict:true,soundMeasured:false},breakdown:{pairDistinction:0}});
  });
 });

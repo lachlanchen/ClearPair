@@ -33,6 +33,8 @@ run(process.execPath, [
   platform,
 ]);
 if (platform === "ios") {
+  const {prepareIosAudioPackage}=await import('./ios-audio-package.mjs');
+  await prepareIosAudioPackage(app);
   const file = `native/apps/${app}/ios/App/App/Info.plist`,
     text = await readFile(file, "utf8");
   await writeFile(file, updateIosInfo(text, app));
@@ -48,6 +50,7 @@ if (platform === "ios") {
     .replaceAll(/MARKETING_VERSION = [\d.]+;/g,`MARKETING_VERSION = ${release.version};`)
     .replaceAll(/CURRENT_PROJECT_VERSION = \d+;/g,`CURRENT_PROJECT_VERSION = ${release.build};`));
 } else {
+  run(process.execPath,['tools/prepare-native-decoders.mjs']);
   if(pairWordLanguages[app])await preparePairWordModels(app,`native/apps/${app}/android/app/src/main/assets/public/models`,true);
   await exportNativeIcons(app, platform);
   const gradle=`native/apps/${app}/android/app/build.gradle`;

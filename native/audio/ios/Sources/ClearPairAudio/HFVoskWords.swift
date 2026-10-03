@@ -1,4 +1,5 @@
 import Foundation
+#if canImport(CNativeVosk)
 import CNativeVosk
 
 /// Saved PCM only, one model/serial worker, unrestricted vocabulary. Bundled
@@ -9,7 +10,6 @@ final class HFVoskWords {
     private var active: String?
     private var model: OpaquePointer?
     private var language: String?
-
     func cancel() { lock.lock(); active = nil; lock.unlock() }
     func release() {
         cancel()
@@ -71,3 +71,16 @@ final class HFVoskWords {
     }
     deinit { if let model { vosk_model_free(model) } }
 }
+#elseif canImport(CNativeSenseVoice)
+/// Same saved-PCM adapter contract, but only the Yue SDK is linked. This avoids
+/// cross-library OpenFst global registries colliding before the app can launch.
+final class HFVoskWords {
+    private let cantonese = SenseVoiceWords()
+    func cancel() { cantonese.cancel() }
+    func release() { cantonese.release() }
+    func recognize(pcm: Data, language: String, id: String, completion: @escaping ([String: Any]?) -> Void) {
+        guard language == "zh-HK" else { DispatchQueue.main.async { completion(nil) }; return }
+        cantonese.recognize(pcm: pcm, id: id, completion: completion)
+    }
+}
+#endif

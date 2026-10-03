@@ -68,7 +68,7 @@ export class HfWordRuntime {
      new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Native offline words timed out')),31_000);})]);
     if(token!==this.generation)return undefined;
     const completedPartial=native.engine===`apple-on-device-words:v1/${language}`&&native.completed===true&&native.final===false;
-    if(![`apple-on-device-words:v1/${language}`,`hf-vosk-native:v1/${language}`,...(this.config.version==='pair-offline-words:v1'?[`pair-vosk-native:v1/${language}`]:[])].includes(native.engine)||native.final!==true&&!completedPartial)throw Error('Invalid native word provenance');
+    if(![`apple-on-device-words:v1/${language}`,`hf-vosk-native:v1/${language}`,...(this.config.version==='pair-offline-words:v1'?[`pair-vosk-native:v1/${language}`,...(language==='zh-HK'?['pair-sensevoice-native:v1/zh-HK']:[])]:[])].includes(native.engine)||native.final!==true&&!completedPartial)throw Error('Invalid native word provenance');
     return native;
    }catch(error){
     if(token!==this.generation)return undefined;

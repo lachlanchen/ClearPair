@@ -10,6 +10,12 @@ if(execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim())throw E
 const sourceCommit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
 const release=selectedRelease(JSON.parse(fs.readFileSync('store/release.json','utf8')),process.argv.slice(2));
 const files=new Set(execFileSync('git',['ls-files','-z'],{encoding:'utf8'}).split('\0').filter(Boolean));
+if(release.apps.includes('cantonese')){
+ const generated='native/audio-yue/ios/Sources';
+ for(const file of fs.readdirSync(generated,{recursive:true})){
+  const name=path.posix.join(generated,file);if(fs.statSync(name).isFile())files.add(name);
+ }
+}
 for(const app of release.apps){
  const base=`native/apps/${app}/ios/App/App/public`;
  for(const file of fs.readdirSync(base,{recursive:true})){

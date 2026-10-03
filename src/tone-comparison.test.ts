@@ -21,6 +21,13 @@ describe('relative tone-shape evidence, not absolute register',()=>{
  it('does not pretend centered flat high/mid/low tones are distinguishable',()=>{
   expect(compareTone(fixture(()=>0),fixture(()=>5),fixture(()=>-5))).toBeNull();
  });
+ it('can compare level tones against their own surrounding carrier, not another speaker absolute pitch',()=>{
+  const target=fixture(()=>3),other=fixture(()=>-2);
+  const r=compareTone(fixture(()=>3),target,other,true)!;
+  expect(r.baseline).toBe('carrier-median');expect(r.targetDistance).toBe(0);expect(r.competitorDistance).toBe(5);
+  expect(compareTone(other,target,other,true)!.competitorDistance).toBe(0);
+  expect(compareTone(target,target,target,true)).toBeNull();
+ });
  it('rejects insufficient voicing, long gaps and non-finite pitch',()=>{
   const a=fixture(x=>6*x-3),b=fixture(x=>3-6*x);
   for(const take of [fixture(()=>null),fixture(x=>x>.2&&x<.8?null:x),fixture(()=>NaN),{...a,periodic:.1}])expect(compareTone(take,a,b)).toBeNull();

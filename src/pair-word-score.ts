@@ -26,8 +26,15 @@ const homophones:Record<string,string[]>={
  knight:['night'],night:['knight'],no:['know'],buy:['by','bye'],
  eye:['i'],ate:['eight'],pair:['pear','pare'],sole:['soul'],
 };
+const chineseScript:Record<string,string>={'標':'标','飄':'飘','個':'个','係':'系','詩':'诗','試':'试','婦':'妇','時':'时','實':'实','濕':'湿','雞':'鸡','藍':'蓝','連':'连','這':'这','說':'说','發':'发','綠':'绿','來':'来','聲':'声','詞':'词'};
 export function normalizeWords(text:string,language:string,keepMarks=false):string {
  let value=text.normalize('NFKC').toLowerCase().replace(/[’']/g,'');
+ // Script variants in the authored Chinese courses are spelling equivalents,
+ // not extra accepted pronunciations. Retain the original decoder text in UI
+ // and never use this conversion as evidence for a tone or sound measurement.
+ if(['zh-CN','zh-HK'].includes(language)){
+  value=Array.from(value,c=>chineseScript[c]??c).join('');
+ }
  if(language==='ja-JP')value=value.replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));
  if(language==='ar-SA')value=value.replace(keepMarks?/\u0640/g:/[\u064B-\u065F\u0670\u0640]/g,'');
  value=value.replace(keepMarks?/[^\p{Letter}\p{Number}\p{Mark}]+/gu:/[^\p{Letter}\p{Number}]+/gu,' ').trim();
@@ -44,15 +51,16 @@ export function pairWordDecision(plan:Plan,e:HfWordEvidence):{decision:Decision;
  const lang=plan.profile.language;
  const keepMarks=plan.profile.id==='ar-syllable-vowel:v1';
  const normalize=(v:string)=>normalizeWords(v,lang,keepMarks);
- const provenance=[`apple-on-device-words:v1/${lang}`,`pair-offline-words:v1/${lang}`,`pair-vosk-native:v1/${lang}`,`hf-vosk-native:v1/${lang}`];
+ const untimed=lang==='zh-HK'&&e.engine==='pair-sensevoice-native:v1/zh-HK'&&e.final===true&&e.untimed===true&&e.words.length===0;
+ const provenance=[`apple-on-device-words:v1/${lang}`,`pair-offline-words:v1/${lang}`,`pair-vosk-native:v1/${lang}`,`hf-vosk-native:v1/${lang}`,...(untimed?['pair-sensevoice-native:v1/zh-HK']:[])];
  if(!provenance.includes(e.engine)||e.text.length>500||e.words.length>150||
    e.words.some(w=>!w.word||![w.conf,w.start,w.end].every(Number.isFinite)||w.conf<0||w.conf>1||w.start<0||w.end<w.start||w.end>15))return unknown;
  const text=normalize(e.text),tokens=e.words.map(w=>normalize(w.word));
- if(!text||text!==normalize(tokens.join(' ')))return unknown;
+ if(!text||!untimed&&text!==normalize(tokens.join(' ')))return unknown;
  const confidence=e.words.length?Math.min(...e.words.map(w=>w.conf)):0;
  const apple=e.engine===`apple-on-device-words:v1/${lang}`&&(e.final===true||e.completed===true&&e.final===false);
  if(e.engine===`apple-on-device-words:v1/${lang}`&&!apple)return unknown;
- if(!apple&&confidence<.65)return {decision:'unknown',confidence,valid:true};
+ if(!apple&&!untimed&&confidence<.65)return {decision:'unknown',confidence,valid:true};
  const sentence=plan.calibrationKey.includes('/sentence/');
  const candidates=(word:Word)=>forms(word,lang,keepMarks);
  const has=(word:Word)=>candidates(word).some(form=>sentence?
@@ -90,11 +98,12 @@ export function pairHybridScore(plan:Plan,e:HfWordEvidence|undefined,acoustic:Sc
  // measured sound feedback, with an explicit provisional cap, rather than
  // presenting an empty transcript as a failed recording or inventing words.
  const emptyNative=e&&e.final===true&&e.words.length===0&&!e.text.trim()&&
-  [`apple-on-device-words:v1/${plan.profile.language}`,`pair-vosk-native:v1/${plan.profile.language}`,`hf-vosk-native:v1/${plan.profile.language}`].includes(e.engine);
+  [`apple-on-device-words:v1/${plan.profile.language}`,`pair-vosk-native:v1/${plan.profile.language}`,`hf-vosk-native:v1/${plan.profile.language}`,...(plan.profile.language==='zh-HK'&&e.untimed===true?['pair-sensevoice-native:v1/zh-HK']:[])].includes(e.engine);
  if(!e||emptyNative){
   if(!base)return acoustic;
   const measured=!!base.focus||!!base.tone||plan.profile.id.startsWith('ja-mora')||plan.profile.id==='yue-vowels:v1';
-  return {...base,model:'local-pair-hybrid:v1',score:Math.min(measured?79:59,base.score),evidence:measured?'sound':'word',
+  const contrastOnly=!!base.tone||plan.profile.id.startsWith('ja-mora')||plan.profile.id==='yue-vowels:v1';
+  return {...base,model:'local-pair-hybrid:v1',score:Math.min(measured?79:59,contrastOnly?Math.round((base.breakdown?.pairDistinction??0)*.79):base.score),evidence:measured?'sound':'word',
    pairFeedback:feedbackFor(plan,'','unknown',measured)};
  }
  const decoded=pairWordDecision(plan,e);
@@ -122,7 +131,7 @@ export function pairHybridScore(plan:Plan,e:HfWordEvidence|undefined,acoustic:Sc
   decision==='opposite'?Math.min(35,Math.round((sound??0)*.25)):
   decision==='other'?Math.min(25,Math.round((sound??0)*.2)):
   decision==='both'?Math.min(40,base?.score??0):Math.min(strongContrast&&!conflict?79:59,
-   base?.tone?Math.round((base.breakdown?.pairDistinction??0)*.6):base?.score??0);
+   base?Math.round((base.breakdown?.pairDistinction??0)*.6):0);
  if(decision==='unknown'&&!base)return {...acoustic,diagnostics:{speechMs:Math.round(quality.voicedSeconds*1000),signal:quality.status,
   acousticState:acoustic.status==='unscored'?acoustic.reason:'unknown',wordState:'recognized',wordEngine:e.engine,wordText:e.text.slice(0,500),wordFinal:e.final,wordProvisional:provisional}};
  return {status:'matched',score,contrast:plan.calibrationKey,model:'local-pair-hybrid:v1',unit:plan.profile.unit,

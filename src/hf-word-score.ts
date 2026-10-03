@@ -8,6 +8,9 @@ export interface HfWordEvidence {
  final?:boolean;
  /** A native request has closed with a usable partial result; not an ASR final. */
  completed?:boolean;
+ /** SenseVoice does not supply reliable word confidence/timestamps. Keep
+  * those absent, never fabricate Vosk-style probabilities or alignments. */
+ untimed?:boolean;
 }
 export function nativeHfWordEvidence(plan:Plan,e:HfWordEvidence):boolean{
  return e.final===true&&e.engine===`apple-on-device-words:v1/${plan.profile.language}`;

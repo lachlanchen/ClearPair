@@ -1,4 +1,5 @@
-import {acousticReference,referenceDistance} from './reference-features';
+import {acousticReference,referenceDistance,locateReference,referenceSlice,carrierWordSpan} from './reference-features';
+import {pronunciationText} from './pronunciation-text';
 import type {AssessmentPlan} from './scoring-profiles';
 import type {ScoreResult} from './scoring';
 import {hfDetails,hfAnalysisSamples} from './hf-score';
@@ -9,14 +10,54 @@ export interface ReferenceRequest {
  id:string;plan:Extract<AssessmentPlan,{mode:'contrast'}>;samples:Float32Array;
  target:Float32Array;competitor:Float32Array;voice:string;
  wordTarget?:Float32Array;wordCompetitor?:Float32Array;
+ carrierAnchors?:{target:{prefix?:Float32Array;suffix?:Float32Array};competitor:{prefix?:Float32Array;suffix?:Float32Array}};
 }
 export function referenceScore(request:ReferenceRequest):ScoreResult {
  const {plan}=request;
  const hfTask=plan.calibrationKey.startsWith('handf/');
  const extract=(samples:Float32Array)=>acousticReference(hfTask?hfAnalysisSamples(samples):samples);
- const take=extract(request.samples),target=extract(request.target),competitor=extract(request.competitor);
+ let take=extract(request.samples),target=extract(request.target),competitor=extract(request.competitor);
  if(!take)return {status:'unscored',reason:'poor-signal'};
  if(!target||!competitor)return {status:'unscored',reason:'model-unavailable'};
+ const sentence=plan.calibrationKey.includes('/sentence/');
+ if(sentence&&!hfTask){
+  const wt=request.wordTarget?extract(request.wordTarget):null,wc=request.wordCompetitor?extract(request.wordCompetitor):null;
+  if(!wt||!wc)return {status:'unscored',reason:'reference-unavailable'};
+  const prompt=plan.spokenPrompt.replace(/[^\p{Letter}\p{Mark}]/gu,''),word=pronunciationText(plan.target,plan.profile.language).replace(/[^\p{Letter}\p{Mark}]/gu,'');
+  const position=prompt.lastIndexOf(word),earliest=position<0?0:Math.max(0,position/Math.max(1,prompt.length)-.3);
+  // Symmetric search: neither the selected side nor ASR's answer chooses the
+  // word span. Keep a bounded authored position prior to avoid a similar
+  // earlier syllable in the carrier becoming the graded word.
+  const span=(carrier:NonNullable<typeof take>)=>{
+   const candidates=[locateReference(carrier,wt,Math.floor(carrier.frames.length*earliest)),locateReference(carrier,wc,Math.floor(carrier.frames.length*earliest))]
+    .filter((v):v is NonNullable<typeof v>=>!!v).sort((a,b)=>a.distance-b.distance);
+   const best=candidates[0],next=candidates[1];if(!best)return null;
+   // Apply the SAME symmetric localization to the take and both carriers.
+   // Otherwise an exact target can lose its weak aspiration on one side only.
+   // Merge two close overlapping candidate spans, preserving that edge rather
+   // than choosing the shared vowel's shorter, artificially easier match.
+   const overlap=next?Math.min(best.to,next.to)-Math.max(best.from,next.from):0;
+   return next&&next.distance<=best.distance+.2&&overlap>=Math.min(best.to-best.from,next.to-next.from)*.65
+    ?{from:Math.min(best.from,next.from),to:Math.max(best.to,next.to),distance:best.distance}:best;
+  };
+  const anchors=request.carrierAnchors;
+  let heard:ReturnType<typeof locateReference>=null,a:ReturnType<typeof locateReference>=null,b:ReturnType<typeof locateReference>=null;
+  if(anchors){
+   const edges=(part:typeof anchors.target)=>({prefix:part.prefix?extract(part.prefix):null,suffix:part.suffix?extract(part.suffix):null});
+   const ta=edges(anchors.target),tb=edges(anchors.competitor);
+   if(anchors.target.prefix&&!ta.prefix||anchors.target.suffix&&!ta.suffix||anchors.competitor.prefix&&!tb.prefix||anchors.competitor.suffix&&!tb.suffix)
+    return {status:'unscored',reason:'reference-unavailable'};
+   a=carrierWordSpan(target,ta.prefix,ta.suffix);b=carrierWordSpan(competitor,tb.prefix,tb.suffix);
+   const candidates=[carrierWordSpan(take,ta.prefix,ta.suffix),carrierWordSpan(take,tb.prefix,tb.suffix)]
+    .filter((v):v is NonNullable<typeof v>=>!!v).sort((a,b)=>a.distance-b.distance);
+   heard=candidates[0]??null;
+  }else{heard=span(take);a=span(target);b=span(competitor);}
+  if(!heard||!a||!b||Math.max(heard.distance,a.distance,b.distance)>1.35)return {status:'unscored',reason:'unaligned'};
+  // Slices preserve their full-carrier relative pitch baseline. This lets
+  // level-tone practice use the same speaker's surrounding syllables instead
+  // of comparing the user's absolute pitch with someone else's voice.
+  take=referenceSlice(take,heard.from,heard.to);target=referenceSlice(target,a.from,a.to);competitor=referenceSlice(competitor,b.from,b.to);
+ }
  const tone=plan.profile.unit==='tone',timing=plan.profile.id.startsWith('ja-mora')||plan.profile.id==='yue-vowels:v1';
  if(tone&&take.periodic<.35)return {status:'unscored',reason:'poor-signal'};
  const targetDistance=referenceDistance(take,target,tone,timing),competitorDistance=referenceDistance(take,competitor,tone,timing);
@@ -30,14 +71,13 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
  if(Math.min(targetDistance,competitorDistance)>2.2||take.seconds>Math.max(target.seconds,competitor.seconds)*3.5)
   return {status:'unscored',reason:'unaligned'};
  const fit=Math.exp(-targetDistance/1.6);
- const sentence=plan.calibrationKey.includes('/sentence/');
  const side=plan.calibrationKey.split('/')[3]==='1'?1:0;
- const toneShape=tone?compareTone(take,target,competitor):null;
+ const toneShape=tone?compareTone(take,target,competitor,sentence&&!hfTask):null;
  // Like L & N, keep word identity separate from evidence for the difficult
  // contrast. Do not let a long shared vowel dominate an initial or final sound.
  // Tone register and mora length keep their existing separate route; a
  // spectral difference mask must not pretend to assess absolute pitch/length.
- const focus=!hfTask&&!tone&&!timing&&!sentence?
+ const focus=!hfTask&&!tone&&!timing?
   focusedPair(take,side===0?target:competitor,side===0?competitor:target,focusRegion(plan)):null;
  // A brief aspiration difference can be diluted below the whole-word gate.
  // Resolve it only if the focused region supplies real reference separation;
