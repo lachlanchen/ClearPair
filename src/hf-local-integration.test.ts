@@ -6,10 +6,22 @@ vi.mock('./hf-word-runtime',()=>({HfWordRuntime:class{recognize=mock.recognize;c
 vi.mock('./pcm',()=>({decodeRecording:async()=>({samples:new Float32Array(6400).fill(.05),rate:16000}),resamplePCM:(s:Float32Array)=>s}));
 vi.mock('./analysis',()=>({analyze:()=>({seconds:.4,rms:.05,peak:.1,clipped:0,voicedSeconds:.3,waveform:[],pitch:[],status:'clear'})}));
 import {LocalScorer} from './local-score';
+import {Capacitor} from '@capacitor/core';
 const word={engine:'fixture',text:'hat',words:[{word:'hat',conf:.95,start:0,end:.3}]};
 const match={status:'matched',score:93,contrast:'fixture',model:'local-reference-dtw:v1',unit:'phone',targetDistance:.1,competitorDistance:.5,referenceVoice:'fixture',scope:'word'};
 beforeEach(()=>{vi.clearAllMocks();mock.recognize.mockResolvedValue(word);mock.reference.mockResolvedValue(match);});
 describe.skipIf(!__HF_WORD_MODELS__)('H & F native enabled integration (run with CLEARPAIR_APP=handf CLEARPAIR_HF_WORDS=1)',()=>{
+ it('always requests final native word identity on iOS initial H/F, even with a favourable synthetic match',async()=>{
+  const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios');
+  const e=new LocalScorer();
+  try{
+   mock.recognize.mockResolvedValue({engine:'apple-on-device-words:v1/en-US',text:'fat',words:[{word:'fat',conf:.9,start:0,end:.3}],final:true});
+   const r=await e.assess('handf','hf-en',0,0,false,new Blob());
+   expect(mock.recognize).toHaveBeenCalledTimes(1);
+   expect(r).toMatchObject({status:'matched',closestWord:'fat',recognition:{decision:'opposite'}});
+   if(r.status==='matched')expect(r.score).toBeLessThanOrEqual(45);
+  }finally{e.dispose();platform.mockRestore();}
+ });
  it('preserves the recording buffer when the reference worker transfers its copy',async()=>{
   mock.reference.mockImplementation(async(_plan,pcm:Float32Array)=>{structuredClone(pcm,{transfer:[pcm.buffer]});return {status:'unscored',reason:'unaligned'};});
   const e=new LocalScorer(),r=await e.assess('handf','hf-en',0,0,false,new Blob(['fixture']));

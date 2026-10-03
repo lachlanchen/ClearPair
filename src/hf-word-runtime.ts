@@ -4,11 +4,12 @@ import type {HfWordEvidence} from './hf-word-score';
 import {Capacitor} from '@capacitor/core';
 import {nativeAudio} from './native';
 type ModelFactory=(url:string,signal?:AbortSignal)=>Promise<Model>;
-/** H & F only, exact saved PCM, unrestricted decoder. No permission request,
- * microphone consumer, cloud fallback, pair grammar, or target-word hints. */
+/** H & F only, exact saved PCM, unrestricted decoder. iOS uses native offline
+ * Apple Speech first. No second microphone, cloud fallback or target hints. */
 export class HfWordRuntime {
  /** Diagnostic for the private native test helper; never audio/text contents. */
  lastError?:string;
+ nativeError?:string;
  private model?:Model;
  private language?:string;
  private loading?:Promise<Model>;
@@ -16,6 +17,7 @@ export class HfWordRuntime {
  private generation=0;
  private abort?:()=>void;
  private recognizer?:KaldiRecognizer;
+ private nativeId?:string;
  constructor(private create:ModelFactory=async (url,signal)=>{
   // Do not even import/initialize WASM on an unqualified older iOS runtime.
   // Its failure is a compatibility fallback, never a failed microphone take.
@@ -43,15 +45,39 @@ export class HfWordRuntime {
   });
  }){}
  cancel(){this.generation++;this.abort?.();this.abort=undefined;this.recognizer?.remove();this.recognizer=undefined;
+  const nativeId=this.nativeId;this.nativeId=undefined;
+  if(nativeId)void nativeAudio.cancelWords({id:nativeId}).catch(()=>{});
   this.loadAbort?.abort();this.loadAbort=undefined;this.loading=undefined;}
  dispose(){this.cancel();this.model?.terminate();this.model=undefined;this.language=undefined;
+  if(Capacitor.getPlatform()==='ios')void nativeAudio.releaseWords().catch(()=>{});
   // A cancelled load may finish later; never retain its model after dispose.
   const pending=this.loading;this.loading=undefined;void pending?.then(m=>m.terminate()).catch(()=>{});}
  async recognize(language:string,samples:Float32Array,base:string):Promise<HfWordEvidence|undefined>{
-  this.cancel();this.lastError=undefined;
+  this.cancel();this.lastError=undefined;this.nativeError=undefined;
   const pin=manifest.models.find(m=>m.language===language);
   if(!pin||samples.length<1600||samples.length>216000||samples.some(v=>!Number.isFinite(v)||Math.abs(v)>1.01))return undefined;
   let attempt:Promise<Model>|undefined;
+  if(Capacitor.getPlatform()==='ios'){
+   const token=this.generation,id=crypto.randomUUID();this.nativeId=id;
+   let timer:ReturnType<typeof setTimeout>|undefined;
+   try{
+    const bytes=new Uint8Array(samples.length*2),view=new DataView(bytes.buffer);
+    for(let i=0;i<samples.length;i++)view.setInt16(i*2,Math.max(-32767,Math.min(32767,Math.round(samples[i]*32767))),true);
+    let binary='';for(let at=0;at<bytes.length;at+=8192)binary+=String.fromCharCode(...bytes.subarray(at,at+8192));
+    const native=await Promise.race([nativeAudio.recognizeWords({id,language,pcm16Base64:btoa(binary)}),
+     new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Native offline words timed out')),31_000);})]);
+    if(token!==this.generation)return undefined;
+    if(![`apple-on-device-words:v1/${language}`,`hf-vosk-native:v1/${language}`].includes(native.engine)||native.final!==true)throw Error('Invalid native word provenance');
+    return native;
+   }catch(error){
+    if(token!==this.generation)return undefined;
+    this.nativeError=error instanceof Error?error.message.slice(0,200):'Native offline words unavailable';
+    this.lastError=this.nativeError;
+    // Older iOS still never initializes the unqualified WASM decoder.
+   }finally{
+    clearTimeout(timer);if(this.nativeId===id){this.nativeId=undefined;void nativeAudio.cancelWords({id}).catch(()=>{});}
+   }
+  }
   try{
    if(this.language!==language){this.dispose();this.language=language;}
    // Switching language disposes the old worker; keep only one model in RAM.

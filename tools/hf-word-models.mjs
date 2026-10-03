@@ -1,6 +1,6 @@
 // H & F only: reproducible, licensed offline word-model staging. No training
 // corpus, recordings, generated voice, or credentials enter a package.
-import {readFile,mkdir,copyFile,access,rm} from 'node:fs/promises';
+import {readFile,mkdir,copyFile,access,rm,rename} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {resolve} from 'node:path';
@@ -33,6 +33,31 @@ export async function prepareHfWordModels(destination){
  }
  await copyFile('models/hf-words.json',resolve(destination,'hf-words.json'));
  await copyFile('models/licenses/Apache-2.0.txt',resolve(destination,'Apache-2.0.txt'));
+}
+/** Native iOS reads unpacked weights, avoiding WebKit's WASM compatibility
+ * dependency. Staged into H/F only, from the same checksum-pinned model zips. */
+export async function prepareHfNativeWordModels(destination){
+ const manifest=JSON.parse(await readFile('models/hf-words.json','utf8'));
+ await mkdir(destination,{recursive:true});
+ for(const model of hfWordModels){
+  const zip=resolve('.runtime/reference-qa/vosk-models',model.name+'.zip');
+  const pin=manifest.models.find(m=>m.language===model.language);
+  if(!pin||pin.zipSha256!==model.zipSha256||createHash('sha256').update(await readFile(zip)).digest('hex')!==model.zipSha256)
+   throw Error('Native word-model source hash mismatch');
+  const stage=resolve(destination,'hf-native','.stage-'+model.name),out=resolve(destination,'hf-native',model.language==='en-US'?'en':'zh');
+  await mkdir(stage,{recursive:true});
+  execFileSync('unzip',['-q','-o',zip,'-d',stage]);
+  await access(resolve(stage,model.name,'am/final.mdl'));
+  await rm(out,{recursive:true,force:true});
+  await rename(resolve(stage,model.name),out);
+  await rm(stage,{recursive:true,force:true});
+  // This iOS stager owns these generated package copies. Keep source archives
+  // and all historical builds; do not ship two copies of each model.
+  await rm(resolve(destination,pin.asset.split('/').at(-1)),{force:true});
+ }
+ await copyFile('models/hf-words.json',resolve(destination,'hf-words.json'));
+ await copyFile('models/licenses/Apache-2.0.txt',resolve(destination,'Apache-2.0.txt'));
+ await copyFile('models/licenses/HF-native-NOTICE.txt',resolve(destination,'HF-native-NOTICE.txt'));
 }
 if(process.argv[1]&&resolve(process.argv[1])===resolve('tools/hf-word-models.mjs')){
  await prepareHfWordModels(process.argv[2]||'.runtime/public/handf/models');

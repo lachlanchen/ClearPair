@@ -12,6 +12,8 @@
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
+[僅針對 H & F 的評分更新](../docs/HANDF-NATIVE-SCORING-20261003.md)在 iOS 上原生識別已儲存的英語與普通話錄音，並提供內建離線後備模型，不再只依賴 WebView 解碼。詞語識別與實際測量的發音細節保持獨立；評分失敗原因隨歷史錄音儲存。其他課程和現有正式審核保持不變。原始碼驗證不代表商店可用或真人發音準確率已獲認證。
+
 包含獨立[日語應用](../docs/JAPANESE-COURSE.md)的八款應用，均已提供 TestFlight 和 Google Play [內部測試版 1.0.0 (9)及測試連結](../docs/BETA-1.0.0-9.md)。八款 iOS 正式審核仍使用構建8，均在等待審核，保留獲批後自動發布；Google 正式生產提交尚未完成。[簽名構建和商店狀態均已驗證](../store/artifacts/internal-beta-1.0.0-9.json)。本次內部測試更新不代表獲批或公開上線。已上線的 PWA 保持不變。
 
 ## 八門專項課程

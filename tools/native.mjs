@@ -34,7 +34,11 @@ run(process.execPath, [
 if (platform === "ios") {
   const file = `native/apps/${app}/ios/App/App/Info.plist`,
     text = await readFile(file, "utf8");
-  await writeFile(file, updateIosInfo(text));
+  await writeFile(file, updateIosInfo(text, app));
+  if(app==='handf'){
+    const {prepareHfNativeWordModels}=await import('./hf-word-models.mjs');
+    await prepareHfNativeWordModels(`native/apps/${app}/ios/App/App/public/models`);
+  }
   await exportNativeIcons(app, platform);
   const project=`native/apps/${app}/ios/App/App.xcodeproj/project.pbxproj`;
   await writeFile(project,(await readFile(project,'utf8'))

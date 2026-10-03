@@ -4,6 +4,9 @@ import {
   type PluginListenerHandle,
 } from "@capacitor/core";
 interface NativeAudio {
+  recognizeWords(options:{id:string;language:string;pcm16Base64:string}):Promise<import('./hf-word-score').HfWordEvidence>;
+  cancelWords(options:{id:string}):Promise<void>;
+  releaseWords():Promise<void>;
   offlineWordSupport(): Promise<{supported:boolean}>;
   reference(options: { id: string; text: string; language: string }): Promise<{
     base64: string; mimeType: string; voice: string;

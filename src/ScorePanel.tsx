@@ -9,6 +9,7 @@ export function scoreMessage(reason:ScoreReason,tr:(en:string,zh:string)=>string
   switch(reason){
     case 'ungraded-exercise':return tr('This is an ungraded exploration, not a spoken contrast test.','这是不计分的探索，不是发音对比测试。');
     case 'poor-signal':return tr('No reliable speech signal. Check the microphone and try again.','没有可靠语音信号，请检查麦克风后重试。');
+    case 'sound-unresolved':return tr('Recording captured. Sound details could not be measured.','录音已保存，但未能测量发音细节。');
     case 'unvalidated-model':return tr('The on-device pronunciation models are still being validated. No grade is invented.','设备端发音模型仍在验证中，不会编造分数。');
     case 'cancelled':return tr('Assessment stopped. Your recording is safe.','评分已停止，录音仍保留。');
     case 'reference-unavailable':return tr('Install an offline voice for this practice language in device speech settings, then try again. Your recording is saved.','请在设备语音设置中安装此练习语言的离线声音后重试，录音已保留。');
@@ -43,9 +44,10 @@ export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarnin
     catch{next={status:'unscored',reason:'model-unavailable'};}
     if(run!==token.current)return;
     setResult(next);setRunning(false);
-    // Store only real grades with their model/contrast provenance. No result from
+    // H/F also retains unsuccessful assessment reasons next to the audio for
+    // diagnosis. These remain ungraded and never become recall stars. No result from
     // a previous target can overwrite a newly recorded take or change recall stars.
-    if(next.status==='scored'||next.status==='matched'){
+    if(next.status==='scored'||next.status==='matched'||entry.app==='handf'&&next.status==='unscored'&&next.reason!=='cancelled'){
       const updated={...entry,score:next};
       try{const storage=await saveTake(updated);if(storage==='session')onStorageWarning();
         if(run===token.current)onSaved({...updated,storage});}
@@ -69,7 +71,7 @@ export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarnin
       </dl>}
       {!running&&result?.status==='matched'&&!result.hf&&result.breakdown&&<dl className="hf-score-items">
         <div><dt>{tr('Word match','词语匹配')}</dt><dd>{result.breakdown.wordMatch}<small>/100</small></dd></div>
-        <div><dt>{result.recognition?tr('Target sound','目标音'):contrastLabel(result.focus?.region,tr)}</dt><dd>{result.recognition&&result.evidence==='word'?tr('Uncertain','不确定'):<>{result.breakdown.pairDistinction}<small>/100</small></>}</dd></div>
+        <div><dt>{result.recognition?tr('Target sound','目标音'):contrastLabel(result.focus?.region,tr)}</dt><dd>{result.recognition&&result.evidence==='word'?tr('Not measured','未测量'):<>{result.breakdown.pairDistinction}<small>/100</small></>}</dd></div>
         <div><dt>{tr('Speech duration','有效发声时长')}</dt><dd>{result.breakdown.speechMs}<small>ms</small></dd></div>
       </dl>}
       {!running&&result?.status==='matched'&&result.hf&&<p className="hf-coaching">{hfCue(result.hf.cue,tr)}</p>}

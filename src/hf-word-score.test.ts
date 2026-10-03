@@ -9,6 +9,18 @@ const quality:Analysis={seconds:1,rms:.06,peak:.2,clipped:0,voicedSeconds:.3,wav
 const acoustic:ScoreResult={status:'matched',score:95,contrast:plan().calibrationKey,model:'local-reference-dtw:v1',unit:'phone',targetDistance:0,competitorDistance:.3,referenceVoice:'fixture',scope:'word',closestWord:'hat',
  hf:{version:'hf-segment-fft:v1',target:'h',heard:'h',position:'initial',sound:95,word:90,timing:90,segmentMs:80,targetDistance:0,competitorDistance:.3,margin:1,cue:'good'}};
 describe('H & F word/content and sound evidence stay separate',()=>{
+ it('uses native FINAL word identity without inventing confidence or requiring a synthetic consonant match',()=>{
+  const e={...evidence('hat',0),engine:'apple-on-device-words:v1/en-US',final:true};
+  expect(hfWordDecision(plan(),e)).toMatchObject({decision:'target',confidence:0});
+  const r=hfHybridScore(plan(),e,{status:'unscored',reason:'sound-unresolved'},quality);
+  expect(r).toMatchObject({status:'matched',score:85,closestWord:'hat',recognition:{confidence:0,decision:'target'},evidence:'word'});
+  expect(hfWordDecision(plan(),{...e,final:false}).decision).toBe('unknown');
+ });
+ it('uses native final opposite-word identity even when a synthetic reference incorrectly looks favourable',()=>{
+  const e={...evidence('fat',.9),engine:'apple-on-device-words:v1/en-US',final:true};
+  const r=hfHybridScore(plan(),e,acoustic,quality);
+  if(r.status!=='matched')throw Error('fixture');expect(r.closestWord).toBe('fat');expect(r.score).toBeLessThanOrEqual(45);
+ });
  it.each([['hat','target'],['fat','opposite'],['at','omitted'],['cat','other'],['hat fat','both'],['','unknown']] as const)('classifies %s without prompting the recognizer', (text,decision)=>{
   expect(hfWordDecision(plan(),evidence(text)).decision).toBe(decision);
  });

@@ -1,0 +1,23 @@
+H & F native offline word recognition
+
+Vosk API: Copyright 2019 Alpha Cephei Inc., Apache License 2.0.
+https://github.com/alphacep/vosk-api/tree/v0.3.50
+Kaldi: Apache License 2.0.
+https://github.com/alphacep/kaldi/tree/vosk-android
+OpenFst: Apache License 2.0.
+https://github.com/alphacep/openfst
+
+Native iOS library is an unofficial build published by santalex/libvosk:
+https://github.com/santalex/libvosk/tree/05e23e031eb5d533ba806dbeb50fcdeb4dac77ab
+https://github.com/santalex/libvosk/releases/tag/v0.3.50
+libvosk-v0.3.50-ios-xcframework.zip
+SHA-256: 13348851e77887fec83631e1651655057801677472dfd0a53f1670cbe06eb735
+The build recipe links Apple's Accelerate framework, not a bundled BLAS copy.
+
+English model: vosk-model-small-en-us-0.15, Alpha Cephei, Apache License 2.0.
+Mandarin model: vosk-model-small-cn-0.22, Alpha Cephei, Apache License 2.0.
+https://alphacephei.com/vosk/models
+Full Apache License 2.0 is included in Apache-2.0.txt alongside this notice.
+
+ClearPair's saved-PCM, cancellation and scoring adapters are separate code.
+The recognizer has no target grammar, microphone capture or network fallback.

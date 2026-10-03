@@ -12,6 +12,8 @@ Eight focused courses for easily confused sounds and letters, targeting iOS, And
 
 ![ClearPair](docs/assets/eight-icons-v4.png)
 
+The [H & F-only scoring update](docs/HANDF-NATIVE-SCORING-20261003.md) identifies saved English/Mandarin audio natively on iOS, with a bundled offline fallback instead of relying on WebView decoding. Word identity and measured sound detail remain separate; failed-assessment reasons stay with History audio. The other courses and existing formal reviews are unchanged. Source validation is not store availability or human accuracy certification.
+
 All eight standalone apps, including [Japanese](docs/JAPANESE-COURSE.md), have [1.0.0 (9) internal-test builds and test links](docs/BETA-1.0.0-9.md) on TestFlight and Google Play. The eight iOS formal reviews still use build 8 and remain Waiting for Review, with automatic release preserved; Google production submission is not yet complete. [Signed artifacts and provider states are verified](store/artifacts/internal-beta-1.0.0-9.json). This internal-test update is not approval or public availability. The live PWA is unchanged.
 
 ## Eight focused courses

@@ -7,6 +7,7 @@ import {decodeRecording,resamplePCM} from './pcm';
 import {LocalWorker} from './local-worker';
 import {ReferenceRuntime} from './reference-runtime';
 import {hasNativeAudio} from './native';
+import {Capacitor} from '@capacitor/core';
 import type {HfWordRuntime} from './hf-word-runtime';
 import {hfHybridScore,needsHfWordEvidence} from './hf-word-score';
 export interface LocalAssessmentRequest {
@@ -40,10 +41,11 @@ export class LocalScorer {
         base:new URL(import.meta.env.BASE_URL,location.href).href}):await this.references.assess(plan,app==='handf'&&__HF_WORD_MODELS__?samples.slice():samples);
       if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
       let words:import('./hf-word-score').HfWordEvidence|undefined;
-      // Keep already usable word-mode results fast and unchanged. Lexical
-      // models help difficult/unaligned takes and longer carriers; they are not
-      // qualified to overrule every isolated pronunciation.
-      if(app==='handf'&&__HF_WORD_MODELS__&&needsHfWordEvidence(plan,result)){
+      // iOS follows L & N: final native word identity first, separate sound
+      // evidence second. Android's existing Vosk helper remains a conservative
+      // fallback for difficult takes, not a universal pronunciation classifier.
+      if(app==='handf'&&__HF_WORD_MODELS__&&!plan.calibrationKey.includes('/hf-final/')&&
+        (Capacitor.getPlatform()==='ios'||needsHfWordEvidence(plan,result))){
         const {HfWordRuntime}=await import('./hf-word-runtime');
         if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
         this.hfWords??=new HfWordRuntime();

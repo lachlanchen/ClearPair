@@ -21,7 +21,7 @@ describe('local scoring take lifecycle',()=>{
    recognition:{engine:'fixture',text:'hat',decision:'target',confidence:.95},breakdown:{wordMatch:100,pairDistinction:0,speechMs:180,referenceMs:0}};
   mocks.assess.mockResolvedValue(match);
   render(<ScorePanel take={{...take(),app:'handf',word:'hat'}} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);await act(async()=>{});
-  expect(screen.getByText('Uncertain')).toBeDefined();expect(screen.getByText(/consonant could not be measured reliably/)).toBeDefined();
+  expect(screen.getByText('Not measured')).toBeDefined();expect(screen.getByText(/consonant could not be measured reliably/)).toBeDefined();
  });
  it('shows the offline recognized word and missing-consonant coaching without a false sound label',async()=>{
   const match:ScoreResult={status:'matched',score:18,model:'local-hf-hybrid:v1',contrast:'handf/hf-en/0/0/word/en-h-f:v1',unit:'phone',
@@ -125,6 +125,15 @@ describe('local scoring take lifecycle',()=>{
   render(<ScorePanel take={take()} busy={false} tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);
   await act(async()=>fireEvent.click(screen.getByRole('button',{name:'Assess my pronunciation'})));
   expect(screen.getByText(/No grade is invented/)).toBeDefined();expect(mocks.save).not.toHaveBeenCalled();
+  expect(document.querySelector('.local-grade')).toBeNull();
+ });
+ it('preserves a failed H/F assessment alongside its original recording, without inventing a grade',async()=>{
+  const entry={...take(),app:'handf' as const,lesson:'hf-en',word:'hat'},saved=vi.fn();
+  mocks.assess.mockResolvedValue({status:'unscored',reason:'sound-unresolved'});
+  render(<ScorePanel take={entry} busy={false} automatic tr={tr} onSaved={saved} onStorageWarning={vi.fn()}/>);
+  await act(async()=>{});
+  expect(mocks.save).toHaveBeenCalledWith({...entry,score:{status:'unscored',reason:'sound-unresolved'}});
+  expect(saved).toHaveBeenCalledWith(expect.objectContaining({audio:entry.audio,score:{status:'unscored',reason:'sound-unresolved'}}));
   expect(document.querySelector('.local-grade')).toBeNull();
  });
 });

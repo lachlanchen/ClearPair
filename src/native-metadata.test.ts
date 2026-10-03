@@ -4,6 +4,11 @@ import { updateIosInfo } from '../tools/native-metadata.mjs';
 import { readFileSync } from 'node:fs';
 
 describe('native iOS permission metadata', () => {
+  it('adds offline speech permission only to the explicitly selected H/F app',()=>{
+    const source=readFileSync('native/apps/landr/ios/App/App/Info.plist','utf8');
+    expect(updateIosInfo(source,'handf')).toContain('<key>NSSpeechRecognitionUsageDescription</key>');
+    expect(updateIosInfo(source,'landr')).not.toContain('<key>NSSpeechRecognitionUsageDescription</key>');
+  });
   it('repairs nested microphone text without changing scene data', () => {
     const input = '<?xml version="1.0"?><plist version="1.0"><dict><key>Scene</key><dict><key>Name</key><string>Main</string><key>NSMicrophoneUsageDescription</key><string>wrong location</string></dict></dict></plist>';
     const result = updateIosInfo(input);

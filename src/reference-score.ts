@@ -14,7 +14,8 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
  const hfTask=plan.calibrationKey.startsWith('handf/');
  const extract=(samples:Float32Array)=>acousticReference(hfTask?hfAnalysisSamples(samples):samples);
  const take=extract(request.samples),target=extract(request.target),competitor=extract(request.competitor);
- if(!take||take.periodic<.08)return {status:'unscored',reason:'poor-signal'};
+ if(!take)return {status:'unscored',reason:'poor-signal'};
+ if(take.periodic<.08)return {status:'unscored',reason:hfTask?'sound-unresolved':'poor-signal'};
  if(!target||!competitor)return {status:'unscored',reason:'model-unavailable'};
  const tone=plan.profile.unit==='tone',timing=plan.profile.id.startsWith('ja-mora')||plan.profile.id==='yue-vowels:v1';
  if(tone&&take.periodic<.35)return {status:'unscored',reason:'poor-signal'};

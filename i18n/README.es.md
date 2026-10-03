@@ -12,6 +12,8 @@ Ocho cursos centrados en sonidos y letras fáciles de confundir, para iOS, Andro
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
+La [actualización de puntuación exclusiva de H & F](../docs/HANDF-NATIVE-SCORING-20261003.md) identifica audio guardado en inglés y mandarín de forma nativa en iOS, con un respaldo integrado sin conexión en lugar de depender del decodificador WebView. La identidad de la palabra y los detalles sonoros medidos siguen separados; los motivos de evaluación fallida se conservan junto al audio del historial. Los demás cursos y las revisiones oficiales existentes no cambian. Validar el código no implica disponibilidad en la tienda ni certificación de precisión con voces humanas.
+
 Las ocho apps independientes, incluido [japonés](../docs/JAPANESE-COURSE.md), tienen [pruebas internas 1.0.0 (9) y enlaces de acceso](../docs/BETA-1.0.0-9.md) en TestFlight y Google Play. Las ocho revisiones oficiales de iOS siguen usando la compilación 8 y esperan revisión, manteniendo la publicación automática tras la aprobación; el envío de producción a Google aún no está completo. Se verificaron [los paquetes firmados y los estados de las tiendas](../store/artifacts/internal-beta-1.0.0-9.json). Esta actualización de prueba interna no significa aprobación ni disponibilidad pública. La PWA pública no cambia.
 
 ## Ocho cursos especializados

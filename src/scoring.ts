@@ -2,6 +2,7 @@ import type { Analysis, AppId, Language } from "./types";
 import type { AssessmentPlan } from "./scoring-profiles";
 export type ScoreReason =
   | "poor-signal"
+  | "sound-unresolved"
   | "unvalidated-model"
   | "wrong-model"
   | "unsupported-contrast"
@@ -61,7 +62,7 @@ export type ScoreResult =
       status: "matched";
       score: number;
       contrast: string;
-      model: "local-reference-dtw:v1" | "local-reference-dtw:v2" | "local-hf-hybrid:v1";
+      model: "local-reference-dtw:v1" | "local-reference-dtw:v2" | "local-hf-hybrid:v1" | "local-hf-native:v1";
       unit: ScoreEvidence["unit"];
       // A reference similarity index, NOT a probability of correct pronunciation.
       targetDistance: number;

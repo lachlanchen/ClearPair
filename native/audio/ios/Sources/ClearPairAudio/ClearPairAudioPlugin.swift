@@ -8,6 +8,9 @@ public class ClearPairAudioPlugin: CAPPlugin, CAPBridgedPlugin, AVSpeechSynthesi
     public let jsName = "ClearPairAudio"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "offlineWordSupport", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "recognizeWords", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "cancelWords", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "releaseWords", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "start", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "stop", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "cancel", returnType: CAPPluginReturnPromise),
@@ -29,6 +32,16 @@ public class ClearPairAudioPlugin: CAPPlugin, CAPBridgedPlugin, AVSpeechSynthesi
             call.resolve(["supported": false])
         }
     }
+    private let hfWords = HFOfflineWords()
+    @objc public func recognizeWords(_ call: CAPPluginCall) { DispatchQueue.main.async {
+        self.hfWords.recognize(call)
+    }}
+    @objc public func cancelWords(_ call: CAPPluginCall) { DispatchQueue.main.async {
+        self.hfWords.cancel(call)
+    }}
+    @objc public func releaseWords(_ call: CAPPluginCall) { DispatchQueue.main.async {
+        self.hfWords.release(call)
+    }}
     private var recorder: AVAudioRecorder?
     private var recordingURL: URL?
     private var meter: Timer?

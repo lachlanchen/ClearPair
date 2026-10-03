@@ -2,8 +2,8 @@ import {describe,it,expect,vi} from 'vitest';
 import type {Model} from 'vosk-browser/dist/model';
 import {HfWordRuntime} from './hf-word-runtime';
 import {Capacitor} from '@capacitor/core';
-const compatibility=vi.hoisted(()=>({support:vi.fn(),model:vi.fn()}));
-vi.mock('./native',()=>({nativeAudio:{offlineWordSupport:compatibility.support}}));
+const compatibility=vi.hoisted(()=>({support:vi.fn(),model:vi.fn(),native:vi.fn(),cancel:vi.fn().mockResolvedValue(undefined),release:vi.fn().mockResolvedValue(undefined)}));
+vi.mock('./native',()=>({nativeAudio:{offlineWordSupport:compatibility.support,recognizeWords:compatibility.native,cancelWords:compatibility.cancel,releaseWords:compatibility.release}}));
 vi.mock('vosk-browser',()=>({Model:compatibility.model}));
 class FakeModel{
  ready=true;terminate=vi.fn();remove=vi.fn();decoders:FakeDecoder[]=[];
@@ -28,10 +28,50 @@ describe('H & F offline decoder lifecycle',()=>{
  it('does not initialize WebAssembly on an unqualified older iOS runtime',async()=>{
   const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios');
   compatibility.support.mockResolvedValue({supported:false});compatibility.model.mockClear();
+  compatibility.native.mockRejectedValue(Error('Offline model unavailable'));
   const engine=new HfWordRuntime();
   try{
    expect(await engine.recognize('en-US',samples(),'capacitor://localhost/')).toBeUndefined();
    expect(compatibility.model).not.toHaveBeenCalled();expect(engine.lastError).toContain('not qualified');
+  }finally{engine.dispose();platform.mockRestore();}
+ });
+ it('uses native saved-PCM words on older iOS without loading WebAssembly',async()=>{
+  const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios');
+  const result={engine:'apple-on-device-words:v1/en-US',text:'hat',words:[{word:'hat',conf:0,start:.32,end:.7}],final:true};
+  compatibility.native.mockResolvedValue(result);compatibility.model.mockClear();compatibility.support.mockClear();compatibility.native.mockClear();
+  const engine=new HfWordRuntime(),audio=samples();
+  try{
+   expect(await engine.recognize('en-US',audio,'capacitor://localhost/')).toEqual(result);
+   expect(compatibility.model).not.toHaveBeenCalled();expect(compatibility.support).not.toHaveBeenCalled();
+   const request=compatibility.native.mock.calls[0][0];
+   expect(request.language).toBe('en-US');expect(Object.keys(request).sort()).toEqual(['id','language','pcm16Base64']);
+   const raw=Uint8Array.from(atob(request.pcm16Base64),c=>c.charCodeAt(0));
+   expect(raw.length).toBe(audio.length*2);expect(new DataView(raw.buffer).getInt16(0,true)/32767).toBeCloseTo(.04,4);
+  }finally{engine.dispose();platform.mockRestore();}
+ });
+ it('accepts the bundled native fallback without treating it as Apple evidence',async()=>{
+  const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios');
+  const result={engine:'hf-vosk-native:v1/en-US',text:'fat',words:[{word:'fat',conf:.88,start:.32,end:.7}],final:true};
+  compatibility.native.mockResolvedValue(result);compatibility.model.mockClear();
+  const engine=new HfWordRuntime();
+  try{expect(await engine.recognize('en-US',samples(),'capacitor://localhost/')).toEqual(result);expect(compatibility.model).not.toHaveBeenCalled();}
+  finally{engine.dispose();platform.mockRestore();}
+ });
+ it('releases the native model cache when the score panel is backgrounded/disposed',()=>{
+  const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios');compatibility.release.mockClear();
+  try{new HfWordRuntime().dispose();expect(compatibility.release).toHaveBeenCalledOnce();}finally{platform.mockRestore();}
+ });
+ it('ignores an old native final result and cancels by its own request ID',async()=>{
+  const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios');
+  let finish!:(r:unknown)=>void;
+  compatibility.native.mockImplementation(()=>new Promise(r=>finish=r));compatibility.cancel.mockClear();
+  const engine=new HfWordRuntime();
+  try{
+   const pending=engine.recognize('en-US',samples(),'capacitor://localhost/');
+   const request=compatibility.native.mock.calls.at(-1)![0];engine.cancel();
+   expect(compatibility.cancel).toHaveBeenCalledWith({id:request.id});
+   finish({engine:'apple-on-device-words:v1/en-US',text:'fat',words:[],final:true});
+   expect(await pending).toBeUndefined();
   }finally{engine.dispose();platform.mockRestore();}
  });
  it('uses unrestricted 16k saved audio and a fresh decoder per take',async()=>{
