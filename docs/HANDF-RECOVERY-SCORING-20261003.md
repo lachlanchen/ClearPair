@@ -1,6 +1,6 @@
 # H & F recognition recovery and captured-speech feedback
 
-Candidate 1.0.0 (14) addresses the owner's iPhone SE 3 report that build 13
+H & F 1.0.0 (14) addresses the owner's iPhone SE 3 report that build 13
 usually recognized fat, but left most other attempts uncertain. No owner audio
 or device recognition logs were retrieved; these are source-verified recovery
 faults, not a proven diagnosis of every reported take.
@@ -57,8 +57,9 @@ Apple's simulator recognizer was unavailable. These checks use synthesized
 references, not live learner microphone audio. The Apple partial-result recovery
 policy is covered by unit/native-contract tests, not claimed as observed on the
 owner's phone. The owned simulator was shut down after evidence capture.
-Exact internal-store delivery is recorded separately after it completes; this
-candidate note alone is not an availability receipt.
+Exact TestFlight and Google Play internal availability is verified in the
+[build 14 delivery receipt](BETA-HANDF-1.0.0-14.md). Other apps, existing production
+reviews and the web deployment remain unchanged.
 
 An existing experimental onset network was independently evaluated on cached
 human word crops and did not improve usable coverage. It was not enabled or
