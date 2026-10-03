@@ -37,22 +37,36 @@ export class LocalScorer {
       const quality=analyze(pcm.samples,pcm.rate);
       if(!['clear','quiet'].includes(quality.status))return {status:'unscored',reason:'poor-signal'};
       const samples=resamplePCM(pcm.samples,pcm.rate);
+      let words:import('./hf-word-score').HfWordEvidence|undefined;
+      const useHfWords=app==='handf'&&__HF_WORD_MODELS__&&!plan.calibrationKey.includes('/hf-final/');
+      const iosWords=useHfWords&&Capacitor.getPlatform()==='ios';
+      const identify=async()=>{
+        const {HfWordRuntime}=await import('./hf-word-runtime');
+        if(generation!==this.generation)return;
+        this.hfWords??=new HfWordRuntime();
+        words=await this.hfWords.recognize(plan.profile.language,samples,new URL(import.meta.env.BASE_URL,location.href).href);
+      };
+      // Like L & N, identify the captured speech FIRST. Reference synthesis
+      // changes the shared AVAudioSession; it must not run while Apple words
+      // are starting/finishing. Both stages still use this one saved recording.
+      if(iosWords)await identify();
+      if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
       const result=calibrated?await this.host.request({id:crypto.randomUUID(),app,plan,samples,quality,
         base:new URL(import.meta.env.BASE_URL,location.href).href}):await this.references.assess(plan,app==='handf'&&__HF_WORD_MODELS__?samples.slice():samples);
       if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
-      let words:import('./hf-word-score').HfWordEvidence|undefined;
       // iOS follows L & N: final native word identity first, separate sound
       // evidence second. Android's existing Vosk helper remains a conservative
       // fallback for difficult takes, not a universal pronunciation classifier.
-      if(app==='handf'&&__HF_WORD_MODELS__&&!plan.calibrationKey.includes('/hf-final/')&&
-        (Capacitor.getPlatform()==='ios'||needsHfWordEvidence(plan,result))){
-        const {HfWordRuntime}=await import('./hf-word-runtime');
-        if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
-        this.hfWords??=new HfWordRuntime();
-        words=await this.hfWords.recognize(plan.profile.language,samples,new URL(import.meta.env.BASE_URL,location.href).href);
-      }
+      if(useHfWords&&!iosWords&&needsHfWordEvidence(plan,result))await identify();
       if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
-      return generation===this.generation?hfHybridScore(plan,words,result,quality):{status:'unscored',reason:'cancelled'};
+      const hybrid=hfHybridScore(plan,words,result,quality);
+      if(useHfWords&&(hybrid.status==='matched'&&words!==undefined||hybrid.status==='unscored'&&hybrid.reason!=='cancelled'))
+        return {...hybrid,diagnostics:{speechMs:Math.round(quality.voicedSeconds*1000),signal:quality.status,
+          acousticState:result.status==='unscored'?result.reason:result.status==='matched'&&result.hf?'measured-sound':'word-comparison',
+          wordState:words?.text.trim()?'recognized':words?'empty':'unavailable',
+          ...(words?{wordEngine:words.engine,wordText:words.text.slice(0,500),wordFinal:words.final,
+            wordProvisional:words.completed===true&&words.final===false}:{}),}};
+      return hybrid;
     }catch{
       return {status:'unscored',reason:generation===this.generation?'model-unavailable':'cancelled'};
     }

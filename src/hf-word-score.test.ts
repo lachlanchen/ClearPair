@@ -9,6 +9,31 @@ const quality:Analysis={seconds:1,rms:.06,peak:.2,clipped:0,voicedSeconds:.3,wav
 const acoustic:ScoreResult={status:'matched',score:95,contrast:plan().calibrationKey,model:'local-reference-dtw:v1',unit:'phone',targetDistance:0,competitorDistance:.3,referenceVoice:'fixture',scope:'word',closestWord:'hat',
  hf:{version:'hf-segment-fft:v1',target:'h',heard:'h',position:'initial',sound:95,word:90,timing:90,segmentMs:80,targetDistance:0,competitorDistance:.3,margin:1,cue:'good'}};
 describe('H & F word/content and sound evidence stay separate',()=>{
+ it('uses a completed Apple partial without inventing a final result or confidence',()=>{
+  const e={...evidence('hat',0),engine:'apple-on-device-words:v1/en-US',final:false,completed:true};
+  expect(hfWordDecision(plan(),e)).toMatchObject({decision:'target',confidence:0,wordMatch:100});
+  const r=hfHybridScore(plan(),e,{status:'unscored',reason:'sound-unresolved'},quality);
+  expect(r).toMatchObject({status:'matched',score:79,evidence:'word',recognition:{decision:'target',confidence:0,provisional:true}});
+  expect(hfWordDecision(plan(),{...e,completed:false})).toMatchObject({decision:'unknown'});
+  expect(hfWordDecision(plan(),{...e,engine:'hf-vosk-native:v1/en-US'})).toMatchObject({decision:'unknown'});
+ });
+ it('keeps completed partial opposite words low and considers them above the old acoustic threshold',()=>{
+  const e={...evidence('fat',0),engine:'apple-on-device-words:v1/en-US',final:false,completed:true};
+  const r=hfHybridScore(plan(),e,acoustic,quality);
+  expect(r).toMatchObject({status:'matched',recognition:{decision:'opposite',provisional:true},closestWord:'fat'});
+  if(r.status==='matched')expect(r.score).toBeLessThanOrEqual(45);
+ });
+ it.each(['hot','hit'])('keeps onset-preserving %s as partial word analysis, never perfect hat',text=>{
+  const e={...evidence(text,0),engine:'apple-on-device-words:v1/en-US',final:true};
+  expect(hfWordDecision(plan(),e)).toMatchObject({decision:'target',wordMatch:55,confidence:0});
+  const r=hfHybridScore(plan(),e,{status:'unscored',reason:'unaligned'},quality);
+  expect(r).toMatchObject({status:'matched',recognition:{partialWord:true},breakdown:{wordMatch:55}});
+  if(r.status==='matched')expect(r.score).toBeLessThanOrEqual(69);
+ });
+ it('does not use vowel-near spelling to rescue other onsets, inserted consonants, plurals or low-confidence Vosk',()=>{
+  for(const text of ['that','cat','hats','heart','the hat'])expect(hfWordDecision(plan(),evidence(text)).decision).toBe('other');
+  expect(hfWordDecision(plan(),evidence('hot',.1)).decision).toBe('unknown');
+ });
  it('does not count a word-only reference ratio as measured sound or exceed its 85-point cap',()=>{
   const e={...evidence('hat',.9),engine:'hf-vosk-native:v1/en-US',final:true};
   const wordOnly={...acoustic,score:59,hf:undefined,evidence:'word' as const,breakdown:{wordMatch:100,pairDistinction:99,speechMs:300,referenceMs:300}};

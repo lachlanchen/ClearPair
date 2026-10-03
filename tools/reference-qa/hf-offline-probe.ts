@@ -29,7 +29,9 @@ async function run(){
   const p=await decodeRecording(new Blob([Uint8Array.from(atob(a.base64),c=>c.charCodeAt(0))],{type:a.mimeType}));
   return {samples:resamplePCM(p.samples,p.rate),voice:a.voice};
  };
- const native=(word:HfWordEvidence|undefined)=>!!word&&word.final===true&&/^(apple-on-device-words|hf-vosk-native):v1\//.test(word.engine);
+ const native=(word:HfWordEvidence|undefined)=>!!word&&(
+  word.final===true&&/^(apple-on-device-words|hf-vosk-native):v1\//.test(word.engine)||
+  word.completed===true&&word.final===false&&/^apple-on-device-words:v1\//.test(word.engine));
  console.log('CLEARPAIR_REFERENCE_BEGIN 47 H&F offline saved-PCM regressions only');
  try{
   for(const lesson of ['hf-en','hf-zh','hf-final'])for(const [pair,words] of lessonById(lesson).pairs.entries()){

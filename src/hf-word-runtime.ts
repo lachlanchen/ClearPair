@@ -67,7 +67,8 @@ export class HfWordRuntime {
     const native=await Promise.race([nativeAudio.recognizeWords({id,language,pcm16Base64:btoa(binary)}),
      new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Native offline words timed out')),31_000);})]);
     if(token!==this.generation)return undefined;
-    if(![`apple-on-device-words:v1/${language}`,`hf-vosk-native:v1/${language}`].includes(native.engine)||native.final!==true)throw Error('Invalid native word provenance');
+    const completedPartial=native.engine===`apple-on-device-words:v1/${language}`&&native.completed===true&&native.final===false;
+    if(![`apple-on-device-words:v1/${language}`,`hf-vosk-native:v1/${language}`].includes(native.engine)||native.final!==true&&!completedPartial)throw Error('Invalid native word provenance');
     return native;
    }catch(error){
     if(token!==this.generation)return undefined;

@@ -6,9 +6,14 @@ export interface HfWordEvidence {
  engine:string;text:string;words:{word:string;conf:number;start:number;end:number}[];
  /** Only the native bridge produces final saved-PCM Apple/native Vosk results. */
  final?:boolean;
+ /** A native request has closed with a usable partial result; not an ASR final. */
+ completed?:boolean;
 }
 export function nativeHfWordEvidence(plan:Plan,e:HfWordEvidence):boolean{
  return e.final===true&&e.engine===`apple-on-device-words:v1/${plan.profile.language}`;
+}
+export function provisionalNativeHfWords(plan:Plan,e:HfWordEvidence):boolean{
+ return e.completed===true&&e.final===false&&e.engine===`apple-on-device-words:v1/${plan.profile.language}`;
 }
 function finalNativeWords(plan:Plan,e:HfWordEvidence):boolean{
  return e.final===true&&[`apple-on-device-words:v1/${plan.profile.language}`,`hf-vosk-native:v1/${plan.profile.language}`].includes(e.engine);
@@ -33,6 +38,14 @@ const englishForms:Record<string,string[]>={fill:['fill','phil'],feet:['feet','f
 // Common recognizer coda confusions preserve the H/F onset and vowel, but NOT
 // the entire word. They contribute partial content evidence, never a full match.
 const partialForms:Record<string,string[]>={hat:['had'],fat:['fad'],heat:['hed'],feet:['feed'],hit:['hid']};
+function nearbyVowelWord(expected:string,heard:string):boolean{
+ // Onset-preserving, one-vowel spelling substitution gives PARTIAL content
+ // evidence (hat/hot, fat/fit), never a correct whole-word or phoneme claim.
+ // No edit-distance rescue for inserted consonants, TH, plurals or sentences.
+ if(!/^[hf]/.test(expected)||heard[0]!==expected[0]||heard.length!==expected.length)return false;
+ const differences=[...expected].flatMap((c,i)=>c===heard[i]?[]:[i]);
+ return differences.length===1&&/[aeiou]/.test(expected[differences[0]])&&/[aeiou]/.test(heard[differences[0]]);
+}
 export function hfWordDecision(plan:Plan,e:HfWordEvidence):{decision:Decision;confidence:number;wordMatch?:number}{
  if(!plan.calibrationKey.startsWith('handf/')||!['en-US','zh-CN'].includes(plan.profile.language))
   return {decision:'unknown',confidence:0};
@@ -56,8 +69,13 @@ export function hfWordDecision(plan:Plan,e:HfWordEvidence):{decision:Decision;co
   // Apple final word identity follows L & N's lexical route. Keep its actual
   // confidence (including zero), never substitute a fabricated probability.
   // This establishes spelling/word identity, NOT a measured consonant grade.
-  return {decision:confidence>=.65||nativeHfWordEvidence(plan,e)?(target.length?'target':'opposite'):'unknown',confidence,
+  return {decision:confidence>=.65||nativeHfWordEvidence(plan,e)||provisionalNativeHfWords(plan,e)?(target.length?'target':'opposite'):'unknown',confidence,
    wordMatch:!chinese&&partialForms[selected]?.includes(hits[0].word)?75:100};
+ }
+ if(!chinese&&units.length===1){
+  const hit=units[0],targetNear=nearbyVowelWord(norm(plan.target.text),hit.word),oppositeNear=nearbyVowelWord(norm(plan.competitor.text),hit.word);
+  if(targetNear!==oppositeNear&&(hit.conf>=.65||nativeHfWordEvidence(plan,e)||provisionalNativeHfWords(plan,e)))
+   return {decision:targetNear?'target':'opposite',confidence:hit.conf,wordMatch:55};
  }
  const omitted=units.filter(w=>(omissions[norm(plan.target.text)]??[]).includes(w.word));
  if(!sentence&&units.length===1&&omitted[0]?.conf>=.65)return {decision:'omitted',confidence:omitted[0].conf};
@@ -68,9 +86,10 @@ export function hfWordDecision(plan:Plan,e:HfWordEvidence):{decision:Decision;co
  * content decisions, acoustics explain the difficult sound. The indices are
  * deliberately not a calibrated correctness percentage. */
 export function hfHybridScore(plan:Plan,e:HfWordEvidence|undefined,acoustic:ScoreResult,quality:Analysis):ScoreResult{
- if(!e||(!needsHfWordEvidence(plan,acoustic)&&!finalNativeWords(plan,e)))return acoustic;
+ if(!e||(!needsHfWordEvidence(plan,acoustic)&&!finalNativeWords(plan,e)&&!provisionalNativeHfWords(plan,e)))return acoustic;
  if(!plan.calibrationKey.startsWith('handf/'))return acoustic;
- const native=nativeHfWordEvidence(plan,e);
+ const provisional=provisionalNativeHfWords(plan,e);
+ const native=nativeHfWordEvidence(plan,e)||provisional;
  let {decision,confidence,wordMatch}=hfWordDecision(plan,e);
  if(acoustic.status==='unscored'&&(['cancelled','invalid-evidence'].includes(acoustic.reason)||acoustic.reason==='poor-signal'&&!['clear','quiet'].includes(quality.status)))return acoustic;
  const base=acoustic.status==='matched'?acoustic:undefined;
@@ -90,7 +109,8 @@ export function hfHybridScore(plan:Plan,e:HfWordEvidence|undefined,acoustic:Scor
  if(decision==='other'&&(!base||confidence<.85||Math.min(base.targetDistance,base.competitorDistance)<1.35||
    (base.hf?.word??base.breakdown?.wordMatch??100)>50))decision='unknown';
  if(decision==='unknown'&&!base)return {status:'unscored',reason:'uncertain'};
- const recognition={engine:e.engine,text:e.text.slice(0,500),decision,confidence};
+ const recognition={engine:e.engine,text:e.text.slice(0,500),decision,confidence,
+  ...(wordMatch!==undefined&&wordMatch<100?{partialWord:true}:{}),...(provisional?{provisional:true}:{})};
  const labels=plan.calibrationKey.includes('/hf-final/')?['f','v'] as const:['h','f'] as const;
  const side=plan.calibrationKey.split('/')[3]==='1'?1:0;
  const lexicalSide=decision==='target'?side:decision==='opposite'?1-side:undefined;
@@ -104,7 +124,8 @@ export function hfHybridScore(plan:Plan,e:HfWordEvidence|undefined,acoustic:Scor
  const word=decision==='target'?wordMatch??100:decision==='opposite'?0:decision==='omitted'?20:decision==='other'?0:base?.hf?.word??base?.breakdown?.wordMatch??0;
  // A confident opposite/missing/unrelated word receives useful low-score
  // feedback. The selected target never biases decoding into these two words.
- const cap=decision==='opposite'?45:decision==='omitted'?30:decision==='other'?25:decision==='both'?40:conflict?59:decision==='unknown'?base!.score:sound===undefined?85:100;
+ const cap=decision==='opposite'?45:decision==='omitted'?30:decision==='other'?25:decision==='both'?40:conflict?59:decision==='unknown'?base!.score:
+  wordMatch!==undefined&&wordMatch<=55?69:provisional||wordMatch!==undefined&&wordMatch<100?79:sound===undefined?85:100;
  const identity=decision==='target'?100:decision==='opposite'?0:decision==='omitted'?0:decision==='other'?0:50;
  const measured=sound??identity;
  const score=Math.min(cap,Math.round(decision==='target'?(native ? .65*word+.20*identity+.15*measured : .55*word+.35*measured+.10*confidence*100):

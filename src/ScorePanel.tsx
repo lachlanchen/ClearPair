@@ -59,10 +59,10 @@ export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarnin
       {take&&<small className="score-target">{tr('Recorded word','录制的词')}: <WordText value={take.word} reading={take.reading}/></small>}
       {running?<p>{tr('Analysing the target sound…','正在分析目标音…')}</p>:result?.status==='scored'||result?.status==='matched'?<div className="local-grade">
         <strong>{result.score}<small>/ 100</small></strong>
-        <p>{result.status==='matched'&&result.hf&&!result.recognition?tr('Target sound','目标音'):tr('Practice match','练习匹配分')}
+        <p>{result.status==='matched'&&result.hf&&!result.recognition?tr('Target sound','目标音'):result.status==='matched'&&result.evidence==='word'&&result.recognition?tr('Word match','词语匹配'):tr('Practice match','练习匹配分')}
           {result.status==='matched'&&result.hf&&!result.recognition&&<small>{tr('Heard','听到的音')}: {result.hf.heard==='uncertain'?tr('Uncertain','不确定'):`/${result.hf.heard==='h'&&take?.language==='zh-CN'?'x':result.hf.heard}/`}</small>}
         </p>
-      </div>:<p>{result?.status==='unscored'?scoreMessage(result.reason,tr):automatic?tr('Record, speak, then pause for your score.','点录音，说出词语，停顿后查看评分。'):tr('Record first, then assess the confusing sound.','先录音，再评估容易混淆的音。')}</p>}
+      </div>:<p>{result?.status==='unscored'?result.diagnostics&&['clear','quiet'].includes(result.diagnostics.signal)&&['uncertain','unaligned','sound-unresolved'].includes(result.reason)?tr('Speech was captured, but word recognition could not confirm H/F. Try the sentence option; your recording is saved.','已录到语音，但词语识别未能确认 H/F。可尝试短句模式，录音仍保留。'):scoreMessage(result.reason,tr):automatic?tr('Record, speak, then pause for your score.','点录音，说出词语，停顿后查看评分。'):tr('Record first, then assess the confusing sound.','先录音，再评估容易混淆的音。')}</p>}
       {!running&&result?.status==='matched'&&(result.recognition?.text||result.closestWord)&&<p className="closest-word">{result.recognition?.text?tr('Recognized words','识别的词语'):tr('Closer to','更接近')}: <bdi>{result.recognition?.text??result.closestWord}</bdi></p>}
       {!running&&result?.status==='matched'&&result.hf&&<dl className="hf-score-items">
         <div><dt>{tr('Target sound','目标音')}</dt><dd>{result.hf.sound}<small>/100</small></dd></div>
@@ -77,9 +77,17 @@ export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarnin
       {!running&&result?.status==='matched'&&result.hf&&<p className="hf-coaching">{result.hf.cue==='uncertain'?tr('Both sounds are close in this recording. The score shows the measured difference; try clearer breath for H or lip friction for F.','这段录音的两个音较接近。分数反映测量到的区别；H 可加强轻柔呼气，F 可加强唇齿摩擦。'):hfCue(result.hf.cue,tr)}</p>}
       {!running&&take?.app==='handf'&&result?.status==='matched'&&!result.hf&&!result.recognition&&<p className="hf-coaching">{tr('The word shape was compared, but the consonant boundary was unclear. This score is provisional, not a confirmed H/F sound grade.','已比较词语的声音特征，但辅音边界不清晰。这是暂定匹配分，不是已确认的 H/F 发音分。')}</p>}
       {!running&&result?.status==='matched'&&!result.hf&&result.recognition&&result.recognition.decision!=='target'&&<p className="hf-coaching">{hfCue(result.recognition.decision==='omitted'?'missing':result.recognition.decision==='other'?'different-word':'uncertain',tr)}</p>}
-      {!running&&(result?.status==='matched'||result?.status==='scored')&&<details className="score-details">
+      {!running&&result?.status==='matched'&&result.recognition?.partialWord&&<p className="hf-coaching">{tr('A nearby word supports the initial sound, but the complete word was not confirmed. Compare the vowel and ending too.','识别到的近似词支持词首音，但完整词语未确认。请同时比较元音和词尾。')}</p>}
+      {!running&&result?.status==='unscored'&&result.diagnostics&&<dl className="hf-score-items">
+        <div><dt>{tr('Speech duration','有效发声时长')}</dt><dd>{result.diagnostics.speechMs}<small>ms</small></dd></div>
+        <div><dt>{tr('Recognized words','识别的词语')}</dt><dd>{result.diagnostics.wordText||tr('Not measured','未测量')}</dd></div>
+        <div><dt>{tr('Target sound','目标音')}</dt><dd>{tr('Not measured','未测量')}</dd></div>
+      </dl>}
+      {!running&&(result?.status==='matched'||result?.status==='scored'||result?.status==='unscored'&&result.diagnostics)&&<details className="score-details">
         <summary>{tr('Score details','评分详情')}</summary>
-        <p>{result.status==='matched'?result.recognition?result.evidence==='word'?tr('The word was identified offline; its consonant could not be measured reliably. This is a word-match score, not a pronunciation accuracy percentage.','离线识别到了词语，但无法可靠测量辅音。这是词语匹配分，不是发音正确率。'):tr('Offline word recognition plus sound comparison. This practice index is not a pronunciation accuracy percentage.','离线词语识别结合声音比较：练习分数不是发音正确率。'):tr('Beta practice match. Similarity to the device voice, not a pronunciation accuracy percentage.','测试版练习匹配分：与设备示范声音的相似度，不是发音正确率。'):tr('Estimated target-contrast score, not a diagnosis.','目标音对比的估计分数，不是诊断。')}</p>
+        <p>{result.status==='matched'?result.recognition?result.evidence==='word'?tr('The word was identified offline; its consonant could not be measured reliably. This is a word-match score, not a pronunciation accuracy percentage.','离线识别到了词语，但无法可靠测量辅音。这是词语匹配分，不是发音正确率。'):tr('Offline word recognition plus sound comparison. This practice index is not a pronunciation accuracy percentage.','离线词语识别结合声音比较：练习分数不是发音正确率。'):tr('Beta practice match. Similarity to the device voice, not a pronunciation accuracy percentage.','测试版练习匹配分：与设备示范声音的相似度，不是发音正确率。'):result.status==='scored'?tr('Estimated target-contrast score, not a diagnosis.','目标音对比的估计分数，不是诊断。'):scoreMessage(result.reason,tr)}</p>
+        {result.status==='matched'&&result.recognition?.provisional&&<p>{tr('Provisional word recognition: Apple returned useful words but did not finalize the transcript.','暂定词语识别：Apple 返回了有效词语，但未完成最终转写。')}</p>}
+        {result.status!=='scored'&&result.diagnostics&&<small className="score-diagnostics">{result.diagnostics.wordEngine??'offline-words-unavailable'} · {result.diagnostics.acousticState} · {result.diagnostics.wordState}</small>}
         <small>{tr('On this device. No audio uploads.','在此设备运行，不上传录音。')}</small>
       </details>}
     </div>

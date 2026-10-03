@@ -57,7 +57,7 @@ export interface Calibration {
   };
 }
 export type ScoreResult =
-  | { status: "unscored"; reason: ScoreReason }
+  | { status: "unscored"; reason: ScoreReason; diagnostics?:HfDiagnostics }
   | {
       status: "matched";
       score: number;
@@ -71,7 +71,8 @@ export type ScoreResult =
       scope: "word" | "sentence";
       hf?: import('./hf-score').HFDetails;
       closestWord?: string;
-      recognition?: {engine:string;text:string;decision:'target'|'opposite'|'omitted'|'other'|'both'|'unknown';confidence:number};
+      recognition?: {engine:string;text:string;decision:'target'|'opposite'|'omitted'|'other'|'both'|'unknown';confidence:number;provisional?:boolean;partialWord?:boolean};
+      diagnostics?:HfDiagnostics;
       evidence?: "sound" | "word";
       breakdown?: {wordMatch:number;pairDistinction:number;speechMs:number;referenceMs:number};
       focus?: import('./pair-focus').PairFocus;
@@ -84,6 +85,11 @@ export type ScoreResult =
       model: string;
       unit: ScoreEvidence["unit"];
     };
+export interface HfDiagnostics {
+ speechMs:number;signal:'clear'|'quiet'|'silent'|'clipped'|'unavailable';
+ acousticState:string;wordState:'recognized'|'empty'|'unavailable';
+ wordEngine?:string;wordText?:string;wordFinal?:boolean;wordProvisional?:boolean;
+}
 const sigmoid = (x: number) =>
   x >= 0 ? 1 / (1 + Math.exp(-x)) : Math.exp(x) / (1 + Math.exp(x));
 export function logSumExp(values: number[]): number {

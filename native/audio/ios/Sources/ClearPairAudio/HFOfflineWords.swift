@@ -12,7 +12,7 @@ final class HFOfflineWords {
     private var file: URL?
     private var deadline: DispatchWorkItem?
     private let fallback = HFVoskWords()
-    private var unavailableLocales = Set<String>()
+    private var latestTranscript: [String: Any]?
     private var bundledRunning = false
 
     func recognize(_ call: CAPPluginCall) {
@@ -49,8 +49,9 @@ final class HFOfflineWords {
     }
 
     private func begin(_ call: CAPPluginCall, pcm: Data, language: String, id: String) {
-        guard !unavailableLocales.contains(language),
-              let recognizer = SFSpeechRecognizer(locale: Locale(identifier: language)),
+        // A transient initialization failure must not disable this locale for
+        // the rest of the app session. Recheck availability on EVERY take.
+        guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: language)),
               recognizer.supportsOnDeviceRecognition, recognizer.isAvailable else {
             bundled(call, pcm: pcm, language: language, id: id); return
         }
@@ -60,7 +61,7 @@ final class HFOfflineWords {
         let timeout = DispatchWorkItem { [weak self] in
             guard self?.identifier == id else { return }
             guard let self else { return }
-            self.bundled(call, pcm: pcm, language: language, id: id)
+            self.completeLatestOrDecode(call, pcm: pcm, language: language, id: id)
         }
         deadline = timeout
         DispatchQueue.main.asyncAfter(deadline: .now() + 10, execute: timeout)
@@ -73,41 +74,49 @@ final class HFOfflineWords {
             try Self.wav(padded).write(to: url, options: .atomic)
             let request = SFSpeechURLRecognitionRequest(url: url)
             request.requiresOnDeviceRecognition = true
-            request.shouldReportPartialResults = false
+            request.shouldReportPartialResults = true
             request.taskHint = .confirmation
             // No contextualStrings: the target is not an answer supplied to ASR.
             task = recognizer.recognitionTask(with: request) { [weak self] result, error in
                 DispatchQueue.main.async {
                     guard let self, self.pending === call, self.identifier == id, !self.bundledRunning else { return }
-                    if let result, result.isFinal {
+                    if let result {
                         let transcript = result.bestTranscription
                         // A completed Apple task can still contain no words.
-                        // That is not a useful final answer: decode the same
-                        // saved PCM with the bundled model instead.
+                        // Keep any usable earlier words; otherwise decode the
+                        // same saved PCM with the bundled model instead.
                         if transcript.formattedString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || transcript.segments.isEmpty {
-                            self.bundled(call, pcm: pcm, language: language, id: id); return
+                            if result.isFinal { self.completeLatestOrDecode(call, pcm: pcm, language: language, id: id); return }
+                        } else {
+                            guard transcript.formattedString.count <= 500, transcript.segments.count <= 150 else {
+                                self.finish(error: "Invalid offline transcription."); return
+                            }
+                            let words: [[String: Any]] = transcript.segments.map { segment in
+                                ["word": segment.substring, "conf": Double(segment.confidence),
+                                 "start": segment.timestamp, "end": segment.timestamp + segment.duration]
+                            }
+                            // Preserve the actual isFinal flag and raw confidence.
+                            // This snapshot is emitted only when this exact saved-
+                            // audio request completes; never masquerade as final.
+                            self.latestTranscript = ["engine": "apple-on-device-words:v1/\(language)",
+                                "text": transcript.formattedString, "words": words,
+                                "final": result.isFinal, "completed": true]
+                            if result.isFinal { self.finish(value: self.latestTranscript); return }
                         }
-                        guard transcript.formattedString.count <= 500, transcript.segments.count <= 150 else {
-                            self.finish(error: "Invalid offline transcription."); return
-                        }
-                        let words: [[String: Any]] = transcript.segments.map { segment in
-                            ["word": segment.substring, "conf": Double(segment.confidence),
-                             "start": segment.timestamp, "end": segment.timestamp + segment.duration]
-                        }
-                        self.finish(value: ["engine": "apple-on-device-words:v1/\(language)",
-                                            "text": transcript.formattedString, "words": words, "final": true])
-                    } else if let error {
-                        // Only domain/code for engineering diagnosis: no paths,
-                        // transcript or audio context from localized error text.
-                        let failure = error as NSError
-                        if failure.domain == "kLSRErrorDomain" && failure.code == 300 {
-                            self.unavailableLocales.insert(language)
-                        }
-                        self.bundled(call, pcm: pcm, language: language, id: id)
                     }
+                    if error != nil { self.completeLatestOrDecode(call, pcm: pcm, language: language, id: id) }
                 }
             }
         } catch { bundled(call, pcm: pcm, language: language, id: id) }
+    }
+
+    private func completeLatestOrDecode(_ call: CAPPluginCall, pcm: Data, language: String, id: String) {
+        guard pending === call, identifier == id, !bundledRunning else { return }
+        // L & N retains useful latest words even when Apple's task ends with an
+        // error or no final result. Explicit provisional metadata keeps this
+        // from being a fabricated final result or consonant-accuracy claim.
+        if let latestTranscript { finish(value: latestTranscript) }
+        else { bundled(call, pcm: pcm, language: language, id: id) }
     }
 
     private func bundled(_ call: CAPPluginCall, pcm: Data, language: String, id: String) {
@@ -144,7 +153,7 @@ final class HFOfflineWords {
     }
     private func finish(value: [String: Any]? = nil, error: String? = nil) {
         let old = pending
-        pending = nil; identifier = nil
+        pending = nil; identifier = nil; latestTranscript = nil
         bundledRunning = false
         deadline?.cancel(); deadline = nil
         task?.cancel(); task = nil; recognizer = nil

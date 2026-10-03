@@ -7,8 +7,15 @@ describe('H/F native offline recognition contract',()=>{
   expect(source).toContain('private var recognizer: SFSpeechRecognizer?');
   expect(source).toContain('self.recognizer = recognizer');
   expect(source).toContain('transcript.segments.isEmpty');
-  expect(source).toMatch(/transcript\.segments\.isEmpty\s*\{\s*self\.bundled/);
+  expect(source).toContain('self.completeLatestOrDecode(call, pcm: pcm, language: language, id: id)');
   expect(source).toContain('task = nil; recognizer = nil');
+ });
+ it('keeps actual partial words on timeout/error without permanently blacklisting a locale',()=>{
+  expect(source).toContain('request.shouldReportPartialResults = true');
+  expect(source).toContain('"final": result.isFinal, "completed": true');
+  expect(source).toContain('if let latestTranscript { finish(value: latestTranscript) }');
+  expect(source).toContain('latestTranscript = nil');
+  expect(source).not.toContain('unavailableLocales');
  });
  it('checks device-model support and makes a recorded-file offline request',()=>{
   expect(source).toContain('recognizer.supportsOnDeviceRecognition');

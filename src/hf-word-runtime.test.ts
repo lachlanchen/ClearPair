@@ -25,6 +25,24 @@ class FakeDecoder{
 const samples=()=>new Float32Array(6400).fill(.04);
 const cast=(m:FakeModel)=>m as unknown as Model;
 describe('H & F offline decoder lifecycle',()=>{
+ it('accepts only a completed Apple partial and never initializes WASM for it',async()=>{
+  const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios');
+  const result={engine:'apple-on-device-words:v1/en-US',text:'hat',words:[{word:'hat',conf:0,start:.32,end:.7}],final:false,completed:true};
+  compatibility.native.mockResolvedValue(result);compatibility.model.mockClear();
+  const engine=new HfWordRuntime();
+  try{expect(await engine.recognize('en-US',samples(),'capacitor://localhost/')).toEqual(result);expect(compatibility.model).not.toHaveBeenCalled();}
+  finally{engine.dispose();platform.mockRestore();}
+ });
+ it('rejects incomplete native results and does not treat a Vosk partial as Apple evidence',async()=>{
+  const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios');
+  compatibility.support.mockResolvedValue({supported:false});
+  const engine=new HfWordRuntime();
+  try{for(const extra of [{engine:'apple-on-device-words:v1/en-US',completed:false},{engine:'hf-vosk-native:v1/en-US',completed:true}]){
+   compatibility.native.mockResolvedValue({...extra,final:false,text:'hat',words:[]});
+   expect(await engine.recognize('en-US',samples(),'capacitor://localhost/')).toBeUndefined();
+   expect(engine.nativeError).toContain('Invalid native word provenance');
+  }}finally{engine.dispose();platform.mockRestore();}
+ });
  it('does not initialize WebAssembly on an unqualified older iOS runtime',async()=>{
   const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios');
   compatibility.support.mockResolvedValue({supported:false});compatibility.model.mockClear();

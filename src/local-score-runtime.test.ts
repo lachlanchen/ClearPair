@@ -37,7 +37,7 @@ describe('local assessment decoding and cancellation',()=>{
     mocks.decode.mockRejectedValueOnce(Error('Unsupported recording'));
     await expect(assess(scorer)).resolves.toEqual({status:'unscored',reason:'model-unavailable'});
     expect(mocks.request).not.toHaveBeenCalled();
-    await expect(assess(scorer)).resolves.toEqual({status:'unscored',reason:'uncertain'});
+    await expect(assess(scorer)).resolves.toMatchObject({status:'unscored',reason:'uncertain'});
     expect(mocks.request).toHaveBeenCalledOnce();
   });
   it.each(['resolve','reject'] as const)('settles a %s after cancellation as cancelled',async(settle)=>{
@@ -54,7 +54,7 @@ describe('local assessment decoding and cancellation',()=>{
     const decoding=deferred<PCM>(),scorer=new LocalScorer();
     mocks.decode.mockReturnValueOnce(decoding.promise);
     const old=assess(scorer),next=assess(scorer);
-    await expect(next).resolves.toEqual({status:'unscored',reason:'uncertain'});
+    await expect(next).resolves.toMatchObject({status:'unscored',reason:'uncertain'});
     decoding.reject(Error('Old decoder failed'));
     await expect(old).resolves.toEqual({status:'unscored',reason:'cancelled'});
     expect(mocks.request).toHaveBeenCalledOnce();

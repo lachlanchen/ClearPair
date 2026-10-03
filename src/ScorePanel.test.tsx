@@ -15,6 +15,20 @@ const grade:ScoreResult={status:'scored',score:83,probability:.83,model:'test-on
 beforeEach(()=>{vi.clearAllMocks();mocks.save.mockResolvedValue('device');});
 afterEach(cleanup);
 describe('local scoring take lifecycle',()=>{
+ it('explains an unresolved capture with actual words and duration instead of claiming the microphone failed',async()=>{
+  mocks.assess.mockResolvedValue({status:'unscored',reason:'uncertain',diagnostics:{speechMs:260,signal:'clear',acousticState:'unaligned',wordState:'recognized',wordEngine:'hf-vosk-native:v1/en-US',wordText:'that',wordFinal:true}});
+  render(<ScorePanel take={{...take(),app:'handf',word:'hat'}} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);await act(async()=>{});
+  expect(screen.getByText('260')).toBeDefined();expect(screen.getByText('that')).toBeDefined();
+  expect(screen.getByText(/Speech was captured/)).toBeDefined();
+  expect(screen.queryByText(/Check the microphone/)).toBeNull();
+  expect(mocks.save).toHaveBeenCalledWith(expect.objectContaining({score:expect.objectContaining({diagnostics:expect.objectContaining({wordText:'that'})})}));
+ });
+ it('labels word-only points as word match and discloses a partial transcript',async()=>{
+  mocks.assess.mockResolvedValue({status:'matched',score:79,model:'local-hf-native:v1',contrast:'handf/test',unit:'phone',targetDistance:0,competitorDistance:0,referenceVoice:'none',scope:'word',evidence:'word',recognition:{engine:'apple-on-device-words:v1/en-US',text:'hat',confidence:0,decision:'target',provisional:true}});
+  render(<ScorePanel take={{...take(),app:'handf',word:'hat'}} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);await act(async()=>{});
+  expect(screen.getByText('Word match').closest('.local-grade')).not.toBeNull();
+  expect(screen.getByText(/Provisional word recognition/)).toBeDefined();expect(screen.queryByText('Practice match')).toBeNull();
+ });
  it('shows the measured unclear H/F score and useful items instead of a dead-end uncertainty message',async()=>{
   const result:ScoreResult={status:'matched',score:56,model:'local-reference-dtw:v2',contrast:'handf/hf-en/0/0/word/en-h-f:v1',unit:'phone',targetDistance:.5,competitorDistance:.51,referenceVoice:'fixture',scope:'word',
    hf:{version:'hf-segment-fft:v1',target:'h',heard:'uncertain',position:'initial',sound:51,word:78,timing:64,segmentMs:70,targetDistance:.5,competitorDistance:.51,margin:.01,cue:'uncertain'},

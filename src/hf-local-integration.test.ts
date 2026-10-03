@@ -11,6 +11,24 @@ const word={engine:'fixture',text:'hat',words:[{word:'hat',conf:.95,start:0,end:
 const match={status:'matched',score:93,contrast:'fixture',model:'local-reference-dtw:v1',unit:'phone',targetDistance:.1,competitorDistance:.5,referenceVoice:'fixture',scope:'word'};
 beforeEach(()=>{vi.clearAllMocks();mock.recognize.mockResolvedValue(word);mock.reference.mockResolvedValue(match);});
 describe.skipIf(!__HF_WORD_MODELS__)('H & F native enabled integration (run with CLEARPAIR_APP=handf CLEARPAIR_HF_WORDS=1)',()=>{
+ it('identifies saved iOS speech before reference synthesis changes the audio session',async()=>{
+  const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios'),e=new LocalScorer();
+  try{
+   mock.recognize.mockResolvedValue({engine:'apple-on-device-words:v1/en-US',text:'hat',words:[{word:'hat',conf:0,start:0,end:.3}],final:false,completed:true});
+   mock.reference.mockResolvedValue({status:'unscored',reason:'sound-unresolved'});
+   const r=await e.assess('handf','hf-en',0,0,false,new Blob());
+   expect(mock.recognize.mock.invocationCallOrder[0]).toBeLessThan(mock.reference.mock.invocationCallOrder[0]);
+   expect(r).toMatchObject({status:'matched',score:79,diagnostics:{wordFinal:false,wordProvisional:true,signal:'clear'}});
+  }finally{e.dispose();platform.mockRestore();}
+ });
+ it('preserves speech and recognizer details for a valid but unresolved recording',async()=>{
+  mock.reference.mockResolvedValue({status:'unscored',reason:'unaligned'});
+  mock.recognize.mockResolvedValue({engine:'hf-vosk-native:v1/en-US',text:'that',words:[{word:'that',conf:.9,start:0,end:.3}],final:true});
+  const e=new LocalScorer();
+  try{expect(await e.assess('handf','hf-en',0,0,false,new Blob())).toMatchObject({status:'unscored',reason:'uncertain',
+    diagnostics:{speechMs:300,signal:'clear',acousticState:'unaligned',wordState:'recognized',wordText:'that'}});}
+  finally{e.dispose();}
+ });
  it('scores 20 successive iOS takes with native fallback words, including after cancellation and disposal',async()=>{
   const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios');
   const e=new LocalScorer();
