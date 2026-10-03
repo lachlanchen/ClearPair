@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "build": 9,
-  "appBuilds": {"handf": 15, "landr": 10, "english": 10},
+  "appBuilds": {"handf": 15, "landr": 10, "english": 10, "cantonese": 10},
   "distribution": "contrast-focused-quiet-speech-internal-test",
   "testApps": ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese", "japanese"],
   "apps": ["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese", "japanese"]

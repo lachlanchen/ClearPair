@@ -1,6 +1,6 @@
 {
  "version":"pair-offline-words:v1",
- "activeApps":["landr","english","chinese"],
+ "activeApps":["landr","english","chinese","cantonese"],
  "purpose":"Offline word identification, separate from measured sound and calibrated accuracy",
  "rate":16000,
  "license":"Apache-2.0",

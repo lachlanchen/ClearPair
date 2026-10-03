@@ -185,3 +185,11 @@ Fresh extended native iOS checks also pass Mandarin 310/310, Cantonese 70/70
 and L & R 98/98. Pair-enabled regression tests pass 1112 (12 skipped); H & F
 regressions pass 1115 (9 skipped). Further native Android checks and exact
 packaging remain required before additional tester availability is claimed.
+
+Cantonese's extended Android run now also passes 70/70, matching iOS 70/70.
+Its own bundled int8 Cantonese decoder is activated for the build-10 candidate,
+with separate iOS native dependencies to avoid the previously fixed registry
+collision. On the physical MIX 2S, word-decoding median/p95 is 593/661 ms;
+the first model load is 5108 ms. These are synthetic runtime timings, not human
+accuracy or a promise for every device. No additional store availability is
+claimed until exact package and provider verification are complete.
