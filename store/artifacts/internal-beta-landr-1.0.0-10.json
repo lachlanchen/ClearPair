@@ -1,0 +1,30 @@
+{
+  "app": "landr",
+  "version": "1.0.0",
+  "build": 10,
+  "sourceCommit": "6f800c2fcce4bd1c09b2b7669bbbfe2718d8b646",
+  "verifiedAt": "2026-10-03T15:35:10Z",
+  "ios": {
+    "sha256": "d89300510bf8bf87b73a5b7b4888772447950046519a7876f26a892d3516d83f",
+    "processingState": "VALID",
+    "internalBuildState": "IN_BETA_TESTING",
+    "autoNotifyEnabled": true,
+    "existingTesterVerified": true
+  },
+  "android": {
+    "sha256": "bb4fe9bcd005d379ef4b28fee5222308bd8c7f12cc2e2a0f152cbe0df8ac97c7",
+    "track": "internal",
+    "state": "Available to internal testers",
+    "existingTesterListVerified": true,
+    "native64BitElfAlignment": 16384
+  },
+  "validation": {
+    "nativeIosSavedPcm": "55/55",
+    "nativeAndroidSavedPcm": "55/55",
+    "multilingualResultLayout": "308/308",
+    "repeatedRecordingLayout": "12/12",
+    "scope": "Synthetic regression and packaging evidence, not calibrated human pronunciation accuracy"
+  },
+  "formalReviewChanged": false,
+  "webDeployed": false
+}

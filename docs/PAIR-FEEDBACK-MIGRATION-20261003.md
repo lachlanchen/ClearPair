@@ -33,7 +33,7 @@ store binary are preserved; the other courses use a separate hybrid adapter.
 | --- | --- | --- |
 | L & R | Apple on-device / pinned English Vosk fallback; native Android Vosk | Fresh 55/55 native saved-PCM checks on both the Mac mini and physical MIX 2S, including both directions of every pair, quieter speech, repeat/cancel/dispose and silence |
 | English | Same English route; own contrast profiles | 169/169 native Android checks after fixing collapsed ASR spellings. Initial iOS run 163/169; saved-evidence re-scoring resolves all six failures; fresh iOS check pending |
-| Mandarin | Apple on-device / pinned Mandarin Vosk fallback; native Android Vosk | 161/161 native Android checks. Initial iOS run 157/161 exposed short-aspiration rejection and flattened tone feedback; fresh iOS check follows the targeted fixes |
+| Mandarin | Apple on-device / pinned Mandarin Vosk fallback; native Android Vosk | 161/161 native Android checks. Fresh iOS 161/161 after fixing short-aspiration rejection and flattened tone feedback |
 | Japanese / Korean | Separate publisher models downloaded and checksum-pinned | Candidates only; not activated for shipping |
 | Arabic | Separate publisher model downloaded and checksum-pinned | Candidate only; not activated for shipping |
 | Cantonese | Cantonese-finetuned SenseVoice candidate downloaded | Language-specific native integration pending; not activated for shipping |
@@ -49,6 +49,10 @@ recognition median/p95: L & R 723/936 ms; English 742/929 ms; first model loads
 No new public release, formal-review replacement, or web deployment is claimed
 by this source checkpoint. Store availability is recorded only after provider
 readback. Existing reviews, recordings, account settings and prices are untouched.
+
+Subsequent verified test distribution: [L & R 1.0.0 (10)](BETA-LANDR-1.0.0-10.md)
+is available on both internal TestFlight and Google Play. The other courses remain
+at their existing test builds until their separate checks and packaging pass.
 
 ## Model provenance and interpretation
 
