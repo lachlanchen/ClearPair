@@ -15,6 +15,17 @@ const grade:ScoreResult={status:'scored',score:83,probability:.83,model:'test-on
 beforeEach(()=>{vi.clearAllMocks();mocks.save.mockResolvedValue('device');});
 afterEach(cleanup);
 describe('local scoring take lifecycle',()=>{
+ it('shows the measured unclear H/F score and useful items instead of a dead-end uncertainty message',async()=>{
+  const result:ScoreResult={status:'matched',score:56,model:'local-reference-dtw:v2',contrast:'handf/hf-en/0/0/word/en-h-f:v1',unit:'phone',targetDistance:.5,competitorDistance:.51,referenceVoice:'fixture',scope:'word',
+   hf:{version:'hf-segment-fft:v1',target:'h',heard:'uncertain',position:'initial',sound:51,word:78,timing:64,segmentMs:70,targetDistance:.5,competitorDistance:.51,margin:.01,cue:'uncertain'},
+   breakdown:{wordMatch:78,pairDistinction:51,speechMs:340,referenceMs:400}};
+  mocks.assess.mockResolvedValue(result);
+  render(<ScorePanel take={{...take(),app:'handf',word:'hat'}} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);await act(async()=>{});
+  expect(document.querySelector('.local-grade strong')?.textContent).toContain('56');
+  for(const value of ['51','78','64'])expect(screen.getByText(value)).toBeDefined();
+  expect(screen.getByText(/Both sounds are close/)).toBeDefined();
+  expect(screen.queryByText('The sound is uncertain. Compare the pair and record again.')).toBeNull();
+ });
  it('never presents lexical recognition as a measured 100-point consonant',async()=>{
   const match:ScoreResult={status:'matched',score:85,model:'local-hf-hybrid:v1',contrast:'handf/hf-en/0/0/word/en-h-f:v1',unit:'phone',
    targetDistance:0,competitorDistance:0,referenceVoice:'none:word-identification-only',scope:'word',evidence:'word',

@@ -9,6 +9,22 @@ const quality:Analysis={seconds:1,rms:.06,peak:.2,clipped:0,voicedSeconds:.3,wav
 const acoustic:ScoreResult={status:'matched',score:95,contrast:plan().calibrationKey,model:'local-reference-dtw:v1',unit:'phone',targetDistance:0,competitorDistance:.3,referenceVoice:'fixture',scope:'word',closestWord:'hat',
  hf:{version:'hf-segment-fft:v1',target:'h',heard:'h',position:'initial',sound:95,word:90,timing:90,segmentMs:80,targetDistance:0,competitorDistance:.3,margin:1,cue:'good'}};
 describe('H & F word/content and sound evidence stay separate',()=>{
+ it('does not discard a final bundled-native word on a high acoustic result',()=>{
+  const e={...evidence('hat',.9),engine:'hf-vosk-native:v1/en-US',final:true};
+  const r=hfHybridScore(plan(),e,acoustic,quality);
+  expect(r).toMatchObject({status:'matched',closestWord:'hat',recognition:{decision:'target',engine:e.engine}});
+ });
+ it('lets a confident native word resolve ambiguous sound evidence without inventing sound measurements',()=>{
+  const e={...evidence('hat',.9),engine:'hf-vosk-native:v1/en-US',final:true};
+  const unclear={...acoustic,score:72,hf:{...acoustic.hf!,heard:'uncertain' as const,sound:52,cue:'uncertain' as const}};
+  const r=hfHybridScore(plan(),e,unclear,quality);
+  expect(r).toMatchObject({status:'matched',score:85,closestWord:'hat',recognition:{decision:'target'},evidence:'word'});
+  if(r.status==='matched'){expect(r.hf).toBeUndefined();expect(r.breakdown?.pairDistinction).toBe(0);}
+ });
+ it('keeps low-confidence bundled-native words conservative',()=>{
+  const e={...evidence('hat',.2),engine:'hf-vosk-native:v1/en-US',final:true};
+  expect(hfWordDecision(plan(),e).decision).toBe('unknown');
+ });
  it('uses native FINAL word identity without inventing confidence or requiring a synthetic consonant match',()=>{
   const e={...evidence('hat',0),engine:'apple-on-device-words:v1/en-US',final:true};
   expect(hfWordDecision(plan(),e)).toMatchObject({decision:'target',confidence:0});

@@ -51,11 +51,24 @@ describe('consonant-focused H & F scoring',()=>{
    expect(result.evidence).toBe('word');expect(result.hf).toBeUndefined();
   }
   expect(assess(word('none')).status).toBe('unscored');
-  expect(assess(word('h')).status).toBe('unscored');
+  const partial=assess(word('h'));
+  expect(partial.status).toBe('matched');
+  if(partial.status==='matched'){expect(partial.score).toBeLessThanOrEqual(59);expect(partial.evidence).toBe('word');expect(partial.hf).toBeUndefined();}
   const clearOpposite=assess(word('f'));
   expect(clearOpposite.status).toBe('matched');
   if(clearOpposite.status==='matched'){
    expect(clearOpposite.score).toBeLessThan(50);expect(clearOpposite.evidence).toBe('word');
+  }
+ });
+ it('returns measured analysis and a bounded score for an ambiguous consonant, not a failed take',()=>{
+  const clear=assess(word('h'));if(clear.status!=='matched'||!clear.hf)throw Error('fixture');
+  vi.spyOn(hfEngine,'hfDetails').mockReturnValue({...clear.hf,heard:'uncertain',sound:51,margin:.01,cue:'uncertain'});
+  const result=assess(word('h'));
+  expect(result.status).toBe('matched');
+  if(result.status==='matched'){
+   expect(result.score).toBeLessThanOrEqual(59);expect(result.score).toBeGreaterThan(0);
+   expect(result.hf).toMatchObject({heard:'uncertain',sound:51,cue:'uncertain'});
+   expect(result.breakdown?.wordMatch).toBeGreaterThan(0);expect(result.closestWord).toBeUndefined();
   }
  });
  it('does not mistake a brief preceding carrier vowel for the stable target vowel',()=>{

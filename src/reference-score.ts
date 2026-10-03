@@ -61,7 +61,10 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
   const earliest=sentence&&lesson==='hf-zh'&&position>=0?Math.max(0,position/prompt.length-.3):0;
   hf=hfDetails(take,wt,wc,lesson,side,sentence,earliest);
   // Do not award a vowel-only take a high F/H score.
-  if(!hf||(hf.heard==='uncertain'&&hf.version==='hf-segment-fft:v1')){
+  // A measured but ambiguous H/F margin still has useful sound/word/timing
+  // details. Keep its bounded practice index instead of discarding the whole
+  // assessment as "uncertain". Uncertainty is not a failed recording.
+  if(!hf){
    // An opposite word is useful evidence, not a capture failure. If its whole
    // reference fits clearly and there really is breath/friction at the word's
    // edge, retain a LOW word-level comparison even when a clean consonant
@@ -71,15 +74,16 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
     ?take.pitch.map((p,i)=>({p,e:take.energy[i]})).slice(Math.floor(take.frames.length*.7))
     :take.pitch.map((p,i)=>({p,e:take.energy[i]})).slice(0,Math.min(15,Math.floor(take.frames.length/3)));
    const friction=edge.filter(({p,e})=>p===null&&e>Math.max(.00008,peak*.003)).length>=2;
-   if(!sentence&&closest===plan.competitor.text&&competitorDistance<1.35&&friction){wordOnly=true;hf=null;}
-   else return {status:'unscored',reason:hf?'uncertain':'unaligned'};
+   if(!sentence&&lesson!=='hf-final'&&separation>=.035&&Math.min(targetDistance,competitorDistance)<1.35&&friction){wordOnly=true;}
+   else if(!sentence&&closest===plan.competitor.text&&competitorDistance<1.35&&friction){wordOnly=true;}
+   else return {status:'unscored',reason:'unaligned'};
   }
  }
  // A word-only fallback reports contrast agreement, not vowel similarity.
  // Otherwise the shared vowel can lift an opposite H/F word above 50.
  const resolvedClosest=hf?(hf.heard==='uncertain'?undefined:hf.heard===hf.target?plan.target.text:plan.competitor.text):closest;
  const total=hf?Math.round(hf.sound*.8+hf.word*.2):wordOnly?Math.round(100*contrast):score;
- const bounded=hf?.heard==='uncertain'?Math.min(hf.cue==='missing'?30:59,total):total;
+ const bounded=hf?.heard==='uncertain'?Math.min(hf.cue==='missing'?30:59,total):wordOnly?Math.min(59,total):total;
  // A clear match to the OTHER displayed word is useful low-score feedback,
  // not a capture error. Shared phonemes cannot raise it into a success.
  return {status:'matched',score:resolvedClosest===plan.competitor.text?Math.min(45,bounded):bounded,contrast:plan.calibrationKey,model:focus||hfTask?'local-reference-dtw:v2':'local-reference-dtw:v1',

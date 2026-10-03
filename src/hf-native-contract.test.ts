@@ -3,6 +3,13 @@ import {describe,it,expect} from 'vitest';
 const source=readFileSync('native/audio/ios/Sources/ClearPairAudio/HFOfflineWords.swift','utf8');
 const bundled=readFileSync('native/audio/ios/Sources/ClearPairAudio/HFVoskWords.swift','utf8');
 describe('H/F native offline recognition contract',()=>{
+ it('retains each Apple recognizer and falls back for an empty final result',()=>{
+  expect(source).toContain('private var recognizer: SFSpeechRecognizer?');
+  expect(source).toContain('self.recognizer = recognizer');
+  expect(source).toContain('transcript.segments.isEmpty');
+  expect(source).toMatch(/transcript\.segments\.isEmpty\s*\{\s*self\.bundled/);
+  expect(source).toContain('task = nil; recognizer = nil');
+ });
  it('checks device-model support and makes a recorded-file offline request',()=>{
   expect(source).toContain('recognizer.supportsOnDeviceRecognition');
   expect(source).toContain('SFSpeechURLRecognitionRequest(url: url)');

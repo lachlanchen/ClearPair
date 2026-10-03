@@ -8,6 +8,7 @@ final class HFOfflineWords {
     private var pending: CAPPluginCall?
     private var identifier: String?
     private var task: SFSpeechRecognitionTask?
+    private var recognizer: SFSpeechRecognizer?
     private var file: URL?
     private var deadline: DispatchWorkItem?
     private let fallback = HFVoskWords()
@@ -64,6 +65,7 @@ final class HFOfflineWords {
         deadline = timeout
         DispatchQueue.main.asyncAfter(deadline: .now() + 10, execute: timeout)
         do {
+            self.recognizer = recognizer
             let url = FileManager.default.temporaryDirectory.appendingPathComponent("clearpair-hf-word-\(id).wav")
             file = url
             // Decoder context only. Original PCM and its timestamps are unchanged.
@@ -79,6 +81,12 @@ final class HFOfflineWords {
                     guard let self, self.pending === call, self.identifier == id, !self.bundledRunning else { return }
                     if let result, result.isFinal {
                         let transcript = result.bestTranscription
+                        // A completed Apple task can still contain no words.
+                        // That is not a useful final answer: decode the same
+                        // saved PCM with the bundled model instead.
+                        if transcript.formattedString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || transcript.segments.isEmpty {
+                            self.bundled(call, pcm: pcm, language: language, id: id); return
+                        }
                         guard transcript.formattedString.count <= 500, transcript.segments.count <= 150 else {
                             self.finish(error: "Invalid offline transcription."); return
                         }
@@ -105,7 +113,7 @@ final class HFOfflineWords {
     private func bundled(_ call: CAPPluginCall, pcm: Data, language: String, id: String) {
         guard pending === call, identifier == id, !bundledRunning else { return }
         bundledRunning = true
-        task?.cancel(); task = nil
+        task?.cancel(); task = nil; recognizer = nil
         deadline?.cancel()
         if let file { try? FileManager.default.removeItem(at: file) }; file = nil
         let timeout = DispatchWorkItem { [weak self] in
@@ -139,7 +147,7 @@ final class HFOfflineWords {
         pending = nil; identifier = nil
         bundledRunning = false
         deadline?.cancel(); deadline = nil
-        task?.cancel(); task = nil
+        task?.cancel(); task = nil; recognizer = nil
         fallback.cancel()
         if let file { try? FileManager.default.removeItem(at: file) }; file = nil
         if let value { old?.resolve(value) }

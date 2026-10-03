@@ -11,6 +11,21 @@ const word={engine:'fixture',text:'hat',words:[{word:'hat',conf:.95,start:0,end:
 const match={status:'matched',score:93,contrast:'fixture',model:'local-reference-dtw:v1',unit:'phone',targetDistance:.1,competitorDistance:.5,referenceVoice:'fixture',scope:'word'};
 beforeEach(()=>{vi.clearAllMocks();mock.recognize.mockResolvedValue(word);mock.reference.mockResolvedValue(match);});
 describe.skipIf(!__HF_WORD_MODELS__)('H & F native enabled integration (run with CLEARPAIR_APP=handf CLEARPAIR_HF_WORDS=1)',()=>{
+ it('scores 20 successive iOS takes with native fallback words, including after cancellation and disposal',async()=>{
+  const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios');
+  const e=new LocalScorer();
+  try{
+   for(let i=0;i<20;i++){
+    const word=i%2?'fat':'hat',side=i%2?1:0;
+    mock.recognize.mockResolvedValue({engine:'hf-vosk-native:v1/en-US',text:word,words:[{word,conf:.9,start:0,end:.3}],final:true});
+    mock.reference.mockResolvedValue({...match,score:72,hf:{version:'hf-segment-fft:v1',target:side?'f':'h',heard:'uncertain',position:'initial',sound:51,word:90,timing:80,segmentMs:40,targetDistance:.5,competitorDistance:.51,margin:.01,cue:'uncertain'}});
+    const r=await e.assess('handf','hf-en',0,side,false,new Blob());
+    expect(r).toMatchObject({status:'matched',score:85,closestWord:word,recognition:{decision:'target'},evidence:'word'});
+    if(i===5)e.cancel();if(i===10)e.dispose();
+   }
+   expect(mock.recognize).toHaveBeenCalledTimes(20);
+  }finally{e.dispose();platform.mockRestore();}
+ });
  it('always requests final native word identity on iOS initial H/F, even with a favourable synthetic match',async()=>{
   const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios');
   const e=new LocalScorer();

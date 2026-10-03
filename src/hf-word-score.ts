@@ -10,10 +10,13 @@ export interface HfWordEvidence {
 export function nativeHfWordEvidence(plan:Plan,e:HfWordEvidence):boolean{
  return e.final===true&&e.engine===`apple-on-device-words:v1/${plan.profile.language}`;
 }
+function finalNativeWords(plan:Plan,e:HfWordEvidence):boolean{
+ return e.final===true&&[`apple-on-device-words:v1/${plan.profile.language}`,`hf-vosk-native:v1/${plan.profile.language}`].includes(e.engine);
+}
 type Decision=NonNullable<Extract<ScoreResult,{status:'matched'}>['recognition']>['decision'];
 export function needsHfWordEvidence(plan:Plan,result:ScoreResult):boolean{
  return plan.calibrationKey.startsWith('handf/')&&!plan.calibrationKey.includes('/hf-final/')&&
-  (plan.calibrationKey.includes('/sentence/')||result.status==='unscored'&&['uncertain','unaligned','model-unavailable','reference-unavailable','poor-signal','sound-unresolved'].includes(result.reason)||result.status==='matched'&&result.score<65);
+  (plan.calibrationKey.includes('/sentence/')||result.status==='unscored'&&['uncertain','unaligned','model-unavailable','reference-unavailable','poor-signal','sound-unresolved'].includes(result.reason)||result.status==='matched'&&(result.score<65||result.hf?.heard==='uncertain'));
 }
 // Exact authored homophones only; no fuzzy edit distance or target prompting.
 // This course assesses H/F, not lexical tone accuracy. Never generalize this
@@ -65,7 +68,7 @@ export function hfWordDecision(plan:Plan,e:HfWordEvidence):{decision:Decision;co
  * content decisions, acoustics explain the difficult sound. The indices are
  * deliberately not a calibrated correctness percentage. */
 export function hfHybridScore(plan:Plan,e:HfWordEvidence|undefined,acoustic:ScoreResult,quality:Analysis):ScoreResult{
- if(!e||(!needsHfWordEvidence(plan,acoustic)&&!nativeHfWordEvidence(plan,e)))return acoustic;
+ if(!e||(!needsHfWordEvidence(plan,acoustic)&&!finalNativeWords(plan,e)))return acoustic;
  if(!plan.calibrationKey.startsWith('handf/'))return acoustic;
  const native=nativeHfWordEvidence(plan,e);
  let {decision,confidence,wordMatch}=hfWordDecision(plan,e);
@@ -91,7 +94,8 @@ export function hfHybridScore(plan:Plan,e:HfWordEvidence|undefined,acoustic:Scor
  const labels=plan.calibrationKey.includes('/hf-final/')?['f','v'] as const:['h','f'] as const;
  const side=plan.calibrationKey.split('/')[3]==='1'?1:0;
  const lexicalSide=decision==='target'?side:decision==='opposite'?1-side:undefined;
- const inconsistentSound=native&&lexicalSide!==undefined&&!!base?.hf&&base.hf.heard!==labels[lexicalSide];
+ const inconsistentSound=lexicalSide!==undefined&&!!base?.hf&&
+  (native&&base.hf.heard!==labels[lexicalSide]||finalNativeWords(plan,e)&&base.hf.heard==='uncertain');
  // L & N lets final word identity lead. A disagreeing synthetic boundary is
  // explicitly unmeasured, not coaching that the learner made the wrong sound.
  const sound=inconsistentSound?undefined:base?.hf?.sound??base?.breakdown?.pairDistinction;

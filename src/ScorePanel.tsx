@@ -71,10 +71,11 @@ export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarnin
       </dl>}
       {!running&&result?.status==='matched'&&!result.hf&&result.breakdown&&<dl className="hf-score-items">
         <div><dt>{tr('Word match','词语匹配')}</dt><dd>{result.breakdown.wordMatch}<small>/100</small></dd></div>
-        <div><dt>{result.recognition?tr('Target sound','目标音'):contrastLabel(result.focus?.region,tr)}</dt><dd>{result.recognition&&result.evidence==='word'?tr('Not measured','未测量'):<>{result.breakdown.pairDistinction}<small>/100</small></>}</dd></div>
+        <div><dt>{result.recognition||take?.app==='handf'?tr('Target sound','目标音'):contrastLabel(result.focus?.region,tr)}</dt><dd>{(result.recognition||take?.app==='handf')&&result.evidence==='word'?tr('Not measured','未测量'):<>{result.breakdown.pairDistinction}<small>/100</small></>}</dd></div>
         <div><dt>{tr('Speech duration','有效发声时长')}</dt><dd>{result.breakdown.speechMs}<small>ms</small></dd></div>
       </dl>}
-      {!running&&result?.status==='matched'&&result.hf&&<p className="hf-coaching">{hfCue(result.hf.cue,tr)}</p>}
+      {!running&&result?.status==='matched'&&result.hf&&<p className="hf-coaching">{result.hf.cue==='uncertain'?tr('Both sounds are close in this recording. The score shows the measured difference; try clearer breath for H or lip friction for F.','这段录音的两个音较接近。分数反映测量到的区别；H 可加强轻柔呼气，F 可加强唇齿摩擦。'):hfCue(result.hf.cue,tr)}</p>}
+      {!running&&take?.app==='handf'&&result?.status==='matched'&&!result.hf&&!result.recognition&&<p className="hf-coaching">{tr('The word shape was compared, but the consonant boundary was unclear. This score is provisional, not a confirmed H/F sound grade.','已比较词语的声音特征，但辅音边界不清晰。这是暂定匹配分，不是已确认的 H/F 发音分。')}</p>}
       {!running&&result?.status==='matched'&&!result.hf&&result.recognition&&result.recognition.decision!=='target'&&<p className="hf-coaching">{hfCue(result.recognition.decision==='omitted'?'missing':result.recognition.decision==='other'?'different-word':'uncertain',tr)}</p>}
       {!running&&(result?.status==='matched'||result?.status==='scored')&&<details className="score-details">
         <summary>{tr('Score details','评分详情')}</summary>
