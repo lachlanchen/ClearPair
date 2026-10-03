@@ -40,6 +40,7 @@ public class ClearPairAudioPlugin extends Plugin {
     private PluginCall speechCall;
     private String speechId;
     private LocalReferenceVoice referenceVoice;
+    private OfflinePairWords pairWords;
     private final AtomicInteger captureGeneration=new AtomicInteger();
     private final ConcurrentHashMap<String,Integer> permissionRequests=new ConcurrentHashMap<>();
 
@@ -170,6 +171,13 @@ public class ClearPairAudioPlugin extends Plugin {
     @PluginMethod public void cancelReference(PluginCall call){getActivity().runOnUiThread(()->{
         if(referenceVoice!=null)referenceVoice.cancel();call.resolve();
     });}
-    @Override protected void handleOnStop(){if(referenceVoice!=null)referenceVoice.cancel();super.handleOnStop();}
-    @Override protected void handleOnDestroy(){if(referenceVoice!=null)referenceVoice.close();captureGeneration.incrementAndGet();permissionRequests.clear();endCapture();stopVoice();if(tts!=null){tts.shutdown();tts=null;}super.handleOnDestroy();}
+    @PluginMethod public synchronized void recognizeWords(PluginCall call){
+        if(recording||recorder!=null){call.reject("Stop recording before local assessment.");return;}
+        if(pairWords==null)pairWords=new OfflinePairWords(getContext());pairWords.recognize(call);
+    }
+    @PluginMethod public synchronized void cancelWords(PluginCall call){if(pairWords!=null)pairWords.cancel(call.getString("id"));call.resolve();}
+    @PluginMethod public synchronized void releaseWords(PluginCall call){if(pairWords!=null)pairWords.release();call.resolve();}
+    @PluginMethod public void offlineWordSupport(PluginCall call){JSObject value=new JSObject();value.put("supported",true);call.resolve(value);}
+    @Override protected void handleOnStop(){if(referenceVoice!=null)referenceVoice.cancel();if(pairWords!=null)pairWords.release();super.handleOnStop();}
+    @Override protected void handleOnDestroy(){if(referenceVoice!=null)referenceVoice.close();if(pairWords!=null)pairWords.close();captureGeneration.incrementAndGet();permissionRequests.clear();endCapture();stopVoice();if(tts!=null){tts.shutdown();tts=null;}super.handleOnDestroy();}
 }

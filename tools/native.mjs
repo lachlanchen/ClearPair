@@ -3,6 +3,7 @@ import { access, readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
 import { exportNativeIcons } from './icons.mjs';
 import { updateIosInfo } from './native-metadata.mjs';
 import { appRelease } from './release-identity.mjs';
+import {pairWordLanguages,preparePairWordModels} from './pair-word-models.mjs';
 const [app, platform] = process.argv.slice(2);
 const release=appRelease(JSON.parse(await readFile('store/release.json','utf8')),app);
 if(release.version!==JSON.parse(await readFile('package.json','utf8')).version || !Number.isSafeInteger(release.build) || release.build<1) throw new Error('Invalid release identity');
@@ -38,6 +39,8 @@ if (platform === "ios") {
   if(app==='handf'){
     const {prepareHfNativeWordModels}=await import('./hf-word-models.mjs');
     await prepareHfNativeWordModels(`native/apps/${app}/ios/App/App/public/models`);
+  }else if(pairWordLanguages[app]){
+    await preparePairWordModels(app,`native/apps/${app}/ios/App/App/public/models`,true);
   }
   await exportNativeIcons(app, platform);
   const project=`native/apps/${app}/ios/App/App.xcodeproj/project.pbxproj`;
@@ -45,6 +48,7 @@ if (platform === "ios") {
     .replaceAll(/MARKETING_VERSION = [\d.]+;/g,`MARKETING_VERSION = ${release.version};`)
     .replaceAll(/CURRENT_PROJECT_VERSION = \d+;/g,`CURRENT_PROJECT_VERSION = ${release.build};`));
 } else {
+  if(pairWordLanguages[app])await preparePairWordModels(app,`native/apps/${app}/android/app/src/main/assets/public/models`,true);
   await exportNativeIcons(app, platform);
   const gradle=`native/apps/${app}/android/app/build.gradle`;
   await writeFile(gradle,(await readFile(gradle,'utf8'))

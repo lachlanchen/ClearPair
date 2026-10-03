@@ -70,5 +70,7 @@
     <string>Record pronunciation practice and listen back. Recordings stay on this device.</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>Identify practice words from your saved recording using on-device speech recognition. Audio is not sent to a server.</string>
   </dict>
 </plist>

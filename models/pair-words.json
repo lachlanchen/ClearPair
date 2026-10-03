@@ -1,0 +1,15 @@
+{
+ "version":"pair-offline-words:v1",
+ "activeApps":["landr","english","chinese"],
+ "purpose":"Offline word identification, separate from measured sound and calibrated accuracy",
+ "rate":16000,
+ "license":"Apache-2.0",
+ "termsUrl":"https://alphacephei.com/vosk/models",
+ "models":[
+  {"language":"en-US","code":"en","name":"vosk-model-small-en-us-0.15","source":"https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip","zipSha256":"30f26242c4eb449f948e42cb302dd7a686cb29a3423a8367f99ff41780942498","asset":"models/hf-en-vosk-0.15.vosk","sha256":"e430479107134f279fde8cd19db54e5fb9bac62b7ef44b1978950f4506b0e1b2","bytes":41206354},
+  {"language":"zh-CN","code":"zh","name":"vosk-model-small-cn-0.22","source":"https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip","zipSha256":"3af8b0e7e0f835ae9d414ce5df580237a3cfb08d586c9fbbb0f7ff29ad5b14ba","asset":"models/hf-zh-vosk-0.22.vosk","sha256":"a3e2e67b300a41a0b590d2f6f585375d580d15ab76d472ef2aaebc464017ae25","bytes":43899765},
+  {"language":"ja-JP","code":"ja","name":"vosk-model-small-ja-0.22","source":"https://alphacephei.com/vosk/models/vosk-model-small-ja-0.22.zip","zipSha256":"efa092d280153a77615e9e0c7d7283e93e600de3d19d3bec686c57ef19d52eac","asset":"models/pair-ja-vosk-0.22.vosk","sha256":"031dd6cf36c98fc147e6649b7580fd57cde5bd1b17b32c1d965155d6c8342f53","bytes":49705268},
+  {"language":"ko-KR","code":"ko","name":"vosk-model-small-ko-0.22","source":"https://alphacephei.com/vosk/models/vosk-model-small-ko-0.22.zip","zipSha256":"eea36124087fed26c59996a4761519458e3bd185e8ea9d9865ad8760c4a1d989","asset":"models/pair-ko-vosk-0.22.vosk","sha256":"f888720b2af54e534783831e7aaf40eb0c57760298f18e260d0d09fe6c065a4a","bytes":86910834},
+  {"language":"ar-SA","code":"ar","name":"vosk-model-ar-mgb2-0.4","source":"https://alphacephei.com/vosk/models/vosk-model-ar-mgb2-0.4.zip","zipSha256":"357469ae1bb4d7a3810c9cd6b86d33bc135898dfc134e6df8bc2ddd28c5fe77a","asset":"models/pair-ar-vosk-0.4.vosk","sha256":"02e78326ca9f27541b08147b2b038d1eefcf1d69c54efad686630323ff93e910","bytes":333247046}
+ ]
+}

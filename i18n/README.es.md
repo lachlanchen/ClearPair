@@ -12,6 +12,8 @@ Ocho cursos centrados en sonidos y letras fáciles de confundir, para iOS, Andro
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
+La [migración de comentarios](../docs/PAIR-FEEDBACK-MIGRATION-20261003.md) incorpora en el código transcripciones reales sin conexión, comparación independiente de cada contraste y controles compactos y estables. L & R supera 55 pruebas nativas de audio guardado en iOS y Android; mandarín supera 161 en Android. La validación por idioma continúa antes de nuevas cargas de prueba. No certifica la precisión con hablantes reales; las versiones y revisiones actuales de las tiendas no cambian.
+
 La [actualización de puntuación exclusiva de H & F](../docs/HANDF-NATIVE-SCORING-20261003.md) identifica audio guardado en inglés y mandarín de forma nativa en iOS, con un respaldo integrado sin conexión en lugar de depender del decodificador WebView. La identidad de la palabra y los detalles sonoros medidos siguen separados; los motivos de evaluación fallida se conservan junto al audio del historial. Los demás cursos y las revisiones oficiales existentes no cambian. Validar el código no implica disponibilidad en la tienda ni certificación de precisión con voces humanas.
 
 [H & F 1.0.0 (15)](../docs/BETA-HANDF-1.0.0-15.md) está verificado en TestFlight y en las pruebas internas de Google Play. Actualiza sin desinstalar para conservar el historial. Es una versión de prueba, no una nueva publicación pública en las tiendas.

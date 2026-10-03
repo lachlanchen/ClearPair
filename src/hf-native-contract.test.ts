@@ -29,8 +29,11 @@ describe('H/F native offline recognition contract',()=>{
   expect(source).toContain('result.isFinal');
   expect(source).toContain('Double(segment.confidence)');
  });
- it('restricts calls to the H/F app and its private test helper',()=>{
-  expect(source).toContain('["art.lazying.clearpair.handf", "art.lazying.clearpair.qa.modelios"].contains(bundle)');
+ it('restricts every app to its own practice language and preserves H/F locales',()=>{
+  expect(source).toContain('"art.lazying.clearpair.handf": ["en-US", "zh-CN"]');
+  expect(source).toContain('guard let allowed = languages[bundle]');
+  expect(source).toContain('allowed.contains(language)');
+  expect(source).toContain('"art.lazying.clearpair.cantonese": ["zh-HK"]');
   expect(source).toContain('NSSpeechRecognitionUsageDescription');
  });
  it('bounds PCM and refuses stale callbacks and cancellations',()=>{
@@ -46,6 +49,7 @@ describe('H/F native offline recognition contract',()=>{
   expect(bundled).not.toContain('vosk_recognizer_new_grm');
   expect(bundled).toContain('guard current(id) else { return }');
   expect(bundled).toContain('vosk_recognizer_free(recognizer)');
+  expect(bundled).not.toContain('language == "en-US" ? "en" : "zh"');
   expect(source).toContain('!self.bundledRunning');
  });
 });

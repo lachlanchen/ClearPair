@@ -3,6 +3,7 @@ import type {AssessmentPlan} from './scoring-profiles';
 import type {ScoreResult} from './scoring';
 import {hfDetails,hfAnalysisSamples} from './hf-score';
 import {focusedPair,focusRegion} from './pair-focus';
+import {compareTone} from './tone-comparison';
 
 export interface ReferenceRequest {
  id:string;plan:Extract<AssessmentPlan,{mode:'contrast'}>;samples:Float32Array;
@@ -15,18 +16,23 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
  const extract=(samples:Float32Array)=>acousticReference(hfTask?hfAnalysisSamples(samples):samples);
  const take=extract(request.samples),target=extract(request.target),competitor=extract(request.competitor);
  if(!take)return {status:'unscored',reason:'poor-signal'};
- if(take.periodic<.08)return {status:'unscored',reason:hfTask?'sound-unresolved':'poor-signal'};
  if(!target||!competitor)return {status:'unscored',reason:'model-unavailable'};
  const tone=plan.profile.unit==='tone',timing=plan.profile.id.startsWith('ja-mora')||plan.profile.id==='yue-vowels:v1';
  if(tone&&take.periodic<.35)return {status:'unscored',reason:'poor-signal'};
  const targetDistance=referenceDistance(take,target,tone,timing),competitorDistance=referenceDistance(take,competitor,tone,timing);
  const separation=referenceDistance(target,competitor,tone,timing);
  if(!Number.isFinite(targetDistance+competitorDistance+separation))return {status:'unscored',reason:'invalid-evidence'};
+ // Some short aspirated syllables have too few reliable pitch frames. A very
+ // close, independently separated spectral reference can retain their useful
+ // comparison. Noise alone still fails this bounded fit gate. H/F is unchanged.
+ if(take.periodic<.08&&(hfTask||Math.min(targetDistance,competitorDistance)>.55||separation<.035||take.frames.length<12))
+  return {status:'unscored',reason:hfTask?'sound-unresolved':'poor-signal'};
  if(Math.min(targetDistance,competitorDistance)>2.2||take.seconds>Math.max(target.seconds,competitor.seconds)*3.5)
   return {status:'unscored',reason:'unaligned'};
  const fit=Math.exp(-targetDistance/1.6);
  const sentence=plan.calibrationKey.includes('/sentence/');
  const side=plan.calibrationKey.split('/')[3]==='1'?1:0;
+ const toneShape=tone?compareTone(take,target,competitor):null;
  // Like L & N, keep word identity separate from evidence for the difficult
  // contrast. Do not let a long shared vowel dominate an initial or final sound.
  // Tone register and mora length keep their existing separate route; a
@@ -37,9 +43,9 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
  // Resolve it only if the focused region supplies real reference separation;
  // identical readings still abstain instead of handing out an invented grade.
  if(separation<.035&&!focus&&!hfTask)return {status:'unscored',reason:'uncertain'};
- const focusedTarget=focus?(side===0?focus.targetDistance:focus.competitorDistance):targetDistance;
- const focusedCompetitor=focus?(side===0?focus.competitorDistance:focus.targetDistance):competitorDistance;
- const margin=(focusedCompetitor-focusedTarget)/Math.max(.15,focus?.separation??separation);
+ const focusedTarget=toneShape?toneShape.targetDistance:focus?(side===0?focus.targetDistance:focus.competitorDistance):targetDistance;
+ const focusedCompetitor=toneShape?toneShape.competitorDistance:focus?(side===0?focus.competitorDistance:focus.targetDistance):competitorDistance;
+ const margin=(focusedCompetitor-focusedTarget)/Math.max(.15,toneShape?.separation??focus?.separation??separation);
  const contrast=1/(1+Math.exp(-4*Math.max(-4,Math.min(4,margin))));
  // An interpretable designed index: agreement with this reference and separation
  // from its confusable partner. Constants are not claimed to be learned or
@@ -89,6 +95,7 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
  return {status:'matched',score:resolvedClosest===plan.competitor.text?Math.min(45,bounded):bounded,contrast:plan.calibrationKey,model:focus||hfTask?'local-reference-dtw:v2':'local-reference-dtw:v1',
   unit:plan.profile.unit,targetDistance,competitorDistance,referenceVoice:request.voice,
   ...(hf?{hf}:{}),
+  ...(toneShape?{tone:toneShape}:{}),
   ...(focus?{focus:{...focus,targetDistance:focusedTarget,competitorDistance:focusedCompetitor}}:{}),
   ...(resolvedClosest?{closestWord:resolvedClosest}:{}),evidence:hf&&!wordOnly?'sound':'word',
   breakdown:{wordMatch:hf?.word??Math.round(fit*100),pairDistinction:hf?.sound??Math.round(contrast*100),speechMs:Math.round(take.seconds*1000),referenceMs:Math.round(target.seconds*1000)},

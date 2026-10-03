@@ -43,21 +43,21 @@ export class HfWordRuntime {
    model.on('error',message=>finish(false,message.event==='error'?message.error:'Offline word model unavailable'));
    worker.addEventListener('error',event=>finish(false,event.message||'Offline decoder worker failed'),{once:true});
   });
- }){}
+ },private config:{version:string;models:{language:string;asset:string}[];nativeAndroid?:boolean}=manifest){}
  cancel(){this.generation++;this.abort?.();this.abort=undefined;this.recognizer?.remove();this.recognizer=undefined;
   const nativeId=this.nativeId;this.nativeId=undefined;
   if(nativeId)void nativeAudio.cancelWords({id:nativeId}).catch(()=>{});
   this.loadAbort?.abort();this.loadAbort=undefined;this.loading=undefined;}
  dispose(){this.cancel();this.model?.terminate();this.model=undefined;this.language=undefined;
-  if(Capacitor.getPlatform()==='ios')void nativeAudio.releaseWords().catch(()=>{});
+  if(Capacitor.getPlatform()==='ios'||this.config.nativeAndroid)void nativeAudio.releaseWords().catch(()=>{});
   // A cancelled load may finish later; never retain its model after dispose.
   const pending=this.loading;this.loading=undefined;void pending?.then(m=>m.terminate()).catch(()=>{});}
  async recognize(language:string,samples:Float32Array,base:string):Promise<HfWordEvidence|undefined>{
   this.cancel();this.lastError=undefined;this.nativeError=undefined;
-  const pin=manifest.models.find(m=>m.language===language);
+  const pin=this.config.models.find(m=>m.language===language);
   if(!pin||samples.length<1600||samples.length>216000||samples.some(v=>!Number.isFinite(v)||Math.abs(v)>1.01))return undefined;
   let attempt:Promise<Model>|undefined;
-  if(Capacitor.getPlatform()==='ios'){
+  if(Capacitor.getPlatform()==='ios'||this.config.nativeAndroid&&Capacitor.getPlatform()==='android'){
    const token=this.generation,id=crypto.randomUUID();this.nativeId=id;
    let timer:ReturnType<typeof setTimeout>|undefined;
    try{
@@ -68,12 +68,15 @@ export class HfWordRuntime {
      new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Native offline words timed out')),31_000);})]);
     if(token!==this.generation)return undefined;
     const completedPartial=native.engine===`apple-on-device-words:v1/${language}`&&native.completed===true&&native.final===false;
-    if(![`apple-on-device-words:v1/${language}`,`hf-vosk-native:v1/${language}`].includes(native.engine)||native.final!==true&&!completedPartial)throw Error('Invalid native word provenance');
+    if(![`apple-on-device-words:v1/${language}`,`hf-vosk-native:v1/${language}`,...(this.config.version==='pair-offline-words:v1'?[`pair-vosk-native:v1/${language}`]:[])].includes(native.engine)||native.final!==true&&!completedPartial)throw Error('Invalid native word provenance');
     return native;
    }catch(error){
     if(token!==this.generation)return undefined;
     this.nativeError=error instanceof Error?error.message.slice(0,200):'Native offline words unavailable';
     this.lastError=this.nativeError;
+    // The pair apps bundle unpacked native weights, not a duplicate WASM
+    // archive. Retrying a missing browser asset wastes time and memory.
+    if(this.config.version==='pair-offline-words:v1')return undefined;
     // Older iOS still never initializes the unqualified WASM decoder.
    }finally{
     clearTimeout(timer);if(this.nativeId===id){this.nativeId=undefined;void nativeAudio.cancelWords({id}).catch(()=>{});}
@@ -107,9 +110,9 @@ export class HfWordRuntime {
     recognizer.on('result',message=>{
      if(done||token!==this.generation||message.event!=='result')return;
      const r=message.result;
-     if(r.text)parts.push({engine:manifest.version+'/'+language,text:r.text,words:r.result??[]});
+     if(r.text)parts.push({engine:this.config.version+'/'+language,text:r.text,words:r.result??[]});
      if(!finalRequested){final();return;}
-     finish({engine:manifest.version+'/'+language,text:parts.map(p=>p.text).join(' ').trim(),words:parts.flatMap(p=>p.words)});
+     finish({engine:this.config.version+'/'+language,text:parts.map(p=>p.text).join(' ').trim(),words:parts.flatMap(p=>p.words)});
     });
     recognizer.setWords(true);
     // Padding gives the decoder its right context without stretching the word.

@@ -30,7 +30,7 @@ export function focusRegion(plan:Plan):FocusRegion {
      ['en-ending:v1','en-nasal:v1'].includes(id))return 'final';
   if(['en-vowel:v1','ko-vowel:v1','ar-syllable-vowel:v1','yue-vowels:v1'].includes(id))return 'vowel';
   if(id==='cmn-final:v1')return ['an-ang','en-eng','in-ing'].includes(lesson)?'final':'vowel';
-  if(['en-l-r:v1','en-fricative:v1','cmn-initial:v1','ko-three-way-stop:v1',
+  if(['en-l-r:v1','en-h-f:v1','cmn-x-f:v1','en-fricative:v1','cmn-initial:v1','ko-three-way-stop:v1',
       'ko-fricative:v1','ko-position:v1','yue-consonants:v1','ja-voicing:v1','ja-h-b-p:v1'].includes(id))return 'initial';
   return 'whole';
 }

@@ -12,6 +12,8 @@ Acht gezielte Kurse für leicht verwechselbare Laute und Buchstaben auf iOS, And
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
+Die [gemeinsame Feedback-Überarbeitung](../docs/PAIR-FEEDBACK-MIGRATION-20261003.md) ergänzt im Quellcode echte Offline-Transkripte, unabhängige Lautvergleiche je Paar und kompakte, feste Bedienelemente. L & R besteht 55 native Prüfungen gespeicherter Audios unter iOS und Android, Mandarin 161 unter Android. Vor neuen Test-Uploads läuft die sprachspezifische Prüfung weiter. Das bestätigt keine menschliche Aussprachegenauigkeit; bestehende Store-Versionen und Prüfungen bleiben unverändert.
+
 Das [Bewertungsupdate nur für H & F](../docs/HANDF-NATIVE-SCORING-20261003.md) erkennt gespeicherte englische und mandarinchinesische Aufnahmen nativ auf iOS, mit einer integrierten Offline-Alternative statt alleiniger WebView-Dekodierung. Worterkennung und gemessene Lautdetails bleiben getrennt; Gründe für fehlgeschlagene Bewertungen werden beim Verlaufsaudio gespeichert. Andere Kurse und laufende offizielle Prüfungen bleiben unverändert. Quellcode-Validierung bedeutet weder Store-Verfügbarkeit noch zertifizierte Genauigkeit bei menschlichen Stimmen.
 
 [H & F 1.0.0 (15)](../docs/BETA-HANDF-1.0.0-15.md) ist nachweislich in TestFlight und im internen Google-Play-Test verfügbar. Ohne Deinstallation aktualisieren, um den Verlauf zu erhalten. Dies ist eine Testversion, keine neue öffentliche Store-Veröffentlichung.

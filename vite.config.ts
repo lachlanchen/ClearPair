@@ -2,6 +2,7 @@ import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import pkg from './package.json';
+import pairWords from './models/pair-words.json';
 
 const app = process.env.CLEARPAIR_APP || "english";
 const titles: Record<string, string> = {
@@ -22,6 +23,7 @@ export default defineConfig({
     __APP_ID__: JSON.stringify(app),
     __APP_VERSION__: JSON.stringify(pkg.version),
     __HF_WORD_MODELS__: JSON.stringify(app==='handf' && process.env.CLEARPAIR_HF_WORDS==='1'),
+    __PAIR_WORD_MODELS__: JSON.stringify(pairWords.activeApps.includes(app) && process.env.CLEARPAIR_PAIR_WORDS==='1'),
   },
   plugins: [
     react(),

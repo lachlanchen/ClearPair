@@ -1,0 +1,21 @@
+ClearPair offline word identification
+
+Vosk API, Kaldi and OpenFst: Apache License 2.0.
+Android Vosk API 0.3.75 and JNA 5.18.1 (Apache-2.0/LGPL-2.1 dual licence):
+https://github.com/alphacep/vosk-android-demo/blob/master/app/build.gradle
+https://github.com/java-native-access/jna/blob/5.18.1/LICENSE
+Native iOS library provenance is recorded in HF-native-NOTICE.txt.
+https://github.com/alphacep/vosk-api/tree/v0.3.50
+
+Models by Alpha Cephei, Apache License 2.0:
+vosk-model-small-en-us-0.15
+vosk-model-small-cn-0.22
+vosk-model-small-ja-0.22
+vosk-model-small-ko-0.22
+vosk-model-ar-mgb2-0.4
+https://alphacephei.com/vosk/models
+
+Source and deterministic package hashes are recorded in pair-words.json.
+Only the selected practice-language model is bundled with each app.
+Word recognition does not itself measure phoneme accuracy.
+Full Apache License 2.0 is included alongside this notice.

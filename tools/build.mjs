@@ -1,6 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { mkdir, writeFile, readFile, cp, rm } from "node:fs/promises";
 import { exportIcons } from './icons.mjs';
+import {pairWordLanguages,preparePairWordModels} from './pair-word-models.mjs';
 const apps = {
   handf: ["H & F", "h↔f", "#146957", "English & Mandarin h/f"],
   landr: ["L & R", "l↔r", "#7251a5", "English l/r"],
@@ -26,7 +27,10 @@ for (const [id, [name, mark, color]] of Object.entries(apps).filter(
   if(id==='handf'&&isNative){
     const {prepareHfWordModels}=await import('./hf-word-models.mjs');
     await prepareHfWordModels(`${publicDir}/models`);
-  }else if(id==='handf'){
+  }else if(isNative&&pairWordLanguages[id]){
+    await rm(`${publicDir}/models`,{recursive:true,force:true});
+    await preparePairWordModels(id,`${publicDir}/models`);
+  }else {
     // Native and PWA share generated staging; never accidentally publish the
     // large native-only model payload in a later web build.
     await rm(`${publicDir}/models`,{recursive:true,force:true});
@@ -73,6 +77,7 @@ for (const [id, [name, mark, color]] of Object.entries(apps).filter(
         CLEARPAIR_PUBLIC: publicDir,
         CLEARPAIR_NATIVE: isNative ? "1" : "0",
         CLEARPAIR_HF_WORDS: id==='handf'&&isNative ? "1" : "0",
+        CLEARPAIR_PAIR_WORDS: pairWordLanguages[id]&&isNative ? "1" : "0",
       },
     },
   );

@@ -1,7 +1,9 @@
 gradle.beforeProject { app ->
  if (app.name == 'app') app.afterEvaluate {
   app.android.defaultConfig.applicationId = 'art.lazying.clearpair.qa.reference'
-  app.android.sourceSets.main.assets.setSrcDirs([new File(gradle.rootProject.projectDir, '../../../../.runtime/reference-qa/assets')])
+  def qaAssets = System.getProperty('clearpair.qa.assets', '.runtime/reference-qa/assets')
+  if (!(qaAssets ==~ /\.runtime\/reference-qa\/[a-zA-Z0-9\/_-]+/)) throw new GradleException('Invalid project QA assets path')
+  app.android.sourceSets.main.assets.setSrcDirs([new File(gradle.rootProject.projectDir, '../../../../' + qaAssets)])
   app.android.sourceSets.debug.res.srcDir(new File(gradle.rootProject.projectDir, '../../../../.runtime/reference-qa/res'))
  }
 }

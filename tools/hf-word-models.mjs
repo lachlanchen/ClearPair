@@ -8,11 +8,11 @@ export const hfWordModels=[
  {language:'en-US',name:'vosk-model-small-en-us-0.15',zipSha256:'30f26242c4eb449f948e42cb302dd7a686cb29a3423a8367f99ff41780942498'},
  {language:'zh-CN',name:'vosk-model-small-cn-0.22',zipSha256:'3af8b0e7e0f835ae9d414ce5df580237a3cfb08d586c9fbbb0f7ff29ad5b14ba'},
 ];
-export async function prepareHfWordModels(destination){
+export async function prepareHfWordModels(destination,languages=hfWordModels.map(m=>m.language)){
  const manifest=JSON.parse(await readFile('models/hf-words.json','utf8'));
  const cache='.runtime/reference-qa/vosk-models';
  await mkdir(destination,{recursive:true});
- for(const model of hfWordModels){
+ for(const model of hfWordModels.filter(m=>languages.includes(m.language))){
   const pin=manifest.models.find(m=>m.language===model.language);
   if(!pin||pin.source!==`https://alphacephei.com/vosk/models/${model.name}.zip`||pin.zipSha256!==model.zipSha256)
    throw Error('Offline word-model provenance changed');
@@ -36,10 +36,10 @@ export async function prepareHfWordModels(destination){
 }
 /** Native iOS reads unpacked weights, avoiding WebKit's WASM compatibility
  * dependency. Staged into H/F only, from the same checksum-pinned model zips. */
-export async function prepareHfNativeWordModels(destination){
+export async function prepareHfNativeWordModels(destination,languages=hfWordModels.map(m=>m.language)){
  const manifest=JSON.parse(await readFile('models/hf-words.json','utf8'));
  await mkdir(destination,{recursive:true});
- for(const model of hfWordModels){
+ for(const model of hfWordModels.filter(m=>languages.includes(m.language))){
   const zip=resolve('.runtime/reference-qa/vosk-models',model.name+'.zip');
   const pin=manifest.models.find(m=>m.language===model.language);
   if(!pin||pin.zipSha256!==model.zipSha256||createHash('sha256').update(await readFile(zip)).digest('hex')!==model.zipSha256)

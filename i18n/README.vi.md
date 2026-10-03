@@ -12,6 +12,8 @@ Tám khóa tập trung vào âm và chữ dễ nhầm, dành cho iOS, Android v�
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
+[Nâng cấp phản hồi chung](../docs/PAIR-FEEDBACK-MIGRATION-20261003.md) thêm vào mã nguồn bản chép lời ngoại tuyến thực tế, so sánh âm độc lập cho từng cặp và điều khiển gọn, cố định. L & R vượt qua 55 kiểm tra âm thanh đã lưu trên iOS và Android; tiếng Quan thoại vượt qua 161 trên Android. Việc kiểm chứng từng ngôn ngữ tiếp tục trước khi tải bản thử mới. Đây không phải chứng nhận độ chính xác với người thật; phiên bản và đợt xét duyệt hiện tại không đổi.
+
 [Bản cập nhật chấm điểm chỉ dành cho H & F](../docs/HANDF-NATIVE-SCORING-20261003.md) nhận dạng bản ghi tiếng Anh và Quan thoại bằng xử lý gốc trên iOS, có phương án ngoại tuyến tích hợp thay vì phụ thuộc vào bộ giải mã WebView. Nhận dạng từ và chi tiết âm đo được vẫn tách biệt; lý do đánh giá thất bại được lưu cùng âm thanh trong Lịch sử. Các khóa khác và hồ sơ xét duyệt chính thức hiện có không thay đổi. Kiểm thử mã nguồn không đồng nghĩa với việc có mặt trên cửa hàng hoặc chứng nhận độ chính xác với giọng người thật.
 
 Đã xác minh [H & F 1.0.0 (15)](../docs/BETA-HANDF-1.0.0-15.md) có trên TestFlight và kênh thử nghiệm nội bộ Google Play. Hãy cập nhật mà không gỡ cài đặt để giữ Lịch sử. Đây là bản thử nghiệm, không phải bản phát hành công khai mới trên cửa hàng.

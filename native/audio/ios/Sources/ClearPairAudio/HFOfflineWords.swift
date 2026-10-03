@@ -2,7 +2,7 @@ import Foundation
 import Speech
 import Capacitor
 
-/// H/F word identity only. Recognizes saved PCM; never opens another microphone,
+/// Word identity only. Recognizes saved PCM; never opens another microphone,
 /// uses pair hints, or permits an Apple-hosted recognition request.
 final class HFOfflineWords {
     private var pending: CAPPluginCall?
@@ -18,10 +18,21 @@ final class HFOfflineWords {
     func recognize(_ call: CAPPluginCall) {
         dispatchPrecondition(condition: .onQueue(.main))
         let bundle = Bundle.main.bundleIdentifier ?? ""
-        guard ["art.lazying.clearpair.handf", "art.lazying.clearpair.qa.modelios"].contains(bundle),
+        let languages: [String: [String]] = [
+            "art.lazying.clearpair.handf": ["en-US", "zh-CN"],
+            "art.lazying.clearpair.landr": ["en-US"],
+            "art.lazying.clearpair.english": ["en-US"],
+            "art.lazying.clearpair.chinese": ["zh-CN"],
+            "art.lazying.clearpair.cantonese": ["zh-HK"],
+            "art.lazying.clearpair.korean": ["ko-KR"],
+            "art.lazying.clearpair.arabic": ["ar-SA"],
+            "art.lazying.clearpair.japanese": ["ja-JP"],
+            "art.lazying.clearpair.qa.modelios": ["en-US", "zh-CN", "zh-HK", "ko-KR", "ar-SA", "ja-JP"]
+        ]
+        guard let allowed = languages[bundle],
               Bundle.main.object(forInfoDictionaryKey: "NSSpeechRecognitionUsageDescription") != nil,
               let id = call.getString("id"), UUID(uuidString: id) != nil,
-              let language = call.getString("language"), ["en-US", "zh-CN"].contains(language),
+              let language = call.getString("language"), allowed.contains(language),
               let encoded = call.getString("pcm16Base64"), encoded.count <= 576000,
               let pcm = Data(base64Encoded: encoded), pcm.count >= 3200,
               pcm.count <= 432000, pcm.count % 2 == 0 else {

@@ -16,6 +16,8 @@ The [H & F-only scoring update](docs/HANDF-NATIVE-SCORING-20261003.md) identifie
 
 [H & F 1.0.0 (15)](docs/BETA-HANDF-1.0.0-15.md) is now verified available in TestFlight and Google Play internal testing. Update without uninstalling to keep History. This is a test release, not a new public-store release.
 
+The [shared feedback migration](docs/PAIR-FEEDBACK-MIGRATION-20261003.md) brings actual offline transcripts, independent per-pair sound comparisons and compact, steady controls to the other courses in source. L & R passes 55 native saved-audio checks on both iOS and Android; Mandarin passes 161 on Android. Language-specific qualification continues before new test uploads. These engineering checks are not human accuracy certification; existing store versions and reviews are unchanged.
+
 All eight standalone apps, including [Japanese](docs/JAPANESE-COURSE.md), have [1.0.0 (9) internal-test builds and test links](docs/BETA-1.0.0-9.md) on TestFlight and Google Play. The eight iOS formal reviews still use build 8 and remain Waiting for Review, with automatic release preserved; Google production submission is not yet complete. [Signed artifacts and provider states are verified](store/artifacts/internal-beta-1.0.0-9.json). This internal-test update is not approval or public availability. The live PWA is unchanged.
 
 ## Eight focused courses

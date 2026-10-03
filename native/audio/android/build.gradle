@@ -9,4 +9,6 @@ dependencies {
     implementation project(':capacitor-android')
     implementation "androidx.appcompat:appcompat:${rootProject.ext.androidxAppCompatVersion}"
     implementation "androidx.core:core:${rootProject.ext.androidxCoreVersion}"
+    implementation 'com.alphacephei:vosk-android:0.3.75@aar'
+    implementation 'net.java.dev.jna:jna:5.18.1@aar'
 }

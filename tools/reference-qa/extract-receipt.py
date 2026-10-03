@@ -12,7 +12,7 @@ parser.add_argument('console', type=Path)
 parser.add_argument('output', type=Path)
 parser.add_argument('--expected', type=int, required=True)
 args = parser.parse_args()
-assert 1 <= args.expected <= 120
+assert 1 <= args.expected <= 1200
 rows = []
 parts = {}
 done = False
@@ -37,7 +37,7 @@ if parts:
         encoded = ''.join(entry['chunks'][i] for i in range(entry['count']))
         rows.append(json.loads(base64.b64decode(encoded, validate=True).decode('utf-8')))
 assert done and len(rows) == args.expected, 'Incomplete native QA receipt'
-keys = [(r['lesson'], r.get('pair'), r.get('side')) for r in rows]
+keys = [(r['lesson'], r.get('pair',r.get('cycle')), r.get('side')) for r in rows]
 assert len(set(keys)) == len(rows), 'Duplicate native QA rows'
 summary = {'checks': len(rows), 'passed': sum(r['passed'] is True for r in rows),
            'failed': [keys[i] for i, r in enumerate(rows) if r['passed'] is not True]}

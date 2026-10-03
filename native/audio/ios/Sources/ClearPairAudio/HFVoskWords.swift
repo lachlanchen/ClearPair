@@ -24,7 +24,10 @@ final class HFVoskWords {
         lock.lock(); active = id; lock.unlock()
         queue.async { [self] in
             guard current(id) else { return }
-            let name = language == "en-US" ? "en" : "zh"
+            // Never silently decode another language with the Mandarin model.
+            guard let name = ["en-US": "en", "zh-CN": "zh", "ja-JP": "ja", "ko-KR": "ko", "ar-SA": "ar"][language] else {
+                DispatchQueue.main.async { completion(nil) }; return
+            }
             let path = Bundle.main.bundleURL.appendingPathComponent("public/models/hf-native/\(name)")
             guard FileManager.default.fileExists(atPath: path.appendingPathComponent("am/final.mdl").path) else {
                 DispatchQueue.main.async { completion(nil) }; return
@@ -61,7 +64,8 @@ final class HFVoskWords {
             }
             collect(vosk_recognizer_final_result(recognizer))
             guard current(id) else { return }
-            let value: [String: Any] = ["engine": "hf-vosk-native:v1/\(language)", "text": texts.joined(separator: " "), "words": words, "final": true]
+            let hf = Bundle.main.bundleIdentifier == "art.lazying.clearpair.handf" || Bundle.main.bundleIdentifier == "art.lazying.clearpair.qa.modelios" && ["en-US", "zh-CN"].contains(language)
+            let value: [String: Any] = ["engine": "\(hf ? "hf-vosk-native" : "pair-vosk-native"):v1/\(language)", "text": texts.joined(separator: " "), "words": words, "final": true]
             DispatchQueue.main.async { completion(value) }
         }
     }
