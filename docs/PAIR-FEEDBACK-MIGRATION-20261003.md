@@ -1,5 +1,32 @@
 # Word evidence and contrast feedback migration
 
+## October 4 qualification and packaging correction
+
+Arabic now passes **130/130 iOS and 130/130 Android** saved-PCM regressions.
+The first Android attempt exposed repeated setup cancellation at the ordinary
+31-second decoding deadline (128/130 passed). Cold model preparation is now a
+separate bounded stage, without PCM or target-word hints. A fresh generated-cache
+test completes setup once in 61,031 ms and then passes all 130 checks, including
+repeat/cancel/dispose and silence/noise. Android word+sentence decoding median/p95
+is 3032/4004 ms on the older MIX 2S, not a promise for every device. Saved audio
+survives preparation; its localized status is below the fixed Record control.
+
+Cantonese iOS10 was accepted for upload but failed Apple's processing with
+ITMS-90208: the pinned ONNX framework's plist declared iOS13 while its Mach-O
+requires iOS15. Build11 corrects only the embedded copy's deployment metadata
+before final signing and checks all embedded framework minima before export.
+The upstream SDK/cache and original rejected package remain preserved. The new
+package is still processing; iOS availability is not claimed until VALID and
+internal-group readback. Android11 is available to existing internal testers.
+
+Japanese10 is now verified available on both internal-test platforms; see its
+[distribution record](BETA-JAPANESE-1.0.0-10.md). Pair-enabled tests pass1115/12
+skipped and H/F-enabled tests pass1118/9 skipped. These and the native synthetic
+checks are regression evidence, not calibrated human pronunciation accuracy.
+
+L & N's separate approved Mac1.0.0(2) was released at the owner's request and is
+Ready for Sale. That release does not replace ClearPair work or modify H/F15.
+
 H & F build 15 remains the owner-approved baseline. Its scoring path and current
 store binary are preserved; the other courses use a separate hybrid adapter.
 
