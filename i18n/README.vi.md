@@ -14,7 +14,7 @@ Tám khóa tập trung vào âm và chữ dễ nhầm, dành cho iOS, Android v�
 
 [Bản cập nhật chấm điểm chỉ dành cho H & F](../docs/HANDF-NATIVE-SCORING-20261003.md) nhận dạng bản ghi tiếng Anh và Quan thoại bằng xử lý gốc trên iOS, có phương án ngoại tuyến tích hợp thay vì phụ thuộc vào bộ giải mã WebView. Nhận dạng từ và chi tiết âm đo được vẫn tách biệt; lý do đánh giá thất bại được lưu cùng âm thanh trong Lịch sử. Các khóa khác và hồ sơ xét duyệt chính thức hiện có không thay đổi. Kiểm thử mã nguồn không đồng nghĩa với việc có mặt trên cửa hàng hoặc chứng nhận độ chính xác với giọng người thật.
 
-Đã xác minh [H & F 1.0.0 (11)](../docs/BETA-HANDF-1.0.0-11.md) có trên TestFlight và kênh thử nghiệm nội bộ Google Play. Hãy cập nhật mà không gỡ cài đặt để giữ Lịch sử. Đây là bản thử nghiệm, không phải bản phát hành công khai mới trên cửa hàng.
+Đã xác minh [H & F 1.0.0 (13)](../docs/BETA-HANDF-1.0.0-13.md) có trên TestFlight và kênh thử nghiệm nội bộ Google Play. Hãy cập nhật mà không gỡ cài đặt để giữ Lịch sử. Đây là bản thử nghiệm, không phải bản phát hành công khai mới trên cửa hàng.
 
 Cả tám ứng dụng độc lập, gồm [tiếng Nhật](../docs/JAPANESE-COURSE.md), đã có [bản thử nội bộ 1.0.0 (9) và liên kết thử nghiệm](../docs/BETA-1.0.0-9.md) trên TestFlight và Google Play. Tám hồ sơ xét duyệt chính thức iOS vẫn dùng bản dựng 8 và đang chờ xét duyệt, giữ tự động phát hành sau khi được duyệt; việc gửi bản chính thức lên Google chưa hoàn tất. [Gói đã ký và trạng thái cửa hàng được xác minh](../store/artifacts/internal-beta-1.0.0-9.json). Bản cập nhật thử nội bộ này không có nghĩa là đã được duyệt hay công khai. PWA công khai không thay đổi.
 

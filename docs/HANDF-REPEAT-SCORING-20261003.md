@@ -1,8 +1,9 @@
 # H & F repeated-take and ambiguous-sound scoring
 
-This source candidate targets **H & F 1.0.0 (13)** only. Upload/distribution is
-not implied by this document. [Build 11](BETA-HANDF-1.0.0-11.md) is the previous
-verified internal release. Other apps, L & N and production reviews are unchanged.
+These changes target **H & F 1.0.0 (13)** only. The separate
+[verified internal-release receipt](BETA-HANDF-1.0.0-13.md) confirms TestFlight
+and Google Play internal availability. [Build 11](BETA-HANDF-1.0.0-11.md) remains
+historical evidence. Other apps, L & N and production reviews are unchanged.
 
 The owner reported that build 11 sometimes distinguished hat/fat but otherwise
 returned an uncertain-sound message, including after reopening. No owner audio
