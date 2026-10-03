@@ -1,8 +1,10 @@
 # H & F: native saved-audio word evidence
 
-This is the source candidate for **H & F 1.0.0 (11)** only. It does not imply
-an upload, formal review or public release. The other seven apps retain build 9;
-L & N source and existing production reviews are untouched. Build 10 and its
+This is the source for **H & F 1.0.0 (11)** only. Its
+[internal-test release receipt](BETA-HANDF-1.0.0-11.md) verifies TestFlight and
+Google Play internal availability, not formal review or public release.
+The other seven apps retain build 9; L & N source and existing production
+reviews are untouched. Build 10 and its
 [receipt](BETA-HANDF-1.0.0-10.md) remain historical evidence.
 
 ## Design learned from L & N

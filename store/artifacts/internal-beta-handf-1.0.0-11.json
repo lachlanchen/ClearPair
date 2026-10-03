@@ -1,0 +1,81 @@
+{
+  "app": "handf",
+  "bundleId": "art.lazying.clearpair.handf",
+  "version": "1.0.0",
+  "build": 11,
+  "applicationSourceCommit": "a9f329fb6e3120393d78c9ec9b3c8a39f4ada9e0",
+  "verifiedAt": "2026-10-03T07:26:33.494Z",
+  "distribution": ["internal-testflight", "google-play-internal-testing"],
+  "apple": {
+    "ipaSha256": "017e50312f0459021ee343248538a65a64f65d623e15db0b8421be82d3a03659",
+    "ipaBytes": 98060624,
+    "processingState": "VALID",
+    "internalBuildState": "IN_BETA_TESTING",
+    "automaticTesterNotificationEnabled": true,
+    "existingInternalTesterVerified": true,
+    "nativeRecognitionLinked": true,
+    "verifiedNativeModelFiles": 28,
+    "verifiedPublicAssets": 49,
+    "duplicateWasmModels": false
+  },
+  "android": {
+    "aabSha256": "6e3b99319310c27a8b8cff5000e603cfac56be74ad5e500698453d285012d5ec",
+    "aabBytes": 95499758,
+    "state": "available-to-internal-testers",
+    "draftPresent": false,
+    "existingInternalTestersVerified": true,
+    "verifiedPublicAssets": 22,
+    "pinnedModelsVerified": 2,
+    "joinUrl": "https://play.google.com/apps/internaltest/4700504989515969850"
+  },
+  "scope": {
+    "otherSevenAppsUpdated": false,
+    "existingProductionReviewsChanged": false,
+    "build11SubmittedForProduction": false,
+    "webDeployed": false,
+    "pricingIapCountriesPrivacyDeclarationsChanged": false
+  },
+  "scoring": {
+    "acousticModel": "local-reference-dtw:v2",
+    "contrastAnalysis": "hf-segment-fft:v1",
+    "iosWordEvidence": ["apple-on-device-words:v1", "hf-vosk-native:v1"],
+    "androidWordEvidence": "hf-offline-words:v1",
+    "languages": ["en-US", "zh-CN"],
+    "ios": "Saved-audio Apple offline recognition with bundled native Vosk fallback on supported iOS 15+",
+    "android": "Existing bundled offline decoder retained",
+    "wordOnlyScoreCap": 85,
+    "failedAssessmentAudioAndReasonRetainedInHistory": true,
+    "finalFv": "Acoustic grading only; lexical evidence excluded",
+    "recordingUploads": false,
+    "calibratedPronunciationAccuracy": false
+  },
+  "bundledNativeModelSources": [
+    {
+      "language": "en-US",
+      "name": "vosk-model-small-en-us-0.15",
+      "zipSha256": "30f26242c4eb449f948e42cb302dd7a686cb29a3423a8367f99ff41780942498",
+      "license": "Apache-2.0"
+    },
+    {
+      "language": "zh-CN",
+      "name": "vosk-model-small-cn-0.22",
+      "zipSha256": "3af8b0e7e0f835ae9d414ce5df580237a3cfb08d586c9fbbb0f7ff29ad5b14ba",
+      "license": "Apache-2.0"
+    }
+  ],
+  "qa": {
+    "hfEnabledFullSuitePassed": 488,
+    "hfEnabledFullSuiteSkipped": 3,
+    "macMiniNativeSavedPcmChecksPassed": 35,
+    "macMiniNativeSavedPcmChecksTotal": 35,
+    "macMiniSimulatorIos": "27.0",
+    "macMiniAppleRecognizer": "Initialization failed with kLSRErrorDomain 300; native fallback exercised",
+    "macMiniNativeVoskExecuted": true,
+    "typeCheckingPassed": true,
+    "iosArchiveAndExportPassed": true,
+    "appleUploadValidationPassed": true,
+    "androidSignedBundlePassed": true,
+    "nativeTestScope": "Synthesized-reference saved PCM, silence, quiet takes, opposite words, language switching, repetition and unrelated-word rejection; not live learner microphone accuracy",
+    "ownerIphoneSe3RecordingsRetrieved": false
+  }
+}
