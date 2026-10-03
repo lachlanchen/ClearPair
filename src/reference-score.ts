@@ -1,7 +1,7 @@
 import {acousticReference,referenceDistance} from './reference-features';
 import type {AssessmentPlan} from './scoring-profiles';
 import type {ScoreResult} from './scoring';
-import {hfDetails} from './hf-score';
+import {hfDetails,hfAnalysisSamples} from './hf-score';
 import {focusedPair,focusRegion} from './pair-focus';
 
 export interface ReferenceRequest {
@@ -11,7 +11,9 @@ export interface ReferenceRequest {
 }
 export function referenceScore(request:ReferenceRequest):ScoreResult {
  const {plan}=request;
- const take=acousticReference(request.samples),target=acousticReference(request.target),competitor=acousticReference(request.competitor);
+ const hfTask=plan.calibrationKey.startsWith('handf/');
+ const extract=(samples:Float32Array)=>acousticReference(hfTask?hfAnalysisSamples(samples):samples);
+ const take=extract(request.samples),target=extract(request.target),competitor=extract(request.competitor);
  if(!take||take.periodic<.08)return {status:'unscored',reason:'poor-signal'};
  if(!target||!competitor)return {status:'unscored',reason:'model-unavailable'};
  const tone=plan.profile.unit==='tone',timing=plan.profile.id.startsWith('ja-mora')||plan.profile.id==='yue-vowels:v1';
@@ -22,7 +24,6 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
  if(Math.min(targetDistance,competitorDistance)>2.2||take.seconds>Math.max(target.seconds,competitor.seconds)*3.5)
   return {status:'unscored',reason:'unaligned'};
  const fit=Math.exp(-targetDistance/1.6);
- const hfTask=plan.calibrationKey.startsWith('handf/');
  const sentence=plan.calibrationKey.includes('/sentence/');
  const side=plan.calibrationKey.split('/')[3]==='1'?1:0;
  // Like L & N, keep word identity separate from evidence for the difficult
@@ -34,7 +35,7 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
  // A brief aspiration difference can be diluted below the whole-word gate.
  // Resolve it only if the focused region supplies real reference separation;
  // identical readings still abstain instead of handing out an invented grade.
- if(separation<.035&&!focus)return {status:'unscored',reason:'uncertain'};
+ if(separation<.035&&!focus&&!hfTask)return {status:'unscored',reason:'uncertain'};
  const focusedTarget=focus?(side===0?focus.targetDistance:focus.competitorDistance):targetDistance;
  const focusedCompetitor=focus?(side===0?focus.competitorDistance:focus.targetDistance):competitorDistance;
  const margin=(focusedCompetitor-focusedTarget)/Math.max(.15,focus?.separation??separation);
@@ -48,8 +49,8 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
  let wordOnly=false;
  if(hfTask){
   const parts=plan.calibrationKey.split('/'),lesson=parts[1],side=parts[3]==='1'?1:0;
-  const wt=request.wordTarget?acousticReference(request.wordTarget):target;
-  const wc=request.wordCompetitor?acousticReference(request.wordCompetitor):competitor;
+  const wt=request.wordTarget?extract(request.wordTarget):target;
+  const wc=request.wordCompetitor?extract(request.wordCompetitor):competitor;
   if(!wt||!wc)return {status:'unscored',reason:'reference-unavailable'};
   const sentence=plan.calibrationKey.includes('/sentence/');
   // In the authored Mandarin carrier the target is the final character. Keep
@@ -59,7 +60,7 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
   const earliest=sentence&&lesson==='hf-zh'&&position>=0?Math.max(0,position/prompt.length-.3):0;
   hf=hfDetails(take,wt,wc,lesson,side,sentence,earliest);
   // Do not award a vowel-only take a high F/H score.
-  if(!hf||hf.heard==='uncertain'){
+  if(!hf||(hf.heard==='uncertain'&&hf.version==='hf-segment-fft:v1')){
    // An opposite word is useful evidence, not a capture failure. If its whole
    // reference fits clearly and there really is breath/friction at the word's
    // edge, retain a LOW word-level comparison even when a clean consonant
@@ -75,15 +76,16 @@ export function referenceScore(request:ReferenceRequest):ScoreResult {
  }
  // A word-only fallback reports contrast agreement, not vowel similarity.
  // Otherwise the shared vowel can lift an opposite H/F word above 50.
- const resolvedClosest=hf?(hf.heard===hf.target?plan.target.text:plan.competitor.text):closest;
+ const resolvedClosest=hf?(hf.heard==='uncertain'?undefined:hf.heard===hf.target?plan.target.text:plan.competitor.text):closest;
  const total=hf?Math.round(hf.sound*.8+hf.word*.2):wordOnly?Math.round(100*contrast):score;
+ const bounded=hf?.heard==='uncertain'?Math.min(hf.cue==='missing'?30:59,total):total;
  // A clear match to the OTHER displayed word is useful low-score feedback,
  // not a capture error. Shared phonemes cannot raise it into a success.
- return {status:'matched',score:resolvedClosest===plan.competitor.text?Math.min(45,total):total,contrast:plan.calibrationKey,model:focus?'local-reference-dtw:v2':'local-reference-dtw:v1',
+ return {status:'matched',score:resolvedClosest===plan.competitor.text?Math.min(45,bounded):bounded,contrast:plan.calibrationKey,model:focus||hfTask?'local-reference-dtw:v2':'local-reference-dtw:v1',
   unit:plan.profile.unit,targetDistance,competitorDistance,referenceVoice:request.voice,
   ...(hf?{hf}:{}),
   ...(focus?{focus:{...focus,targetDistance:focusedTarget,competitorDistance:focusedCompetitor}}:{}),
   ...(resolvedClosest?{closestWord:resolvedClosest}:{}),evidence:hf&&!wordOnly?'sound':'word',
-  breakdown:{wordMatch:Math.round(fit*100),pairDistinction:Math.round(contrast*100),speechMs:Math.round(take.seconds*1000),referenceMs:Math.round(target.seconds*1000)},
+  breakdown:{wordMatch:hf?.word??Math.round(fit*100),pairDistinction:hf?.sound??Math.round(contrast*100),speechMs:Math.round(take.seconds*1000),referenceMs:Math.round(target.seconds*1000)},
   scope:plan.calibrationKey.includes('/sentence/')?'sentence':'word'};
 }

@@ -1,5 +1,8 @@
 # H & F: one recording, automatic feedback
 
+For the focused build-10 candidate, see [the H & F-only scoring update](HANDF-SCORING-20261003.md).
+The historical build-7/8 description below does not establish current test availability.
+
 Build 1.0.0 (7) added automatic spoken-contrast feedback to all eight apps.
 Candidate (8) keeps that flow and compacts the screen around the word pair,
 waveform, recording button and result. H & F has a dedicated consonant-focused

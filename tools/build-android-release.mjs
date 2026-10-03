@@ -2,6 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdir, readFile, copyFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { createHash } from 'node:crypto';
+import { selectedRelease } from './release-identity.mjs';
 
 // Provision the private upload key separately. Do not use a debug signing key.
 const configFile = process.env.CLEARPAIR_ANDROID_SIGNING;
@@ -14,7 +15,7 @@ const apps = ['handf', 'landr', 'english', 'chinese', 'korean', 'arabic', 'canto
 const selected=process.argv.slice(2);
 if(selected.some(app=>!apps.includes(app))||new Set(selected).size!==selected.length)throw Error('Unknown or duplicate app selector');
 const init = resolve('tools/android-release.init.gradle');
-const {version,build}=JSON.parse(await readFile('store/release.json','utf8'));
+const {version,build}=selectedRelease(JSON.parse(await readFile('store/release.json','utf8')),selected);
 if(version!==JSON.parse(await readFile('package.json','utf8')).version) throw new Error('Version mismatch');
 const commit = spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim();
 const receipts = [];

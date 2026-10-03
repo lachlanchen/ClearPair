@@ -15,6 +15,23 @@ const grade:ScoreResult={status:'scored',score:83,probability:.83,model:'test-on
 beforeEach(()=>{vi.clearAllMocks();mocks.save.mockResolvedValue('device');});
 afterEach(cleanup);
 describe('local scoring take lifecycle',()=>{
+ it('never presents lexical recognition as a measured 100-point consonant',async()=>{
+  const match:ScoreResult={status:'matched',score:85,model:'local-hf-hybrid:v1',contrast:'handf/hf-en/0/0/word/en-h-f:v1',unit:'phone',
+   targetDistance:0,competitorDistance:0,referenceVoice:'none:word-identification-only',scope:'word',evidence:'word',
+   recognition:{engine:'fixture',text:'hat',decision:'target',confidence:.95},breakdown:{wordMatch:100,pairDistinction:0,speechMs:180,referenceMs:0}};
+  mocks.assess.mockResolvedValue(match);
+  render(<ScorePanel take={{...take(),app:'handf',word:'hat'}} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);await act(async()=>{});
+  expect(screen.getByText('Uncertain')).toBeDefined();expect(screen.getByText(/consonant could not be measured reliably/)).toBeDefined();
+ });
+ it('shows the offline recognized word and missing-consonant coaching without a false sound label',async()=>{
+  const match:ScoreResult={status:'matched',score:18,model:'local-hf-hybrid:v1',contrast:'handf/hf-en/0/0/word/en-h-f:v1',unit:'phone',
+   targetDistance:0,competitorDistance:0,referenceVoice:'none:word-identification-only',scope:'word',
+   recognition:{engine:'fixture',text:'at',decision:'omitted',confidence:.9},breakdown:{wordMatch:20,pairDistinction:0,speechMs:180,referenceMs:0}};
+  mocks.assess.mockResolvedValue(match);
+  render(<ScorePanel take={{...take(),app:'handf',word:'hat'}} busy={false} automatic tr={tr} onSaved={vi.fn()} onStorageWarning={vi.fn()}/>);await act(async()=>{});
+  expect(screen.getByText(/Recognized words/).textContent).toContain('at');expect(screen.getByText(/consonant is missing/)).toBeDefined();
+  expect(screen.queryByText(/Heard/)).toBeNull();expect(screen.getByText(/not a pronunciation accuracy percentage/)).toBeDefined();
+ });
  it('shows useful measured items outside the collapsed technical details',async()=>{
   const match:ScoreResult={status:'matched',score:72,model:'local-reference-dtw:v1',contrast:'english/test',unit:'phone',targetDistance:.3,competitorDistance:.7,referenceVoice:'fixture',scope:'word',breakdown:{wordMatch:83,pairDistinction:91,speechMs:220,referenceMs:310}};
   mocks.assess.mockResolvedValue(match);

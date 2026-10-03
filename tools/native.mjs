@@ -2,8 +2,9 @@ import { spawnSync } from "node:child_process";
 import { access, readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
 import { exportNativeIcons } from './icons.mjs';
 import { updateIosInfo } from './native-metadata.mjs';
+import { appRelease } from './release-identity.mjs';
 const [app, platform] = process.argv.slice(2);
-const release=JSON.parse(await readFile('store/release.json','utf8'));
+const release=appRelease(JSON.parse(await readFile('store/release.json','utf8')),app);
 if(release.version!==JSON.parse(await readFile('package.json','utf8')).version || !Number.isSafeInteger(release.build) || release.build<1) throw new Error('Invalid release identity');
 if (
   !["handf", "landr", "english", "chinese", "korean", "arabic", "cantonese", "japanese"].includes(app) ||

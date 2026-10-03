@@ -1,7 +1,7 @@
 import {referenceDistance,referenceSlice,locateReference,type AcousticReference} from './reference-features';
 
 export interface HFDetails {
-  version:'hf-segment-fft:v1';
+  version:'hf-segment-fft:v1'|'hf-segment-fft:v2';
   target:'h'|'f'|'v';
   heard:'h'|'f'|'v'|'uncertain';
   position:'initial'|'final';
@@ -12,12 +12,29 @@ export interface HFDetails {
   targetDistance:number;
   competitorDistance:number;
   margin:number;
-  cue:'good'|'lip-friction'|'gentle-breath'|'back-friction'|'keep-ending'|'add-voice'|'uncertain';
+  cue:'good'|'lip-friction'|'gentle-breath'|'back-friction'|'keep-ending'|'add-voice'|'uncertain'|'missing'|'different-word';
 }
 interface Segment {shape:number[];relative:number[];energy:number;duration:number;voicing:number;from:number;to:number}
 const average=(rows:number[][])=>rows[0].map((_,i)=>rows.reduce((s,row)=>s+row[i],0)/rows.length);
 const mean=(values:number[])=>values.reduce((s,v)=>s+v,0)/Math.max(1,values.length);
 const clamp=(value:number)=>Math.max(0,Math.min(1,value));
+/** Normalize only H/F analysis, after validating original PCM. The active
+ * frame level—not trailing silence—sets gain, so an absolute weak-friction
+ * threshold cannot discard a final F just because the phone recorded quietly.
+ * Availability/noise/clipping checks still use the ORIGINAL recording. */
+export function hfAnalysisSamples(input:Float32Array):Float32Array {
+ if(input.length>216000||input.some(v=>!Number.isFinite(v)||Math.abs(v)>1.01))throw Error('Invalid H/F audio');
+ let activity=0,peak=0;
+ for(let at=0;at<input.length;at+=400){
+  const end=Math.min(input.length,at+400);let sum=0,mean=0;
+  for(let i=at;i<end;i++){mean+=input[i];peak=Math.max(peak,Math.abs(input[i]));}mean/=Math.max(1,end-at);
+  for(let i=at;i<end;i++)sum+=(input[i]-mean)**2;
+  activity=Math.max(activity,Math.sqrt(sum/Math.max(1,end-at)));
+ }
+ if(activity<.001)return input; // Never amplify silence/DC into valid speech.
+ const gain=Math.min(64,.12/activity,.9/Math.max(peak,1e-8));
+ return input.map(v=>v*gain);
+}
 export function fricativeSegment(a:AcousticReference,final:boolean):Segment|null {
  const n=a.frames.length,peak=Math.max(...a.energy);
  let vowel=-1;
@@ -79,7 +96,21 @@ export function hfDetails(take:AcousticReference,target:AcousticReference,compet
   take=referenceSlice(take,Math.max(0,match.from-padding),Math.min(take.frames.length,match.to+2));
  }
  const a=fricativeSegment(take,final),t=fricativeSegment(target,final),c=fricativeSegment(competitor,final);
- if(!a||!t||!c)return null;
+ if(!t||!c)return null;
+ // A vowel-only take is not a recording failure. Keep a low, explicitly
+ // missing-consonant result only when the shared word body fits. The established
+ // classifier below is unchanged: the experimental projection increased
+ // opposite-word errors on human crops and is not enabled.
+ if(!a){
+  // This update concerns initial H/F. Do not reinterpret a missing final F/V
+  // segment as an initial breath/lip-friction error.
+  if(final)return null;
+  const bodyT=referenceSlice(target,t.to,target.frames.length),bodyC=referenceSlice(competitor,c.to,competitor.frames.length);
+  const d=Math.min(referenceDistance(take,bodyT),referenceDistance(take,bodyC));
+  if(!Number.isFinite(d)||d>1.35)return null;
+  return {version:'hf-segment-fft:v2',target:labels[side],heard:'uncertain',position:final?'final':'initial',
+   sound:0,word:Math.round(100*Math.exp(-d/1.6)),timing:0,segmentMs:0,targetDistance:3.5,competitorDistance:3.5,margin:0,cue:'missing'};
+ }
  const mandarin=lesson==='hf-zh';
  const td=distance(a,t,final,mandarin,sentence),cd=distance(a,c,final,mandarin,sentence),separation=distance(t,c,final,mandarin,sentence);
  if(separation<.12||Math.min(td,cd)>3.5)return null;

@@ -1,17 +1,20 @@
 import {describe,it,expect,vi,afterEach} from 'vitest';
 import {referenceScore} from './reference-score';
 import {assessmentPlan} from './scoring-profiles';
-import {fricativeSegment} from './hf-score';
+import {fricativeSegment,hfAnalysisSamples} from './hf-score';
 import * as hfEngine from './hf-score';
 import {acousticReference,locateReference,type AcousticReference} from './reference-features';
 /** Controlled synthetic consonant+vowel fixtures verify segmentation and
  * invariance. They are not human pronunciation-accuracy validation. */
 function word(kind:'h'|'f'|'none',gain=1,pitch=140,onsetSamples=3200){
- const onset=kind==='none'?0:onsetSamples,vowel=8000,a=new Float32Array(onset+vowel+1600);let seed=123;
+ const onset=kind==='none'?0:onsetSamples,vowel=8000,a=new Float32Array(onset+vowel+1600);let seed=123,breath=0;
  for(let i=0;i<onset;i++){
   seed=(seed*1664525+1013904223)>>>0;const noise=seed/2**32-.5,t=i/16000;
   // H's vowel-shaped breath vs F's flatter high-band friction.
-  a[i]=gain*.08*(kind==='f'?noise*Math.sin(2*Math.PI*5000*t):noise*(.3+.7*Math.sin(2*Math.PI*750*t)));
+  breath=.85*breath+.15*noise;
+  // Filter the breath, rather than amplitude-modulating white noise (which
+  // stays broadband and is not a physical H/F spectral contrast).
+  a[i]=gain*.08*(kind==='f'?noise:breath*2.5);
  }
  for(let i=0;i<vowel;i++){
   const t=i/16000,envelope=Math.min(1,i/400,(vowel-i)/400);
@@ -25,6 +28,15 @@ function assess(audio:Float32Array,side:0|1=0,lesson='hf-en',sentence=false){
  ...(sentence?{wordTarget:side===0?h:f,wordCompetitor:side===0?f:h}:{})});
 }
 describe('consonant-focused H & F scoring',()=>{
+ it('uses active-frame gain, not trailing silence, without mutating the original recording',()=>{
+  const a=word('f'),b=new Float32Array(a.length+16000);b.set(a.map(v=>v*.08));
+  const x=hfAnalysisSamples(a),y=hfAnalysisSamples(b);
+  expect(a[0]).not.toBe(x[0]);
+  for(let i=0;i<a.length;i+=100)expect(x[i]).toBeCloseTo(y[i],5);
+  expect(hfAnalysisSamples(new Float32Array(16000))).toEqual(new Float32Array(16000));
+  expect(()=>hfAnalysisSamples(new Float32Array([NaN]))).toThrow();
+  expect(()=>hfAnalysisSamples(new Float32Array([1.2]))).toThrow();
+ });
  afterEach(()=>vi.restoreAllMocks());
  it('retains a clear opposite-word comparison when the consonant boundary is unavailable',()=>{
   vi.spyOn(hfEngine,'hfDetails').mockReturnValue(null);
@@ -40,7 +52,11 @@ describe('consonant-focused H & F scoring',()=>{
   }
   expect(assess(word('none')).status).toBe('unscored');
   expect(assess(word('h')).status).toBe('unscored');
-  expect(assess(word('f')).status).toBe('unscored');
+  const clearOpposite=assess(word('f'));
+  expect(clearOpposite.status).toBe('matched');
+  if(clearOpposite.status==='matched'){
+   expect(clearOpposite.score).toBeLessThan(50);expect(clearOpposite.evidence).toBe('word');
+  }
  });
  it('does not mistake a brief preceding carrier vowel for the stable target vowel',()=>{
   const energy=[.1,.05,.04,.04,.04,.04,.04,.08,.12,.14,.14,.13,.12,.1,.09,.06,.04,.02];
@@ -79,7 +95,27 @@ describe('consonant-focused H & F scoring',()=>{
   if(x.status==='matched')expect(x.hf?.cue).toBe('back-friction');
  });
  it('does not award a high score to vowel-only speech, noise or silence',()=>{
-  expect(assess(word('none')).status).toBe('unscored');expect(assess(new Float32Array(16000)).status).toBe('unscored');
+  const missing=assess(word('none'));
+  expect(missing.status).toBe('matched');
+  if(missing.status==='matched'){
+   expect(missing.score).toBeLessThanOrEqual(30);expect(missing.hf?.sound).toBe(0);
+   expect(missing.hf?.cue).toBe('missing');expect(missing.closestWord).toBeUndefined();
+  }
+  expect(assess(new Float32Array(16000)).status).toBe('unscored');
+ });
+ it('does not change phoneme identity with a longer or shorter consonant',()=>{
+  for(const length of [1280,4800,8000]){
+   const h=assess(word('h',1,140,length)),f=assess(word('f',1,140,length));
+   expect(h.status).toBe('matched');expect(f.status).toBe('matched');
+   if(h.status==='matched'&&f.status==='matched'){
+    expect(h.hf?.heard,`${length}: ${JSON.stringify(h.hf)}`).toBe('h');expect(f.hf?.heard).toBe('f');
+    expect(h.score-f.score).toBeGreaterThan(40);
+   }
+  }
+ });
+ it('keeps identical reference voices ungraded even for H & F',()=>{
+  const plan=assessmentPlan('handf','hf-en',0,0);if(plan.mode!=='contrast')throw Error('plan');
+  expect(referenceScore({id:'same',plan,samples:word('h'),target:word('h'),competitor:word('h'),voice:'fixture'}).status).toBe('unscored');
  });
  it('preserves sound separation after quieter capture or changed vowel pitch',()=>{
   const h=assess(word('h',.35,180)),f=assess(word('f',.35,180));

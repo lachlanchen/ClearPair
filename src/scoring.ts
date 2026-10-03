@@ -61,7 +61,7 @@ export type ScoreResult =
       status: "matched";
       score: number;
       contrast: string;
-      model: "local-reference-dtw:v1" | "local-reference-dtw:v2";
+      model: "local-reference-dtw:v1" | "local-reference-dtw:v2" | "local-hf-hybrid:v1";
       unit: ScoreEvidence["unit"];
       // A reference similarity index, NOT a probability of correct pronunciation.
       targetDistance: number;
@@ -70,6 +70,7 @@ export type ScoreResult =
       scope: "word" | "sentence";
       hf?: import('./hf-score').HFDetails;
       closestWord?: string;
+      recognition?: {engine:string;text:string;decision:'target'|'opposite'|'omitted'|'other'|'both'|'unknown';confidence:number};
       evidence?: "sound" | "word";
       breakdown?: {wordMatch:number;pairDistinction:number;speechMs:number;referenceMs:number};
       focus?: import('./pair-focus').PairFocus;

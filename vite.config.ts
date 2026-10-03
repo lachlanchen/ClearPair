@@ -21,6 +21,7 @@ export default defineConfig({
   define: {
     __APP_ID__: JSON.stringify(app),
     __APP_VERSION__: JSON.stringify(pkg.version),
+    __HF_WORD_MODELS__: JSON.stringify(app==='handf' && process.env.CLEARPAIR_HF_WORDS==='1'),
   },
   plugins: [
     react(),

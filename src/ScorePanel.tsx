@@ -57,25 +57,26 @@ export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarnin
       {take&&<small className="score-target">{tr('Recorded word','录制的词')}: <WordText value={take.word} reading={take.reading}/></small>}
       {running?<p>{tr('Analysing the target sound…','正在分析目标音…')}</p>:result?.status==='scored'||result?.status==='matched'?<div className="local-grade">
         <strong>{result.score}<small>/ 100</small></strong>
-        <p>{result.status==='matched'&&result.hf?tr('Target sound','目标音'):tr('Practice match','练习匹配分')}
-          {result.status==='matched'&&result.hf&&<small>{tr('Heard','听到的音')}: {result.hf.heard==='uncertain'?tr('Uncertain','不确定'):`/${result.hf.heard==='h'&&take?.language==='zh-CN'?'x':result.hf.heard}/`}</small>}
+        <p>{result.status==='matched'&&result.hf&&!result.recognition?tr('Target sound','目标音'):tr('Practice match','练习匹配分')}
+          {result.status==='matched'&&result.hf&&!result.recognition&&<small>{tr('Heard','听到的音')}: {result.hf.heard==='uncertain'?tr('Uncertain','不确定'):`/${result.hf.heard==='h'&&take?.language==='zh-CN'?'x':result.hf.heard}/`}</small>}
         </p>
       </div>:<p>{result?.status==='unscored'?scoreMessage(result.reason,tr):automatic?tr('Record, speak, then pause for your score.','点录音，说出词语，停顿后查看评分。'):tr('Record first, then assess the confusing sound.','先录音，再评估容易混淆的音。')}</p>}
-      {!running&&result?.status==='matched'&&result.closestWord&&<p className="closest-word">{tr('Closer to','更接近')}: <bdi>{result.closestWord}</bdi></p>}
+      {!running&&result?.status==='matched'&&(result.recognition?.text||result.closestWord)&&<p className="closest-word">{result.recognition?.text?tr('Recognized words','识别的词语'):tr('Closer to','更接近')}: <bdi>{result.recognition?.text??result.closestWord}</bdi></p>}
       {!running&&result?.status==='matched'&&result.hf&&<dl className="hf-score-items">
         <div><dt>{tr('Target sound','目标音')}</dt><dd>{result.hf.sound}<small>/100</small></dd></div>
-        <div><dt>{tr('Vowel and word','元音与词语')}</dt><dd>{result.hf.word}<small>/100</small></dd></div>
-        <div><dt>{tr('Sound timing','发音时长')}</dt><dd>{result.hf.timing}<small>/100</small></dd></div>
+        <div><dt>{result.recognition?tr('Word match','词语匹配'):tr('Vowel and word','元音与词语')}</dt><dd>{result.hf.word}<small>/100</small></dd></div>
+        <div><dt>{result.recognition?tr('Speech duration','有效发声时长'):tr('Sound timing','发音时长')}</dt><dd>{result.recognition?result.breakdown?.speechMs:result.hf.timing}<small>{result.recognition?'ms':'/100'}</small></dd></div>
       </dl>}
       {!running&&result?.status==='matched'&&!result.hf&&result.breakdown&&<dl className="hf-score-items">
         <div><dt>{tr('Word match','词语匹配')}</dt><dd>{result.breakdown.wordMatch}<small>/100</small></dd></div>
-        <div><dt>{contrastLabel(result.focus?.region,tr)}</dt><dd>{result.breakdown.pairDistinction}<small>/100</small></dd></div>
+        <div><dt>{result.recognition?tr('Target sound','目标音'):contrastLabel(result.focus?.region,tr)}</dt><dd>{result.recognition&&result.evidence==='word'?tr('Uncertain','不确定'):<>{result.breakdown.pairDistinction}<small>/100</small></>}</dd></div>
         <div><dt>{tr('Speech duration','有效发声时长')}</dt><dd>{result.breakdown.speechMs}<small>ms</small></dd></div>
       </dl>}
       {!running&&result?.status==='matched'&&result.hf&&<p className="hf-coaching">{hfCue(result.hf.cue,tr)}</p>}
+      {!running&&result?.status==='matched'&&!result.hf&&result.recognition&&result.recognition.decision!=='target'&&<p className="hf-coaching">{hfCue(result.recognition.decision==='omitted'?'missing':result.recognition.decision==='other'?'different-word':'uncertain',tr)}</p>}
       {!running&&(result?.status==='matched'||result?.status==='scored')&&<details className="score-details">
         <summary>{tr('Score details','评分详情')}</summary>
-        <p>{result.status==='matched'?tr('Beta practice match. Similarity to the device voice, not a pronunciation accuracy percentage.','测试版练习匹配分：与设备示范声音的相似度，不是发音正确率。'):tr('Estimated target-contrast score, not a diagnosis.','目标音对比的估计分数，不是诊断。')}</p>
+        <p>{result.status==='matched'?result.recognition?result.evidence==='word'?tr('The word was identified offline; its consonant could not be measured reliably. This is a word-match score, not a pronunciation accuracy percentage.','离线识别到了词语，但无法可靠测量辅音。这是词语匹配分，不是发音正确率。'):tr('Offline word recognition plus sound comparison. This practice index is not a pronunciation accuracy percentage.','离线词语识别结合声音比较：练习分数不是发音正确率。'):tr('Beta practice match. Similarity to the device voice, not a pronunciation accuracy percentage.','测试版练习匹配分：与设备示范声音的相似度，不是发音正确率。'):tr('Estimated target-contrast score, not a diagnosis.','目标音对比的估计分数，不是诊断。')}</p>
         <small>{tr('On this device. No audio uploads.','在此设备运行，不上传录音。')}</small>
       </details>}
     </div>
@@ -98,6 +99,8 @@ function hfCue(cue:import('./hf-score').HFDetails['cue'],tr:(en:string,zh:string
     case 'back-friction':return tr('For Mandarin H, make gentle friction at the back of your mouth.','发普通话 H 时，在口腔后部产生轻柔摩擦。');
     case 'keep-ending':return tr('Keep the final F flowing without adding a vowel.','词尾 F 保持气流，不要添加元音。');
     case 'add-voice':return tr('For V, keep lip contact and add gentle voicing.','发 V 时保持唇齿接触，加上轻柔声带振动。');
+    case 'missing':return tr('The vowel was captured, but the consonant is missing or too weak. Start with a little breath or lip friction.','录到了元音，但辅音缺失或太弱。请先发出轻柔呼气或唇齿摩擦。');
+    case 'different-word':return tr('A different word was recognized. Listen to this pair, then try the displayed word.','识别到了其他词语，请先听这个词对，再说屏幕上的词。');
     default:return tr('The consonant is unclear. Listen to the pair and try once more.','辅音区别不够清晰，请听词对后再试。');
   }
 }

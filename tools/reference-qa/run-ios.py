@@ -1,8 +1,8 @@
 """Run the reference beta plumbing probe on only the owned headless simulator."""
 import hashlib, json, os, pathlib, signal, subprocess, time
 root=pathlib.Path.cwd()
-assert root==pathlib.Path('/Users/lachlan/Projects/ClearPair')
-sim='7E3C0832-280A-4245-AB3F-4A464C0E7B7D'
+assert root.name=='ClearPair' and (root/'native/apps/handf/ios/App/App.xcodeproj').is_dir()
+sim=os.environ.get('CLEARPAIR_QA_SIM','7E3C0832-280A-4245-AB3F-4A464C0E7B7D')
 bundle='art.lazying.clearpair.qa.modelios'
 qa=root/'.runtime/ios-model-qa'
 app=qa/'reference-derived/Build/Products/Debug-iphonesimulator/App.app'
@@ -12,7 +12,7 @@ for name,digest in hashes.items():
     assert len(digest)==64 and hashlib.sha256((app/'public'/name).read_bytes()).hexdigest()==digest, 'QA asset transfer mismatch: '+name
 devices=json.loads(subprocess.check_output(['xcrun','simctl','list','devices','--json']))
 device=next(d for group in devices['devices'].values() for d in group if d['udid']==sim)
-assert device['name'].startswith('ClearPair-Audio-QA-') and device['state']=='Shutdown'
+assert (device['name'].startswith('ClearPair-Audio-QA-') or device['name']=='ClearPairBetaQA') and device['state']=='Shutdown'
 out=qa/('reference-result-'+time.strftime('%Y%m%d-%H%M%S'));out.mkdir()
 process=None
 try:

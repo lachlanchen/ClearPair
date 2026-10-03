@@ -1,7 +1,9 @@
 import { spawnSync } from 'node:child_process';
 import { mkdir,copyFile,writeFile,readFile } from 'node:fs/promises';
+import { selectedRelease } from './release-identity.mjs';
 const apps=['handf','landr','english','chinese','korean','arabic','cantonese','japanese'];
-const {version,build}=JSON.parse(await readFile('store/release.json','utf8'));
+// Refuse a family-wide job when H & F owns a different candidate identity.
+const {version,build}=selectedRelease(JSON.parse(await readFile('store/release.json','utf8')),[]);
 const results=[];
 await mkdir('.runtime/artifacts',{recursive:true});
 for(const app of apps){

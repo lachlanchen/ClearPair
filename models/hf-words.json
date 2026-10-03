@@ -1,0 +1,27 @@
+{
+  "version": "hf-offline-words:v1",
+  "app": "handf",
+  "engine": "vosk-browser@0.0.8",
+  "rate": 16000,
+  "purpose": "Unrestricted offline word identification, not a calibrated pronunciation grade",
+  "license": "Apache-2.0",
+  "termsUrl": "https://alphacephei.com/vosk/models",
+  "models": [
+    {
+      "language": "en-US",
+      "source": "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip",
+      "zipSha256": "30f26242c4eb449f948e42cb302dd7a686cb29a3423a8367f99ff41780942498",
+      "asset": "models/hf-en-vosk-0.15.vosk",
+      "sha256": "e430479107134f279fde8cd19db54e5fb9bac62b7ef44b1978950f4506b0e1b2",
+      "bytes": 41206354
+    },
+    {
+      "language": "zh-CN",
+      "source": "https://alphacephei.com/vosk/models/vosk-model-small-cn-0.22.zip",
+      "zipSha256": "3af8b0e7e0f835ae9d414ce5df580237a3cfb08d586c9fbbb0f7ff29ad5b14ba",
+      "asset": "models/hf-zh-vosk-0.22.vosk",
+      "sha256": "a3e2e67b300a41a0b590d2f6f585375d580d15ab76d472ef2aaebc464017ae25",
+      "bytes": 43899765
+    }
+  ]
+}

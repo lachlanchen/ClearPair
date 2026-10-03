@@ -4,10 +4,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
+import {selectedRelease} from './release-identity.mjs';
 if(process.cwd()!=='/home/lachlan/ProjectsLFS/Pronunciation')throw Error('Wrong source checkout');
 if(execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim())throw Error('Dirty source');
 const sourceCommit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-const release=JSON.parse(fs.readFileSync('store/release.json','utf8'));
+const release=selectedRelease(JSON.parse(fs.readFileSync('store/release.json','utf8')),process.argv.slice(2));
 const files=new Set(execFileSync('git',['ls-files','-z'],{encoding:'utf8'}).split('\0').filter(Boolean));
 for(const app of release.apps){
  const base=`native/apps/${app}/ios/App/App/public`;

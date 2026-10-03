@@ -4,6 +4,7 @@ import {
   type PluginListenerHandle,
 } from "@capacitor/core";
 interface NativeAudio {
+  offlineWordSupport(): Promise<{supported:boolean}>;
   reference(options: { id: string; text: string; language: string }): Promise<{
     base64: string; mimeType: string; voice: string;
   }>;

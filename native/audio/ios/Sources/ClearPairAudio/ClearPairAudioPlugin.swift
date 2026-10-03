@@ -7,6 +7,7 @@ public class ClearPairAudioPlugin: CAPPlugin, CAPBridgedPlugin, AVSpeechSynthesi
     public let identifier = "ClearPairAudioPlugin"
     public let jsName = "ClearPairAudio"
     public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "offlineWordSupport", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "start", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "stop", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "cancel", returnType: CAPPluginReturnPromise),
@@ -16,6 +17,18 @@ public class ClearPairAudioPlugin: CAPPlugin, CAPBridgedPlugin, AVSpeechSynthesi
         CAPPluginMethod(name: "cancelReference", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "stopSpeech", returnType: CAPPluginReturnPromise)
     ]
+
+    // H/F's new optional WASM word decoder passed iOS 26.5 runtime QA. The
+    // older 26.3 simulator repeatedly crashed in WebKit's signaling-memory
+    // handler. Fail closed on unqualified older OS versions; no private WebKit
+    // flags, permissions, cloud recognition or microphone access are involved.
+    @objc public func offlineWordSupport(_ call: CAPPluginCall) {
+        if #available(iOS 26.5, *) {
+            call.resolve(["supported": true])
+        } else {
+            call.resolve(["supported": false])
+        }
+    }
     private var recorder: AVAudioRecorder?
     private var recordingURL: URL?
     private var meter: Timer?

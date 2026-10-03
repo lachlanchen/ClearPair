@@ -7,6 +7,8 @@ import {decodeRecording,resamplePCM} from './pcm';
 import {LocalWorker} from './local-worker';
 import {ReferenceRuntime} from './reference-runtime';
 import {hasNativeAudio} from './native';
+import type {HfWordRuntime} from './hf-word-runtime';
+import {hfHybridScore,needsHfWordEvidence} from './hf-word-score';
 export interface LocalAssessmentRequest {
   id:string;app:AppId;plan:Extract<AssessmentPlan,{mode:'contrast'}>;
   samples:Float32Array;quality:Analysis;base:string;
@@ -14,9 +16,10 @@ export interface LocalAssessmentRequest {
 export class LocalScorer {
   private host=new LocalWorker();
   private references=new ReferenceRuntime();
+  private hfWords?:HfWordRuntime;
   private generation=0;
-  cancel(){this.generation++;this.host.cancel();if(hasNativeAudio())this.references.cancel();}
-  dispose(){this.generation++;this.host.dispose();if(hasNativeAudio())this.references.dispose();}
+  cancel(){this.generation++;this.host.cancel();this.hfWords?.cancel();if(hasNativeAudio())this.references.cancel();}
+  dispose(){this.generation++;this.host.dispose();this.hfWords?.dispose();if(hasNativeAudio())this.references.dispose();}
   async assess(app:AppId,lesson:string,pair:number,side:0|1,sentence:boolean,audio:Blob,
     recorded?:{word:string;spokenPrompt:string;calibrationKey?:string}):Promise<ScoreResult>{
     this.cancel();const generation=this.generation;
@@ -34,8 +37,20 @@ export class LocalScorer {
       if(!['clear','quiet'].includes(quality.status))return {status:'unscored',reason:'poor-signal'};
       const samples=resamplePCM(pcm.samples,pcm.rate);
       const result=calibrated?await this.host.request({id:crypto.randomUUID(),app,plan,samples,quality,
-        base:new URL(import.meta.env.BASE_URL,location.href).href}):await this.references.assess(plan,samples);
-      return generation===this.generation?result:{status:'unscored',reason:'cancelled'};
+        base:new URL(import.meta.env.BASE_URL,location.href).href}):await this.references.assess(plan,app==='handf'&&__HF_WORD_MODELS__?samples.slice():samples);
+      if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
+      let words:import('./hf-word-score').HfWordEvidence|undefined;
+      // Keep already usable word-mode results fast and unchanged. Lexical
+      // models help difficult/unaligned takes and longer carriers; they are not
+      // qualified to overrule every isolated pronunciation.
+      if(app==='handf'&&__HF_WORD_MODELS__&&needsHfWordEvidence(plan,result)){
+        const {HfWordRuntime}=await import('./hf-word-runtime');
+        if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
+        this.hfWords??=new HfWordRuntime();
+        words=await this.hfWords.recognize(plan.profile.language,samples,new URL(import.meta.env.BASE_URL,location.href).href);
+      }
+      if(generation!==this.generation)return {status:'unscored',reason:'cancelled'};
+      return generation===this.generation?hfHybridScore(plan,words,result,quality):{status:'unscored',reason:'cancelled'};
     }catch{
       return {status:'unscored',reason:generation===this.generation?'model-unavailable':'cancelled'};
     }
