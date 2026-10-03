@@ -98,7 +98,9 @@ export function hfHybridScore(plan:Plan,e:HfWordEvidence|undefined,acoustic:Scor
   (native&&base.hf.heard!==labels[lexicalSide]||finalNativeWords(plan,e)&&base.hf.heard==='uncertain');
  // L & N lets final word identity lead. A disagreeing synthetic boundary is
  // explicitly unmeasured, not coaching that the learner made the wrong sound.
- const sound=inconsistentSound?undefined:base?.hf?.sound??base?.breakdown?.pairDistinction;
+ // A whole-word fallback's contrast ratio is not a measured consonant. Never
+ // count the same word evidence twice or let it bypass the word-only cap.
+ const sound=inconsistentSound||base?.evidence==='word'&&!base.hf?undefined:base?.hf?.sound??base?.breakdown?.pairDistinction;
  const word=decision==='target'?wordMatch??100:decision==='opposite'?0:decision==='omitted'?20:decision==='other'?0:base?.hf?.word??base?.breakdown?.wordMatch??0;
  // A confident opposite/missing/unrelated word receives useful low-score
  // feedback. The selected target never biases decoding into these two words.

@@ -9,6 +9,12 @@ const quality:Analysis={seconds:1,rms:.06,peak:.2,clipped:0,voicedSeconds:.3,wav
 const acoustic:ScoreResult={status:'matched',score:95,contrast:plan().calibrationKey,model:'local-reference-dtw:v1',unit:'phone',targetDistance:0,competitorDistance:.3,referenceVoice:'fixture',scope:'word',closestWord:'hat',
  hf:{version:'hf-segment-fft:v1',target:'h',heard:'h',position:'initial',sound:95,word:90,timing:90,segmentMs:80,targetDistance:0,competitorDistance:.3,margin:1,cue:'good'}};
 describe('H & F word/content and sound evidence stay separate',()=>{
+ it('does not count a word-only reference ratio as measured sound or exceed its 85-point cap',()=>{
+  const e={...evidence('hat',.9),engine:'hf-vosk-native:v1/en-US',final:true};
+  const wordOnly={...acoustic,score:59,hf:undefined,evidence:'word' as const,breakdown:{wordMatch:100,pairDistinction:99,speechMs:300,referenceMs:300}};
+  const r=hfHybridScore(plan(),e,wordOnly,quality);
+  expect(r).toMatchObject({status:'matched',score:85,evidence:'word',breakdown:{pairDistinction:0},recognition:{decision:'target'}});
+ });
  it('does not discard a final bundled-native word on a high acoustic result',()=>{
   const e={...evidence('hat',.9),engine:'hf-vosk-native:v1/en-US',final:true};
   const r=hfHybridScore(plan(),e,acoustic,quality);

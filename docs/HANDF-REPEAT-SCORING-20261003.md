@@ -1,6 +1,6 @@
 # H & F repeated-take and ambiguous-sound scoring
 
-This source candidate targets **H & F 1.0.0 (12)** only. Upload/distribution is
+This source candidate targets **H & F 1.0.0 (13)** only. Upload/distribution is
 not implied by this document. [Build 11](BETA-HANDF-1.0.0-11.md) is the previous
 verified internal release. Other apps, L & N and production reviews are unchanged.
 
@@ -23,7 +23,8 @@ ungraded. Vowel-only initial H/F takes retain specific low-score feedback.
 
 A confidently recognized native word can resolve uncertain sound evidence, but
 the unavailable sound item says **Not measured**, and word-only scores remain
-capped at 85. Strong disagreement between bundled recognition and an independently
+capped at 85. A whole-word reference ratio is never counted a second time as
+measured consonant evidence. Strong disagreement between bundled recognition and an independently
 clear sound measurement remains conservative. Final F/V lexical grading is still
 excluded; other courses' scoring gates are unchanged.
 
@@ -32,7 +33,7 @@ or fallback. An empty final Apple transcript now invokes the bundled decoder on
 the same PCM instead of being mistaken for usable word evidence. This is lifecycle
 hardening, not proof that an Apple task-lifetime fault caused the owner's report.
 
-499 H/F-enabled unit tests passed, with 3 skipped; type checking passed. New
+500 H/F-enabled unit tests passed, with 3 skipped; type checking passed. New
 checks cover 20 successive mixed-target takes with cancellation/disposal, native
 word evidence above the former threshold, conservative low-confidence words,
 ambiguous sound analysis and UI feedback. The separate Mac mini native probe adds
