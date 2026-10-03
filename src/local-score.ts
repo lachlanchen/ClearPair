@@ -22,6 +22,7 @@ export class LocalScorer {
   private hfWords?:HfWordRuntime;
   private pairWords?:PairWordRuntime;
   private generation=0;
+  onPhase?:(phase:'preparing'|'decoding')=>void;
   cancel(){this.generation++;this.host.cancel();this.hfWords?.cancel();this.pairWords?.cancel();if(hasNativeAudio())this.references.cancel();}
   dispose(){this.generation++;this.host.dispose();this.hfWords?.dispose();this.pairWords?.dispose();if(hasNativeAudio())this.references.dispose();}
   async assess(app:AppId,lesson:string,pair:number,side:0|1,sentence:boolean,audio:Blob,
@@ -48,6 +49,7 @@ export class LocalScorer {
         const Runtime=usePairWords?(await import('./pair-word-runtime')).PairWordRuntime:(await import('./hf-word-runtime')).HfWordRuntime;
         if(generation!==this.generation)return;
         const engine=usePairWords?(this.pairWords??=new Runtime()):(this.hfWords??=new Runtime());
+        engine.onPhase=phase=>{if(generation===this.generation)this.onPhase?.(phase);};
         words=await engine.recognize(plan.profile.language,samples,new URL(import.meta.env.BASE_URL,location.href).href);
       };
       // Like L & N, identify the captured speech FIRST. Reference synthesis

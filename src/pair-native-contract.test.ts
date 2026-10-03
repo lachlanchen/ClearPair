@@ -2,6 +2,15 @@ import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 const source=(file:string)=>readFileSync(file,'utf8');
 describe('language-specific native decoder linkage',()=>{
+ it('corrects the pinned ONNX metadata after embedding and verifies it before upload',()=>{
+  const script=source('tools/fix-embedded-onnx-metadata.sh'),build=source('tools/build-ios-release.sh');
+  expect(script).toContain("test \"$clearpair_compiled\" = '15.0'");
+  expect(script).toContain('Set MinimumOSVersion 15.0');
+  expect(script).toContain('codesign --force');
+  expect(build).toContain('app.build_phases << phase');
+  expect(build).toContain('tools/verify-ios-framework-metadata.py');
+  expect(source('tools/verify-ios-framework-metadata.py')).toContain('version(declared)>=version(m)');
+ });
  it('never links both OpenFst-based SDKs into one static iOS app',()=>{
   const standard=source('native/audio/Package.swift'),yue=source('native/audio-yue/Package.swift');
   expect(standard).toContain('name: "libvosk"');

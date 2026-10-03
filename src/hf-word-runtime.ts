@@ -11,6 +11,8 @@ export class HfWordRuntime {
  /** Diagnostic for the private native test helper; never audio/text contents. */
  lastError?:string;
  nativeError?:string;
+ preparationMs?:number;
+ onPhase?:(phase:'preparing'|'decoding')=>void;
  private model?:Model;
  private language?:string;
  private loading?:Promise<Model>;
@@ -54,7 +56,7 @@ export class HfWordRuntime {
   // A cancelled load may finish later; never retain its model after dispose.
   const pending=this.loading;this.loading=undefined;void pending?.then(m=>m.terminate()).catch(()=>{});}
  async recognize(language:string,samples:Float32Array,base:string):Promise<HfWordEvidence|undefined>{
-  this.cancel();this.lastError=undefined;this.nativeError=undefined;
+  this.cancel();this.lastError=undefined;this.nativeError=undefined;this.preparationMs=undefined;
   const pin=this.config.models.find(m=>m.language===language);
   if(!pin||samples.length<1600||samples.length>216000||samples.some(v=>!Number.isFinite(v)||Math.abs(v)>1.01))return undefined;
   let attempt:Promise<Model>|undefined;
@@ -62,6 +64,19 @@ export class HfWordRuntime {
    const token=this.generation,id=crypto.randomUUID();this.nativeId=id;
    let timer:ReturnType<typeof setTimeout>|undefined;
    try{
+    if(this.config.version==='pair-offline-words:v1'&&language==='ar-SA'&&Capacitor.getPlatform()==='android'){
+     // Arabic's larger graph needs first-use extraction. A saved take must not
+     // cancel and restart that extraction every 31 seconds. Setup is bounded
+     // separately; each subsequent utterance retains the short decode deadline.
+     this.onPhase?.('preparing');
+     const prepared=await Promise.race([nativeAudio.prepareWords({id,language}),
+      new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Native offline preparation timed out')),180_000);})]);
+     clearTimeout(timer);timer=undefined;
+     if(token!==this.generation)return undefined;
+     if(prepared.ready!==true)throw Error('Native offline preparation incomplete');
+     if(Number.isFinite(prepared.preparationMs)&&prepared.preparationMs>=0)this.preparationMs=prepared.preparationMs;
+    }
+    this.onPhase?.('decoding');
     // Same saved utterance, gain only: preserve the original recording and all
     // timestamps. H/F stays unchanged. Pair decoders should not lose a weak
     // consonant simply because the phone's PCM level was lower.

@@ -175,6 +175,9 @@ public class ClearPairAudioPlugin extends Plugin {
         if(recording||recorder!=null){call.reject("Stop recording before local assessment.");return;}
         if(pairWords==null)pairWords=new OfflinePairWords(getContext());pairWords.recognize(call);
     }
+    @PluginMethod public synchronized void prepareWords(PluginCall call){
+        if(pairWords==null)pairWords=new OfflinePairWords(getContext());pairWords.warm(call);
+    }
     @PluginMethod public synchronized void cancelWords(PluginCall call){if(pairWords!=null)pairWords.cancel(call.getString("id"));call.resolve();}
     @PluginMethod public synchronized void releaseWords(PluginCall call){if(pairWords!=null)pairWords.release();call.resolve();}
     @PluginMethod public void offlineWordSupport(PluginCall call){JSObject value=new JSObject();value.put("supported",true);call.resolve(value);}

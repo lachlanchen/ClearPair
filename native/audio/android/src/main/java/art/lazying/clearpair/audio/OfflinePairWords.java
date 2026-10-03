@@ -3,6 +3,7 @@ package art.lazying.clearpair.audio;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Base64;
+import android.os.SystemClock;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
 import org.json.JSONArray;
@@ -31,20 +32,49 @@ final class OfflinePairWords {
  private String modelIdentity;
  private OfflineYueWords cantonese;
  OfflinePairWords(Context context){this.context=context.getApplicationContext();}
+ private String expectedLanguage(String language){
+  return switch(context.getPackageName()){
+   case "art.lazying.clearpair.landr","art.lazying.clearpair.english"->"en-US";
+   case "art.lazying.clearpair.chinese"->"zh-CN";
+   case "art.lazying.clearpair.japanese"->"ja-JP";
+   case "art.lazying.clearpair.korean"->"ko-KR";
+   case "art.lazying.clearpair.arabic"->"ar-SA";
+   case "art.lazying.clearpair.cantonese"->"zh-HK";
+   case "art.lazying.clearpair.qa.reference"->language;
+   default->null;};
+ }
+ /** Separate cold setup from the per-utterance deadline. No PCM or target hints. */
+ void warm(PluginCall call){
+  final String id=call.getString("id"),language=call.getString("language");
+  try{UUID.fromString(id);if(!"ar-SA".equals(language)||!language.equals(expectedLanguage(language)))throw new IllegalArgumentException();}
+  catch(Exception error){call.reject("Unsupported offline preparation.","OFFLINE_WORD_INPUT");return;}
+  active.set(id);queue.execute(()->{
+   long started=SystemClock.elapsedRealtime();
+   try{
+    ensureModel(language,id);
+    if(!id.equals(active.get())){call.reject("Offline preparation cancelled.");return;}
+    JSObject value=new JSObject();value.put("ready",true);value.put("preparationMs",SystemClock.elapsedRealtime()-started);call.resolve(value);
+   }catch(Exception|LinkageError error){call.reject("Bundled offline preparation unavailable.","OFFLINE_WORD_MODEL");}
+   finally{active.compareAndSet(id,null);}
+  });
+ }
+ private void ensureModel(String language,String id)throws Exception{
+  if(!id.equals(active.get()))throw new java.io.IOException("Cancelled");
+  JSONObject pin=pin(language);String code=pin.getString("code"),identity=code+"-"+pin.getString("zipSha256").substring(0,16);
+  if(identity.equals(modelIdentity))return;
+  if(cantonese!=null){cantonese.release();cantonese=null;}
+  if(model!=null)model.close();model=null;modelIdentity=null;
+  File path=prepare(code,identity,id);
+  if(!id.equals(active.get()))throw new java.io.IOException("Cancelled");
+  LibVosk.setLogLevel(LogLevel.WARNINGS);
+  model=new Model(path.getAbsolutePath());modelIdentity=identity;
+ }
  void recognize(PluginCall call){
   final String id=call.getString("id"),language=call.getString("language"),encoded=call.getString("pcm16Base64");
   final byte[] pcm;
   try{
    UUID.fromString(id);
-   String app=context.getPackageName(),expected=switch(app){
-    case "art.lazying.clearpair.landr","art.lazying.clearpair.english"->"en-US";
-    case "art.lazying.clearpair.chinese"->"zh-CN";
-    case "art.lazying.clearpair.japanese"->"ja-JP";
-    case "art.lazying.clearpair.korean"->"ko-KR";
-    case "art.lazying.clearpair.arabic"->"ar-SA";
-    case "art.lazying.clearpair.cantonese"->"zh-HK";
-    case "art.lazying.clearpair.qa.reference"->language;
-    default->null;};
+   String expected=expectedLanguage(language);
    if(expected==null||!expected.equals(language)||encoded==null||encoded.length()>576000)throw new IllegalArgumentException();
    pcm=Base64.decode(encoded,Base64.NO_WRAP);
    if(pcm.length<3200||pcm.length>432000||pcm.length%2!=0)throw new IllegalArgumentException();
@@ -60,15 +90,7 @@ final class OfflinePairWords {
      if(!id.equals(active.get())){call.reject("Offline recognition cancelled.");return;}
      call.resolve(value);return;
     }
-    if(cantonese!=null){cantonese.release();cantonese=null;}
-    JSONObject pin=pin(language);String code=pin.getString("code"),identity=code+"-"+pin.getString("zipSha256").substring(0,16);
-    if(!identity.equals(modelIdentity)){
-     if(model!=null)model.close();model=null;modelIdentity=null;
-     File path=prepare(code,identity,id);
-     if(!id.equals(active.get())){call.reject("Offline recognition cancelled.");return;}
-     LibVosk.setLogLevel(LogLevel.WARNINGS);
-     model=new Model(path.getAbsolutePath());modelIdentity=identity;
-    }
+    ensureModel(language,id);
     JSONObject output=new JSONObject();JSONArray words=new JSONArray();StringBuilder text=new StringBuilder();
     try(Recognizer decoder=new Recognizer(model,16000)){
      decoder.setWords(true);

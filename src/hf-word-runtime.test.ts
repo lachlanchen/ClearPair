@@ -3,8 +3,8 @@ import type {Model} from 'vosk-browser/dist/model';
 import {HfWordRuntime} from './hf-word-runtime';
 import {PairWordRuntime} from './pair-word-runtime';
 import {Capacitor} from '@capacitor/core';
-const compatibility=vi.hoisted(()=>({support:vi.fn(),model:vi.fn(),native:vi.fn(),cancel:vi.fn().mockResolvedValue(undefined),release:vi.fn().mockResolvedValue(undefined)}));
-vi.mock('./native',()=>({nativeAudio:{offlineWordSupport:compatibility.support,recognizeWords:compatibility.native,cancelWords:compatibility.cancel,releaseWords:compatibility.release}}));
+const compatibility=vi.hoisted(()=>({prepare:vi.fn(),support:vi.fn(),model:vi.fn(),native:vi.fn(),cancel:vi.fn().mockResolvedValue(undefined),release:vi.fn().mockResolvedValue(undefined)}));
+vi.mock('./native',()=>({nativeAudio:{prepareWords:compatibility.prepare,offlineWordSupport:compatibility.support,recognizeWords:compatibility.native,cancelWords:compatibility.cancel,releaseWords:compatibility.release}}));
 vi.mock('vosk-browser',()=>({Model:compatibility.model}));
 class FakeModel{
  ready=true;terminate=vi.fn();remove=vi.fn();decoders:FakeDecoder[]=[];
@@ -26,6 +26,27 @@ class FakeDecoder{
 const samples=()=>new Float32Array(6400).fill(.04);
 const cast=(m:FakeModel)=>m as unknown as Model;
 describe('H & F offline decoder lifecycle',()=>{
+ it('separates cold Arabic Android preparation from the bounded utterance decoder',async()=>{
+  vi.useFakeTimers();const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('android');
+  let ready!:(r:unknown)=>void;compatibility.prepare.mockImplementation(()=>new Promise(r=>ready=r));compatibility.native.mockClear();
+  compatibility.native.mockResolvedValue({engine:'pair-vosk-native:v1/ar-SA',text:'بات',words:[],final:true});
+  const engine=new PairWordRuntime(),phase=vi.fn();engine.onPhase=phase;
+  try{
+   const pending=engine.recognize('ar-SA',samples(),'https://local.invalid/');
+   await vi.advanceTimersByTimeAsync(45_000);expect(compatibility.native).not.toHaveBeenCalled();expect(engine.lastError).toBeUndefined();
+   ready({ready:true,preparationMs:45_000});expect((await pending)?.text).toBe('بات');
+   expect(engine.preparationMs).toBe(45_000);expect(phase.mock.calls.map(c=>c[0])).toEqual(['preparing','decoding']);
+   expect(compatibility.native.mock.calls[0][0].id).toBe(compatibility.prepare.mock.calls.at(-1)![0].id);
+  }finally{engine.dispose();platform.mockRestore();vi.useRealTimers();}
+ });
+ it('ignores a cancelled preparation result and never decodes the obsolete take',async()=>{
+  const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('android');
+  let ready!:(r:unknown)=>void;compatibility.prepare.mockImplementation(()=>new Promise(r=>ready=r));compatibility.native.mockClear();
+  const engine=new PairWordRuntime();
+  try{const pending=engine.recognize('ar-SA',samples(),'https://local.invalid/');engine.cancel();ready({ready:true,preparationMs:0});
+   expect(await pending).toBeUndefined();expect(compatibility.native).not.toHaveBeenCalled();
+  }finally{engine.dispose();platform.mockRestore();}
+ });
  it('requests the packaged pair decoder without changing H/F Apple-first requests',async()=>{
   const platform=vi.spyOn(Capacitor,'getPlatform').mockReturnValue('ios');
   compatibility.native.mockClear();compatibility.model.mockClear();

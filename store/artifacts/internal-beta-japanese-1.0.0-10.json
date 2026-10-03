@@ -1,0 +1,28 @@
+{
+  "app": "japanese",
+  "version": "1.0.0",
+  "build": 10,
+  "sourceCommit": "7ba37cc2d574f4a06c971810a8faa9b812b585d5",
+  "verifiedAt": "2026-10-03T20:52:03Z",
+  "ios": {
+    "sha256": "e7dd56d326c985f69351b3b639f7873d58c93d4728b32cff0948a8af0ca5c45b",
+    "processingState": "VALID",
+    "internalBuildState": "IN_BETA_TESTING",
+    "autoNotifyEnabled": true,
+    "existingTesterVerified": true
+  },
+  "android": {
+    "sha256": "0f0ab22094cce61297c48fb1d38ad87733077a0b0bcb7b24c2aa98d6f617df2a",
+    "track": "internal",
+    "state": "Available to internal testers",
+    "existingTesterListVerified": true,
+    "native64BitElfAlignment": 16384
+  },
+  "validation": {
+    "nativeIosSavedPcm": "114/114",
+    "nativeAndroidSavedPcm": "114/114",
+    "scope": "Synthetic regression and packaging evidence, not calibrated human pronunciation accuracy"
+  },
+  "formalReviewChanged": false,
+  "webDeployed": false
+}

@@ -22,6 +22,15 @@ archive)
     release.build_settings["CODE_SIGN_STYLE"] = "Manual"
     release.build_settings["CODE_SIGN_IDENTITY"] = "Apple Distribution"
     release.build_settings["PROVISIONING_PROFILE_SPECIFIER"] = ENV.fetch("CLEARPAIR_PROFILE")
+    if ARGV.fetch(0).include?("/cantonese/")
+      name = "Correct pinned ONNX deployment metadata"
+      phase = app.shell_script_build_phases.find { |p| p.name == name } || app.new_shell_script_build_phase(name)
+      phase.shell_script = %q{bash "$SRCROOT/../../../../../tools/fix-embedded-onnx-metadata.sh"}
+      phase.always_out_of_date = "1"
+      app.build_phases.delete(phase)
+      app.build_phases << phase
+      release.build_settings["ENABLE_USER_SCRIPT_SANDBOXING"] = "NO"
+    end
     project.save
   ' "native/apps/$clearpair_app/ios/App/App.xcodeproj"
   xcodebuild -project "native/apps/$clearpair_app/ios/App/App.xcodeproj" \
@@ -30,6 +39,7 @@ archive)
     -clonedSourcePackagesDirPath .runtime/ios/handf/SourcePackages -jobs 2 \
     "OTHER_CODE_SIGN_FLAGS=--keychain $CLEARPAIR_SIGNING_KEYCHAIN" \
     COMPILER_INDEX_STORE_ENABLE=NO archive
+  python3 tools/verify-ios-framework-metadata.py "$clearpair_output/App.xcarchive/Products/Applications/App.app"
   ;;
 export)
   test -f "$clearpair_output/ExportOptions.plist"

@@ -1,6 +1,7 @@
 // Same nine translated columns as ui-catalog; English/Simplified Chinese live
 // beside the UI. These messages never promise a model that is not packaged.
 export const scoreCatalog = {
+ 'Preparing the offline model… Your recording is saved.':['جارٍ تجهيز النموذج دون اتصال… تم حفظ تسجيلك.','Preparando el modelo sin conexión… Tu grabación está guardada.','Préparation du modèle hors ligne… Votre enregistrement est sauvegardé.','オフラインモデルを準備中…録音は保存されています。','오프라인 모델 준비 중… 녹음은 저장되어 있어요.','Đang chuẩn bị mô hình ngoại tuyến… Bản ghi của bạn đã được lưu.','正在準備離線模型…錄音已儲存。','Offline-Modell wird vorbereitet… Deine Aufnahme ist gespeichert.','Подготовка офлайн-модели… Ваша запись сохранена.'],
  'For pitch level, try the sentence option.':['لمقارنة مستوى طبقة الصوت، جرّب خيار الجملة.','Para comparar la altura tonal, prueba la opción de frase.','Pour comparer le niveau de hauteur, essayez le mode phrase.','音高の位置を比べるには、文の練習を試してください。','음높이 위치를 비교하려면 문장 옵션을 사용해 보세요.','Để so sánh mức cao độ, hãy thử tùy chọn câu.','要比較音高位置，請試試短句模式。','Nutze den Satzmodus, um die Tonhöhe zu vergleichen.','Для сравнения уровня тона попробуйте режим предложения.'],
  'Pitch relative to the sentence':['طبقة الصوت بالنسبة إلى الجملة','Tono relativo a la frase','Hauteur relative à la phrase','文を基準にした音高','문장을 기준으로 한 음높이','Cao độ so với câu','相對於短句的音高','Tonhöhe relativ zum Satz','Высота тона относительно предложения'],
  'Your recording':['تسجيلك','Tu grabación','Votre enregistrement','あなたの録音','내 녹음','Bản ghi của bạn','你的錄音','Deine Aufnahme','Ваша запись'],

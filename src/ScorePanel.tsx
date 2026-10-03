@@ -23,6 +23,7 @@ export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarnin
   tr:(en:string,zh:string)=>string;onSaved:(take:Take)=>void;onStorageWarning:()=>void}){
   const engine=useRef(new LocalScorer()),token=useRef(0),autoStarted=useRef<string|undefined>(undefined);
   const [running,setRunning]=useState(false),[result,setResult]=useState<ScoreResult>();
+  const [preparing,setPreparing]=useState(false);
   useEffect(()=>{token.current++;engine.current.cancel();setRunning(false);setResult(take?.score);},[take?.id,busy]);
   useEffect(()=>{
     if(automatic&&!busy&&take?.assessment&&!take.score&&autoStarted.current!==take.id&&!document.hidden){
@@ -38,7 +39,8 @@ export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarnin
   async function assess(){
     if(!take?.assessment||busy||running)return;
     const run=++token.current,entry=take,task=take.assessment;
-    setRunning(true);setResult(undefined);
+    setRunning(true);setPreparing(false);setResult(undefined);
+    engine.current.onPhase=phase=>{if(run===token.current)setPreparing(phase==='preparing');};
     let next:ScoreResult;
     try{next=await engine.current.assess(entry.app,entry.lesson,task.pair,task.side,task.sentence,entry.audio,
       {word:entry.word,spokenPrompt:task.spokenPrompt??entry.prompt,calibrationKey:task.calibrationKey});}
@@ -58,7 +60,7 @@ export function ScorePanel({take,busy,automatic=false,tr,onSaved,onStorageWarnin
   return <section className="local-score-panel" aria-label={tr('Pronunciation assessment','发音评分')}>
     <div className="local-score-result" aria-live="polite" aria-busy={running}>
       {take&&<small className="score-target">{tr('Recorded word','录制的词')}: <WordText value={take.word} reading={take.reading}/></small>}
-      {running?<p>{tr('Analysing the target sound…','正在分析目标音…')}</p>:result?.status==='scored'||result?.status==='matched'?<div className="local-grade">
+      {running?<p>{preparing?tr('Preparing the offline model… Your recording is saved.','正在准备离线模型…录音已保存。'):tr('Analysing the target sound…','正在分析目标音…')}</p>:result?.status==='scored'||result?.status==='matched'?<div className="local-grade">
         <strong>{result.score}<small>/ 100</small></strong>
         <p>{result.status==='matched'&&result.hf&&!result.recognition?tr('Target sound','目标音'):result.status==='matched'&&result.evidence==='word'&&result.recognition&&(!result.pairFeedback||!['unconfirmed','mixed'].includes(result.pairFeedback.kind))?tr('Word match','词语匹配'):tr('Practice match','练习匹配分')}
           {result.status==='matched'&&result.hf&&!result.recognition&&<small>{tr('Heard','听到的音')}: {result.hf.heard==='uncertain'?tr('Uncertain','不确定'):`/${result.hf.heard==='h'&&take?.language==='zh-CN'?'x':result.hf.heard}/`}</small>}

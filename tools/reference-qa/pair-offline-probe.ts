@@ -91,7 +91,7 @@ async function run(){
       const acoustic=referenceScore({id:'pair-qa',plan:p,samples,target:target.samples,competitor:other.samples,voice:target.voice,
        ...(sentence?{wordTarget:(side?wb:wa)!.samples,wordCompetitor:(side?wa:wb)!.samples,
         carrierAnchors:{target:(side?anchors!.b:anchors!.a),competitor:(side?anchors!.a:anchors!.b)}}:{})});
-      return {word,wordMs,totalMs:Math.round(performance.now()-started),acoustic,score:pairHybridScore(p,word,acoustic,quality),...(!word?{diagnostic:engine.lastError}:{}),quality:quality.status};};
+      return {word,wordMs,...(engine.preparationMs!==undefined?{preparationMs:engine.preparationMs}:{}),totalMs:Math.round(performance.now()-started),acoustic,score:pairHybridScore(p,word,acoustic,quality),...(!word?{diagnostic:engine.lastError}:{}),quality:quality.status};};
      const correct=await assess(target.samples),wrong=await assess(other.samples),quiet=await assess(target.samples.map(v=>v*.08));
      emit({app,lesson:lesson+(sentence?'-carrier':''),pair,side,words:words.map(w=>w.text),correct,wrong,quiet,
       passed:!!correct.word&&!!wrong.word&&correct.score.status==='matched'&&wrong.score.status==='matched'&&quiet.score.status==='matched'&&correct.score.score>wrong.score.score+20&&quiet.score.score>wrong.score.score+20});
