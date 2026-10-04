@@ -2,6 +2,7 @@ import { lessonById, productById, products } from "./curriculum";
 import type { AppId, Language, Text, Word } from "./types";
 import type { ScoreEvidence } from "./scoring";
 import { pronunciationText } from "./pronunciation-text";
+import { extraMandarinToneLessons, extraCantoneseToneLessons } from './tone-curriculum';
 
 /** Versioned requirements, not hand-tuned scoring weights. An on-device encoder must
  * supply these measurements and pass separate calibration for each routed task. */
@@ -330,6 +331,7 @@ route('japaneseHBP', ['ja-h-b-p']);
 route('japaneseTiming', ['ja-long-vowels','ja-small-tsu','ja-small-y']);
 route('japaneseReadings', ['ja-furigana']);
 route('cantoneseTones', ['yue-tone-1-3', 'yue-tone-2-5', 'yue-tone-4-6']);
+route('cantoneseTones', extraCantoneseToneLessons.map(l => l.id));
 route('cantoneseVowels', ['yue-aa-a']);
 route('cantoneseConsonants', ['yue-n-ng', 'yue-b-p', 'yue-p-t']);
 route("mandarinHF", ["hf-zh"]);
@@ -370,6 +372,7 @@ route("mandarinInitials", [
 ]);
 route("mandarinFinals", ["u-y", "i-y", "an-ang", "en-eng", "in-ing", "ou-uo"]);
 route("mandarinTones", ["tone-1-4", "tone-2-3"]);
+route('mandarinTones', extraMandarinToneLessons.map(l => l.id));
 route("koreanStops", [
   "ko-g-k",
   "ko-g-kk",

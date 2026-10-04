@@ -1,6 +1,7 @@
 // Columns: Arabic, Spanish, French, Japanese, Korean, Vietnamese,
 // Traditional Chinese, German, Russian. English/Chinese source remains beside the UI.
 import {scoreCatalog} from './ui-score-catalog';
+import {mapCatalog} from './ui-map-catalog';
 export const translatedLocales = ['ar','es','fr','ja','ko','vi','zh-Hant','de','ru'] as const;
 type Row = readonly [string,string,string,string,string,string,string,string,string];
 export const uiCatalog: Record<string, Row> = {
@@ -17,6 +18,7 @@ export const uiCatalog: Record<string, Row> = {
  'Beta practice match':['مطابقة التدريب التجريبية','Coincidencia de práctica beta','Correspondance d’entraînement bêta','ベータ練習一致度','베타 연습 일치도','Độ khớp luyện tập beta','測試版練習匹配分','Beta-Übungsähnlichkeit','Бета: сходство произношения'],
  'Beta practice match. Similarity to the device voice, not a pronunciation accuracy percentage.':['مطابقة تدريب تجريبية: التشابه مع صوت الجهاز، وليس نسبة صحة النطق.','Coincidencia beta: similitud con la voz del dispositivo, no un porcentaje de precisión.','Correspondance bêta : similarité avec la voix de l’appareil, pas un pourcentage de justesse.','端末の音声との類似度を示すベータ練習スコアです。発音の正解率ではありません。','기기 음성과의 유사도를 나타내는 베타 연습 점수이며 발음 정확도 비율이 아니에요.','Điểm beta thể hiện độ giống giọng thiết bị, không phải tỷ lệ phát âm đúng.','測試版練習匹配分：與裝置示範聲音的相似度，不是發音正確率。','Beta-Übungswert: Ähnlichkeit zur Gerätestimme, kein Prozentsatz korrekter Aussprache.','Бета-оценка сходства с голосом устройства, а не процент правильности произношения.'],
  ...scoreCatalog,
+ ...mapCatalog,
  'The microphone is not responding. Close and reopen the app; do not uninstall it.':[
   'الميكروفون لا يستجيب. أغلق التطبيق وافتحه من جديد؛ لا تحذفه.',
   'El micrófono no responde. Cierra y vuelve a abrir la app; no la desinstales.',

@@ -42,6 +42,7 @@ import { inspectRecording, unavailableAnalysis } from "./analysis";
 import { shareNativeRecording } from "./export";
 import { Challenge } from './Challenge';
 import { LearnMotion } from './LearnMotion';
+import { SoundMap } from './SoundMap';
 import { StoreRoute } from './StoreRoute';
 import { JapaneseStudy } from './JapaneseStudy';
 import { japanesePairGuidance } from './japanese-curriculum';
@@ -727,6 +728,9 @@ export function App() {
                 <ArrowRight size={18} />
               </button>
             </div>
+            <SoundMap key={product.id} app={product.id} locale={locale} tr={tr}
+              play={words=>playWords(words,false,false)} stop={stop} active={!!active} busy={busy}
+              isPlaying={word=>active===clip(word,false).key}/>
           </section>
         )}
 

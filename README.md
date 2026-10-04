@@ -12,13 +12,12 @@ Eight focused courses for easily confused sounds and letters, targeting iOS, And
 
 ![ClearPair](docs/assets/eight-icons-v4.png)
 
-The [H & F-only scoring update](docs/HANDF-NATIVE-SCORING-20261003.md) identifies saved English/Mandarin audio natively on iOS, with a bundled offline fallback instead of relying on WebView decoding. Word identity and measured sound detail remain separate; failed-assessment reasons stay with History audio. The other courses and existing formal reviews are unchanged. Source validation is not store availability or human accuracy certification.
+The [latest release record](docs/RELEASE-20261004.md) verifies TestFlight and Google Play internal testing for all eight 1.0.0 apps: H & F **15**, L & R **11**, English **11**, Mandarin **10**, Cantonese **11**, Korean **10**, Arabic **10** and Japanese **10**. Update without uninstalling to preserve History.
 
-[H & F 1.0.0 (15)](docs/BETA-HANDF-1.0.0-15.md) is now verified available in TestFlight and Google Play internal testing. Update without uninstalling to keep History. This is a test release, not a new public-store release.
+All eight exact builds are submitted for formal review. Verified on 4 October 2026: Apple **Waiting for Review**; Google **Changes in review**, with all **173 supported paid-app countries/regions** selected. Automatic release after approval and existing prices are preserved. Submission is not approval or public availability.
 
-The [shared feedback migration](docs/PAIR-FEEDBACK-MIGRATION-20261003.md) brings actual offline transcripts, independent per-pair sound comparisons and compact, steady controls to the other courses in source. L & R passes 55 native saved-audio checks on both iOS and Android; Mandarin passes 161 on Android. Language-specific qualification continues before new test uploads. These engineering checks are not human accuracy certification; existing store versions and reviews are unchanged.
+The [shared feedback update](docs/PAIR-FEEDBACK-MIGRATION-20261003.md) brings actual native offline transcripts, independent per-pair acoustic evidence and compact, stable controls to the other courses. Saved-audio engineering tests are not human pronunciation accuracy certification. The broader [sound-map and tone-coverage candidate](docs/SOUND-COVERAGE-RESEARCH.md) is separate development work, not included in these submitted builds or the current PWA.
 
-All eight standalone apps, including [Japanese](docs/JAPANESE-COURSE.md), have [1.0.0 (9) internal-test builds and test links](docs/BETA-1.0.0-9.md) on TestFlight and Google Play. The eight iOS formal reviews still use build 8 and remain Waiting for Review, with automatic release preserved; Google production submission is not yet complete. [Signed artifacts and provider states are verified](store/artifacts/internal-beta-1.0.0-9.json). This internal-test update is not approval or public availability. The live PWA is unchanged.
 
 ## Eight focused courses
 
@@ -39,7 +38,7 @@ Listening quizzes, pair playback/looping, learning guides, spaced review, wavefo
 
 V4 icons now guide the in-app palette: light backgrounds, flowing color, tidy cards and steady recording/playback controls. Earlier icon versions are retained. Optional animations and five-question games award local stars for listening/recall, never unvalidated pronunciation scores. See the [localization scope](docs/LOCALIZATION.md) and [Cantonese notes](docs/CANTONESE.md). The [seven-app 0.2.0 (2) beta](docs/BETA-0.2.0.md) includes V4, all 11 UI languages and Cantonese.
 
-**Build 9 improves automatic native practice-match scoring.** Tap Record, speak, then pause or tap Stop and score. Quiet short words retain weak consonant edges; pair-focused comparison gives the confusing initial, vowel or ending more weight than shared sounds. H & F shows sound, vowel/word and timing items; the other courses show word match, contrast and speech duration. Recording controls stay above results. Scores are local reference-similarity indices, not calibrated pronunciation accuracy percentages. An offline practice-language voice is required; calibrated phoneme grades and PWA scoring remain disabled. See the [algorithm notes](docs/SCORING-UPDATE-20261002.md). Capacitor combines a React interface with native Swift/Java recording and speech playback; these are not separate SwiftUI/Compose interfaces.
+Tap Record, speak, then pause or tap Stop and score. Results preserve the actual recognized word when available and keep word identity separate from measured sound evidence. The centered recording control remains above the results, without a timer. Scores are local practice indices, not calibrated accuracy percentages. An offline practice-language voice is required; bundled word-recognition models are native-only. See the [feedback algorithm notes](docs/PAIR-FEEDBACK-MIGRATION-20261003.md). Capacitor combines React with native Swift/Java recording and playback, not separate SwiftUI/Compose interfaces.
 
 ## Build and test
 

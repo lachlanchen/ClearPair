@@ -20,7 +20,7 @@ for(const id of ['handf','landr','english','chinese','korean','arabic','cantones
     await page.getByRole('button',{name:'Practise',exact:true}).click();
     const record=page.getByRole('button',{name:'Record your voice',exact:true});
     await expect(page.locator('.intro')).toHaveCount(0);
-    await expect(page.locator('.timer')).toBeEmpty();
+    await expect(page.locator('.timer')).toHaveCount(0);
     expect(await page.locator('.record-controls').evaluate(e=>e.nextElementSibling?.className)).toBe('local-score-panel');
     await record.scrollIntoViewIfNeeded();
     expect(await record.evaluate(e=>{const r=e.getBoundingClientRect();return e.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))})).toBe(true);

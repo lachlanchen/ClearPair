@@ -12,13 +12,12 @@ Tám khóa tập trung vào âm và chữ dễ nhầm, dành cho iOS, Android v�
 
 ![ClearPair](../docs/assets/eight-icons-v4.png)
 
-[Nâng cấp phản hồi chung](../docs/PAIR-FEEDBACK-MIGRATION-20261003.md) thêm vào mã nguồn bản chép lời ngoại tuyến thực tế, so sánh âm độc lập cho từng cặp và điều khiển gọn, cố định. L & R vượt qua 55 kiểm tra âm thanh đã lưu trên iOS và Android; tiếng Quan thoại vượt qua 161 trên Android. Việc kiểm chứng từng ngôn ngữ tiếp tục trước khi tải bản thử mới. Đây không phải chứng nhận độ chính xác với người thật; phiên bản và đợt xét duyệt hiện tại không đổi.
+[Hồ sơ phát hành mới nhất](../docs/RELEASE-20261004.md) xác nhận cả tám ứng dụng 1.0.0 có trên TestFlight và thử nghiệm nội bộ Google Play: H & F **15**, L & R **11**, tiếng Anh **11**, Quan thoại **10**, Quảng Đông **11**, tiếng Hàn **10**, tiếng Ả Rập **10** và tiếng Nhật **10**. Cập nhật mà không gỡ ứng dụng để giữ Lịch sử.
 
-[Bản cập nhật chấm điểm chỉ dành cho H & F](../docs/HANDF-NATIVE-SCORING-20261003.md) nhận dạng bản ghi tiếng Anh và Quan thoại bằng xử lý gốc trên iOS, có phương án ngoại tuyến tích hợp thay vì phụ thuộc vào bộ giải mã WebView. Nhận dạng từ và chi tiết âm đo được vẫn tách biệt; lý do đánh giá thất bại được lưu cùng âm thanh trong Lịch sử. Các khóa khác và hồ sơ xét duyệt chính thức hiện có không thay đổi. Kiểm thử mã nguồn không đồng nghĩa với việc có mặt trên cửa hàng hoặc chứng nhận độ chính xác với giọng người thật.
+Đã gửi đúng tám bản dựng này để xét duyệt chính thức. Trạng thái xác minh ngày 4 tháng 10 năm 2026: Apple **Waiting for Review**; Google **Changes in review**, với toàn bộ **173 quốc gia và vùng hỗ trợ ứng dụng trả phí** được chọn. Giữ nguyên giá và phát hành tự động sau khi duyệt. Gửi xét duyệt không đồng nghĩa với được duyệt hoặc đã công khai.
 
-Đã xác minh [H & F 1.0.0 (15)](../docs/BETA-HANDF-1.0.0-15.md) có trên TestFlight và kênh thử nghiệm nội bộ Google Play. Hãy cập nhật mà không gỡ cài đặt để giữ Lịch sử. Đây là bản thử nghiệm, không phải bản phát hành công khai mới trên cửa hàng.
+[Bản cập nhật phản hồi chung](../docs/PAIR-FEEDBACK-MIGRATION-20261003.md) đưa bản chép lời ngoại tuyến thực tế trong ứng dụng native, bằng chứng âm học riêng cho từng cặp và điều khiển gọn, ổn định sang các khóa khác. Kiểm tra kỹ thuật âm thanh đã lưu không chứng nhận độ chính xác trên người thật. [Bản mở rộng bảng âm và đối chiếu thanh điệu](../docs/SOUND-COVERAGE-RESEARCH.md) là công việc phát triển riêng, chưa có trong các bản đã gửi hoặc PWA hiện tại.
 
-Cả tám ứng dụng độc lập, gồm [tiếng Nhật](../docs/JAPANESE-COURSE.md), đã có [bản thử nội bộ 1.0.0 (9) và liên kết thử nghiệm](../docs/BETA-1.0.0-9.md) trên TestFlight và Google Play. Tám hồ sơ xét duyệt chính thức iOS vẫn dùng bản dựng 8 và đang chờ xét duyệt, giữ tự động phát hành sau khi được duyệt; việc gửi bản chính thức lên Google chưa hoàn tất. [Gói đã ký và trạng thái cửa hàng được xác minh](../store/artifacts/internal-beta-1.0.0-9.json). Bản cập nhật thử nội bộ này không có nghĩa là đã được duyệt hay công khai. PWA công khai không thay đổi.
 
 ## Tám khóa chuyên biệt
 
@@ -39,7 +38,7 @@ Cả tám ứng dụng độc lập, gồm [tiếng Nhật](../docs/JAPANESE-COU
 
 Biểu tượng V4 dẫn dắt bảng màu: nền sáng, màu mềm, thẻ gọn và nút ghi/phát giữ vị trí ổn định. Biểu tượng cũ được giữ lại. Hoạt ảnh tùy chọn và trò chơi năm câu trao sao cục bộ cho nghe/nhớ, không phải điểm phát âm chưa được kiểm chứng. Xem [phạm vi ngôn ngữ](../docs/LOCALIZATION.md) và [ghi chú Quảng Đông](../docs/CANTONESE.md). [Bản beta 0.2.0 (2) của bảy ứng dụng](../docs/BETA-0.2.0.md) có V4, 11 ngôn ngữ giao diện và ứng dụng Quảng Đông.
 
-**Bản dựng 9 cải thiện điểm khớp luyện tập tự động trong ứng dụng gốc.** Chạm Ghi âm, nói rồi dừng một chút, hoặc chạm Dừng và chấm điểm. Từ ngắn, nhỏ tiếng vẫn giữ phụ âm yếu ở đầu và cuối; phép so sánh ưu tiên âm đầu, nguyên âm hoặc âm cuối dễ nhầm hơn phần âm chung. H & F hiển thị âm, nguyên âm/từ và độ dài tương đối; các khóa khác hiển thị độ khớp của từ, phần đối lập và thời gian phát âm. Các nút ghi âm nằm trên kết quả. Điểm là chỉ số tương đồng cục bộ với giọng mẫu, không phải tỷ lệ phát âm đúng đã hiệu chỉnh. Cần cài giọng ngoại tuyến cho ngôn ngữ luyện tập; điểm âm vị đã hiệu chỉnh và điểm PWA vẫn tắt. Xem [ghi chú thuật toán](../docs/SCORING-UPDATE-20261002.md). Capacitor kết hợp React với ghi âm và giọng nói gốc Swift/Java, không phải giao diện SwiftUI/Compose riêng.
+Chạm Ghi âm, nói rồi ngừng một chút hoặc chạm Dừng và chấm điểm. Khi nhận dạng được, kết quả giữ đúng từ đã nghe và tách nhận dạng từ khỏi bằng chứng âm thanh đo được. Nút ghi âm nằm giữa, cố định phía trên kết quả và không có bộ đếm thời gian. Điểm là chỉ số luyện tập trên máy, không phải phần trăm chính xác đã hiệu chuẩn. Cần giọng ngoại tuyến của ngôn ngữ luyện tập; mô hình nhận dạng từ tích hợp chỉ có trong ứng dụng native. Xem [ghi chú thuật toán](../docs/PAIR-FEEDBACK-MIGRATION-20261003.md). Capacitor kết hợp React với ghi âm và phát tiếng native Swift/Java, không phải giao diện SwiftUI/Compose riêng.
 
 ## Biên dịch và kiểm thử
 
